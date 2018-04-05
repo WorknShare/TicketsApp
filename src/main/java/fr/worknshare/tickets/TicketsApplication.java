@@ -69,14 +69,6 @@ public class TicketsApplication extends Application {
 				builder.append("\n");
 				return builder.toString();
 			}
-
-			public String getHead(Handler h) {
-				return super.getHead(h);
-			}
-
-			public String getTail(Handler h) {
-				return super.getTail(h);
-			}
 		});
 
 		logger.setUseParentHandlers(false);
