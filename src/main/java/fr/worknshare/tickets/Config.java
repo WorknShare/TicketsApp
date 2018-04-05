@@ -56,9 +56,7 @@ public final class Config {
 	 * @return the value associated with the given key, null if not found
 	 */
 	public String get(String key) {
-		String value = values.get(key);
-		if(value == null) Logger.getGlobal().warning("Requested \"" + key + "\" config value is not set.");
-		return value;
+		return values.get(key);
 	}
 	
 	public static final Config getInstance() {

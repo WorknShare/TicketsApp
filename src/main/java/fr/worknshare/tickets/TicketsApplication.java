@@ -10,6 +10,9 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+import com.rollbar.notifier.Rollbar;
+import com.rollbar.notifier.config.ConfigBuilder;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -24,6 +27,8 @@ import javafx.stage.Stage;
  */
 public class TicketsApplication extends Application {
 	
+	private Rollbar rollbar;
+	
 	@Override
 	public void start(Stage primaryStage) {
 		setup();
@@ -34,7 +39,8 @@ public class TicketsApplication extends Application {
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch(Exception e) {
-			Logger.getGlobal().log(Level.SEVERE, "Couldn't load scene", e);
+			rollbar.error(e);
+			Logger.getGlobal().log(Level.SEVERE, "An error occurred", e);
 		}
 	}
 	
@@ -80,10 +86,27 @@ public class TicketsApplication extends Application {
 	private void setupErrorHandling() {
 		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
 			public void uncaughtException(Thread t, Throwable e) {
+				rollbar.error(e);
 				Logger.getGlobal().log(Level.SEVERE, e.getMessage(), e);
 				//Show error dialog
 			}
 		});
+		setupRollbar();
+	}
+	
+	private void setupRollbar() {
+		String token = Config.getInstance().get("RollbarToken");
+		if(token != null) {
+			Logger.getGlobal().info("Setting up rollbar");
+			com.rollbar.notifier.config.Config config = ConfigBuilder.withAccessToken(token)
+			        .environment(Config.getInstance().get("Environment"))
+			        .build();
+			rollbar = Rollbar.init(config);
+		}
+	}
+	
+	public Rollbar getRollbar() {
+		return rollbar;
 	}
 	
 	public static void main(String[] args) {

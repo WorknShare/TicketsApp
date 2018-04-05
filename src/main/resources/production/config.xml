@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Config>
-	<Environment>PRODUCTION</Environment>
+	<Environment>production</Environment>
+	<RollbarToken>7345b105ed1b4c7990ae3ce449ca423b</RollbarToken>
 </Config>
