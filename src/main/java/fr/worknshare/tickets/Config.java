@@ -25,7 +25,7 @@ public final class Config {
 	
 	private Hashtable<String, String> values;
 	
-	Config() {
+	private Config() {
 		Logger.getGlobal().info("Loading config");
 		
 		values = new Hashtable<>();
