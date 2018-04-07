@@ -66,7 +66,7 @@ public class RestRequest {
 	/**
 	 * Puts a parameter to the request. Overrides if a value with the given name already exists
 	 * @param name - the name of the parameter
-	 * @param value  - the value associated with the given name, should implement Serializable
+	 * @param value - the value associated with the given name, should implement Serializable
 	 * @return current instance, used to chain the builder
 	 * @see Serializable
 	 */
