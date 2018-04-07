@@ -142,8 +142,7 @@ public class RestRequest {
 			else
 				((HttpEntityEnclosingRequestBase) request).setEntity(serializeParameters());
 			
-			throw new IllegalArgumentException("test");
-			//return request;
+			return request;
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException | UnsupportedEncodingException | URISyntaxException e) {
 			Logger.getGlobal().log(Level.SEVERE, "Unable to instantiate Http request.", e);
