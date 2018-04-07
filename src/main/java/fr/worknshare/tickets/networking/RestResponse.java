@@ -17,11 +17,11 @@ import com.google.gson.JsonParser;
  * 
  * @author Jérémy LAMBERT
  * 
- * @see RestBuilder
+ * @see RestRequest
  * @see HttpRequest
  *
  */
-public class RestResult {
+public class RestResponse {
 
 	private int status;
 	private String raw;
@@ -30,12 +30,12 @@ public class RestResult {
 	/**
 	 * Use this constructor if the HttpRequest failed. Will instantiate a fail result
 	 */
-	protected RestResult() {
+	protected RestResponse() {
 		status = -1;
 		raw = "Request failed.";
 	}
 	
-	protected RestResult(HttpResponse response) {
+	protected RestResponse(HttpResponse response) {
 		status = response.getStatusLine().getStatusCode();
 		
 		try {
