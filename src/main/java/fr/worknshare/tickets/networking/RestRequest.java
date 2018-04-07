@@ -106,7 +106,7 @@ public class RestRequest {
 		try {
 
 			HttpClient client = HttpClientBuilder.create().build();
-			HttpPost request = (HttpPost) prepareRequest(HttpMethod.POST);
+			HttpPost request = (HttpPost) prepareRequest(method);
 			
 			if(request != null) {
 				HttpResponse response = client.execute(request);
