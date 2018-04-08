@@ -34,7 +34,7 @@ public class TicketsApplication extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-
+		
 		try {
 			BorderPane root = (BorderPane)FXMLLoader.load(getClass().getResource("Sample.fxml"));
 			Scene scene = new Scene(root,400,400);

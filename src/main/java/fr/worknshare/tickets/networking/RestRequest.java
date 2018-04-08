@@ -112,6 +112,7 @@ public class RestRequest {
 				HttpResponse response = client.execute(request);
 				result = new RestResponse(response);
 			}
+			
 		} catch (IOException e) {
 			Logger.getGlobal().log(Level.SEVERE, "Unable to execute Rest " + method.name() + " request", e);
 			result = new RestResponse();
@@ -133,8 +134,7 @@ public class RestRequest {
 
 			//Headers
 			request.addHeader("Accept", "application/json");
-			request.addHeader("Content-type", "application/json;charset=UTF-8");
-
+			request.addHeader("Content-type", "application/json; charset=UTF-8");
 
 			//Parameters
 			if(parameters.size() > 0) {
@@ -160,7 +160,8 @@ public class RestRequest {
 	 */
 	private StringEntity serializeParameters() throws UnsupportedEncodingException {
 		Gson gson = new Gson();
-		StringEntity jsonparam = new StringEntity(gson.toJson(parameters));
+		StringEntity jsonparam = new StringEntity(gson.toJson(parameters), "UTF-8");
+		jsonparam.setContentType("application/json");
 		jsonparam.setChunked(true);
 		return jsonparam;
 	}

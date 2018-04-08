@@ -47,7 +47,9 @@ public final class Config {
 			Logger.getGlobal().log(Level.SEVERE, "Couldn't load config", e);
 		}
 		
-		Logger.getGlobal().info("Loaded config. Current environment: " + get("Environment"));
+		Logger.getGlobal().info("Loaded config.");
+		Logger.getGlobal().info("Current environment: " + get("Environment"));
+		Logger.getGlobal().info("Remote host: " + get("Host"));
 	}
 	
 	/**

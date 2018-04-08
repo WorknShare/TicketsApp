@@ -18,7 +18,7 @@ import fr.worknshare.tickets.networking.RestResponse;
  * @author Jérémy LAMBERT
  *
  */
-public abstract class Repository<T extends Model> {
+public abstract class Repository<T extends Model<T>> {
 
 
 	/**
@@ -108,7 +108,7 @@ public abstract class Repository<T extends Model> {
 		String host = Config.getInstance().get("Host");
 		if(host == null) throw new NullPointerException("Host is undefined");
 
-		return host + "/" + getResourceName();
+		return host + "/api/" + getResourceName();
 	}
 
 	/**
@@ -125,10 +125,11 @@ public abstract class Repository<T extends Model> {
 	 * @param array - the array from the response containing the objects
 	 * @return a list of models with filled values
 	 */
-	private ArrayList<T> parseArray(JsonArray array) {
+	public ArrayList<T> parseArray(JsonArray array) {
 		ArrayList<T> list = new ArrayList<T>();
 		array.forEach((element) -> {
-			list.add(parseObject(element));
+			if(element.isJsonObject())
+				list.add(parseObject(element.getAsJsonObject()));
 		});
 		return list;
 	}
@@ -138,6 +139,6 @@ public abstract class Repository<T extends Model> {
 	 * @param element - the element from the response
 	 * @return an instance of the model with filled values
 	 */
-	protected abstract T parseObject(JsonElement element);
+	public abstract T parseObject(JsonObject object);
 
 }
