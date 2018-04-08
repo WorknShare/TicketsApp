@@ -22,6 +22,11 @@
                   <Insets bottom="30.0" />
                </VBox.margin>
             </ImageView>
+            <Label fx:id="error" styleClass="has-error" stylesheets="@application.css" text="Impossible de joindre le serveur distant" visible="false">
+               <VBox.margin>
+                  <Insets bottom="5.0" top="-20.0" />
+               </VBox.margin>
+            </Label>
             <JFXTextField fx:id="emailField" focusColor="#007bff" prefWidth="200.0" promptText="Email" unFocusColor="#4d4d4d66">
                <VBox.margin>
                   <Insets bottom="25.0" />

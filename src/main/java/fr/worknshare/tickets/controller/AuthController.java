@@ -41,6 +41,7 @@ public class AuthController {
 
 	@FXML private Label errorsEmail;
 	@FXML private Label errorsPassword;
+	@FXML private Label error;
 	
 	@FXML private FlowPane loginPane;
 
@@ -85,8 +86,12 @@ public class AuthController {
 
 				if(response.getStatus() == 422) //Invalid credentials
 					handleResponse(response.getJsonObject().get("errors").getAsJsonObject());
-				else				
+				else if(response.getStatus() != -1)				
 					Logger.getGlobal().log(Level.WARNING, "Login request failed.\n\tStatus code " + response.getStatus() + "\n\tMessage: " + response.getJsonObject().get("message").getAsString());
+				else {
+					Logger.getGlobal().log(Level.WARNING, "Login request failed. Remote host unreachable.");
+					error.setVisible(true);
+				}
 
 			}
 		} else
@@ -113,8 +118,10 @@ public class AuthController {
 				loginPane.toFront();
 				ft.play();
 				return true;
-			} else {
-				Logger.getGlobal().log(Level.WARNING, "Login request failed.\n\tStatus code " + response.getStatus() + "\n\tMessage: " + response.getJsonObject().get("message").getAsString());
+			} else if(response.getStatus() != -1)				
+				Logger.getGlobal().log(Level.WARNING, "Logout request failed.\n\tStatus code " + response.getStatus() + "\n\tMessage: " + response.getJsonObject().get("message").getAsString());
+			 else {
+				Logger.getGlobal().log(Level.WARNING, "Logout request failed. Remote host unreachable.");
 			}
 		} else
 			Logger.getGlobal().log(Level.WARNING, "Logout request failed. Internal error.");
@@ -149,6 +156,7 @@ public class AuthController {
 	}
 	
 	private void resetInputs() {
+		error.setVisible(false);
 		emailField.setDisable(true);
 		passwordField.setDisable(true);
 		emailField.getStyleClass().remove("has-error");
