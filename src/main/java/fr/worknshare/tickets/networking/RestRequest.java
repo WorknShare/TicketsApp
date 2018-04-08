@@ -32,19 +32,19 @@ import com.google.gson.Gson;
  *
  */
 public class RestRequest {
-	
+
 	private String url;
 	private boolean urlParam;
 	private Hashtable<String, Object> parameters;
-	
+
 	public RestRequest(String url) {
 		this.url = url;
 		this.urlParam = false;
 		this.parameters = new Hashtable<>();
 	}
-	
+
 	public RestRequest() {}
-	
+
 	/**
 	 * Set the request URL
 	 * @param url
@@ -54,7 +54,7 @@ public class RestRequest {
 		this.url = url;
 		return this;
 	}
-	
+
 	/**
 	 * Get the request URL
 	 * @return the request URL
@@ -62,7 +62,7 @@ public class RestRequest {
 	public String getUrl() {
 		return url;
 	}
-	
+
 	/**
 	 * Puts a parameter to the request. Overrides if a value with the given name already exists
 	 * @param name - the name of the parameter
@@ -74,7 +74,7 @@ public class RestRequest {
 		parameters.put(name, value);
 		return this;
 	}
-	
+
 	/**
 	 * Define if the request's parameters should be URL parameters or in the body content.
 	 * @param urlParam
@@ -84,7 +84,7 @@ public class RestRequest {
 		this.urlParam = urlParam;
 		return this;
 	}
-	
+
 	/**
 	 * Get if the request's parameters should be URL parameters or in the body content.
 	 * @return urlParam
@@ -92,7 +92,7 @@ public class RestRequest {
 	public boolean isUrlParam() {
 		return urlParam;
 	}
-	
+
 	/**
 	 * Execute the request using the given HttpMethod
 	 * @return the result of the request
@@ -100,14 +100,14 @@ public class RestRequest {
 	 * @see HttpMethod
 	 */
 	public RestResponse execute(HttpMethod method) {
-		
+
 		RestResponse result = null;
-		
+
 		try {
 
 			HttpClient client = HttpClientBuilder.create().build();
 			HttpPost request = (HttpPost) prepareRequest(method);
-			
+
 			if(request != null) {
 				HttpResponse response = client.execute(request);
 				result = new RestResponse(response);
@@ -118,9 +118,9 @@ public class RestRequest {
 		}
 
 		return result;
-		
+
 	}
-	
+
 	/**
 	 * Prepare the request by instantiating it, setting the headers and the parameters.
 	 * @param method - The HttpMethod used
@@ -130,18 +130,20 @@ public class RestRequest {
 	private HttpRequestBase prepareRequest(HttpMethod method) {
 		try {
 			HttpRequestBase request = method.instantiate(url);
-			
+
 			//Headers
 			request.addHeader("Accept", "application/json");
 			request.addHeader("Content-type", "application/json;charset=UTF-8");
-			
-			
+
+
 			//Parameters
-			if(isUrlParam())
-				request.setURI(new URI(url + urlEncodeParameters()));
-			else
-				((HttpEntityEnclosingRequestBase) request).setEntity(serializeParameters());
-			
+			if(parameters.size() > 0) {
+				if(isUrlParam())
+					request.setURI(new URI(url + urlEncodeParameters()));
+				else
+					((HttpEntityEnclosingRequestBase) request).setEntity(serializeParameters());
+			}
+
 			return request;
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException | UnsupportedEncodingException | URISyntaxException e) {
@@ -149,7 +151,7 @@ public class RestRequest {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Serialize the parameters in json
 	 * @return the json string representing parameters
@@ -162,7 +164,7 @@ public class RestRequest {
 		jsonparam.setChunked(true);
 		return jsonparam;
 	}
-	
+
 	/**
 	 * URL encode the parameters and add the question mark at the beginning of the string
 	 * @return the URL encoded string representing parameters
@@ -175,5 +177,5 @@ public class RestRequest {
 		}
 		return "?" + builder.toString();
 	}
-	
+
 }

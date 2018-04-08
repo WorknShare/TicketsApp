@@ -30,14 +30,32 @@ public abstract class Repository<T extends Model> {
 	public abstract String getResourceName();
 
 	/**
+	 * Get the list of records for the given page.
+	 * @param page - the page number, must be positive
+	 * @return a list of records
+	 */
+	public final ArrayList<T> paginate(int page) {
+		return getRequest("page", page);
+	}
+	
+	/**
 	 * Request the list of records corresponding to the "search" pattern.
 	 * @return a list of records
 	 */
 	public final ArrayList<T> where(String search) {
-
+		return getRequest("search", search);
+	}
+	
+	/**
+	 * Executes a simple array request using the GET method with a single parameter and returns the result.
+	 * @param paramName - the name of the parameter
+	 * @param paramValue - the value of the parameter
+	 * @return a list of records
+	 */
+	private final ArrayList<T> getRequest(String paramName, Object paramValue) {
 		RestRequest request = new RestRequest(getUrl())
 				.setUrlParam(true)
-				.param("search", search);
+				.param(paramName, paramValue);
 
 		RestResponse response = request.execute(HttpMethod.GET);
 		if(response != null && response.getStatus() == 200) {
@@ -49,10 +67,57 @@ public abstract class Repository<T extends Model> {
 				//Malformed response
 			}
 		} else {
-			//TODO Handle response failed
+			//TODO Handle request failed
 		}
 
 		return null;
+	}
+
+	/**
+	 * Get a single record for this model based on its ID.
+	 * @param id
+	 * @return an instance of the model, null if not found
+	 * 
+	 * @throws IllegalArgumentException if id is not positive.
+	 */
+	public T getById(int id) {
+		if(id < 1) throw new IllegalArgumentException("Requested resource's ID must be positive. " + id + " given.");
+		
+		RestRequest request = new RestRequest(getUrl(id));
+
+		RestResponse response = request.execute(HttpMethod.GET);
+		if(response != null && response.getStatus() == 200) {
+			JsonObject payload = response.getJsonObject();
+			JsonElement data = payload.get("data");
+			if(data != null && data.isJsonObject()) {
+				return parseObject(data.getAsJsonObject());
+			} else {
+				//Malformed response
+			}
+		} else {
+			//TODO Handle request failed
+		}
+		return null;
+	}
+
+	/**
+	 * Generate the URL based on the Host in the config and the resource name
+	 * @return the url to make a request for this model
+	 */
+	private final String getUrl() {
+		String host = Config.getInstance().get("Host");
+		if(host == null) throw new NullPointerException("Host is undefined");
+
+		return host + "/" + getResourceName();
+	}
+
+	/**
+	 * Generate the URL based on the Host in the config, the resource name and the ID of the resource
+	 * @param id - the id of the resource, must be positive
+	 * @return the full url to make a request for this model and resource
+	 */
+	private final String getUrl(int id) {
+		return getUrl() + "/" + id;
 	}
 	
 	/**
@@ -74,21 +139,5 @@ public abstract class Repository<T extends Model> {
 	 * @return an instance of the model with filled values
 	 */
 	protected abstract T parseObject(JsonElement element);
-
-	public T getById(int id) {
-		if(id < 1) throw new IllegalArgumentException("Requested resource's ID must be positive. " + id + " given.");
-		return null;
-	}
-
-	private final String getUrl() {
-		String host = Config.getInstance().get("Host");
-		if(host == null) throw new NullPointerException("Host is undefined");
-
-		return host + "/" + getResourceName();
-	}
-
-	private final String getUrl(int id) {
-		return getUrl() + "/" + id;
-	}
 
 }
