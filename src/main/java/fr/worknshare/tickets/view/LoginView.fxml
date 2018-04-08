@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXPasswordField?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.VBox?>
+
+
+<FlowPane alignment="CENTER" columnHalignment="CENTER" minHeight="635.0" minWidth="1050.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <VBox alignment="TOP_CENTER">
+         <children>
+            <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@banner64.png" />
+               </image>
+               <VBox.margin>
+                  <Insets bottom="30.0" />
+               </VBox.margin>
+            </ImageView>
+            <JFXTextField focusColor="#007bff" prefWidth="200.0" promptText="Email" unFocusColor="#4d4d4d66">
+               <VBox.margin>
+                  <Insets bottom="25.0" />
+               </VBox.margin>
+            </JFXTextField>
+            <JFXPasswordField focusColor="#007bff" promptText="Mot de passe" unFocusColor="#4d4d4d67">
+               <VBox.margin>
+                  <Insets bottom="25.0" />
+               </VBox.margin>
+            </JFXPasswordField>
+            <JFXButton text="Se connecter" style="-fx-background-color: #007bff;" textAlignment="CENTER" textFill="WHITE"/>
+         </children>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+      </VBox>
+   </children>
+</FlowPane>

@@ -19,7 +19,8 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.image.Image;
+import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 
 /**
@@ -36,9 +37,19 @@ public class TicketsApplication extends Application {
 	public void start(Stage primaryStage) {
 		
 		try {
-			BorderPane root = (BorderPane)FXMLLoader.load(getClass().getResource("Sample.fxml"));
-			Scene scene = new Scene(root,400,400);
-			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("view/LoginView.fxml"));
+			FlowPane rootLayout = (FlowPane) loader.load();
+			Scene scene = new Scene(rootLayout);
+			scene.getStylesheets().add(getClass().getResource("view/application.css").toExternalForm());
+			
+			primaryStage.setTitle("Work'n Share Tickets");
+			primaryStage.setMinHeight(635);
+			primaryStage.setMinWidth(1050);
+			
+			primaryStage.getIcons().add(new Image(getClass().getResource("view/logo16.png").toExternalForm()));
+			primaryStage.getIcons().add(new Image(getClass().getResource("view/logo32.png").toExternalForm()));
+			primaryStage.getIcons().add(new Image(getClass().getResource("view/logo64.png").toExternalForm()));
+			
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch( Exception e ) {

@@ -1,0 +1,55 @@
+.sidebar .menu-item {
+	-fx-pref-width: 200px;
+	
+	-fx-text-fill: #fff;
+	-fx-background-color: transparent;
+	
+	-fx-padding: 10px 10px 10px 10px;
+}
+
+.sidebar .menu-item.active {
+	-fx-background-color: #555;
+}
+
+.sidebar .menu-item:hover {
+	-fx-background-color: #555;
+}
+
+.sidebar {
+	-fx-pref-width: 200px;
+	-fx-background-color: #444;
+	-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
+}
+
+.next-button {
+	-fx-background-image: url("right.png");
+	-fx-background-position: center;
+	-fx-background-repeat: no-repeat;
+	-fx-text-fill: transparent;
+}
+
+.previous-button {
+	-fx-background-image: url("left.png");
+	-fx-background-position: center;
+	-fx-background-repeat: no-repeat;
+	-fx-text-fill: transparent;
+}
+
+.h1 {
+	-fx-font-size: 20px;
+	-fx-padding: 10px 0px 10px 0px;	
+}
+
+.h2 {
+	-fx-font-size: 17px;
+	-fx-padding: 10px 0px 10px 0px;
+}
+
+.text-muted {
+	-fx-text-fill: #6c757d;
+}
+
+.root {
+    -fx-font-family: Roboto;
+    src: "/resources/roboto/Roboto-Regular.ttf";
+}
