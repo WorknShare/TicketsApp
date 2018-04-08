@@ -30,19 +30,19 @@ import javafx.util.Duration;
  * @author Jérémy LAMBERT
  *
  */
-public class AuthController extends Controller {
+public class AuthController {
 
 	private EmployeeRepository employeeRepository;
 	private Employee employee;
 
-	@FXML JFXButton submit;
-	@FXML JFXTextField emailField;
-	@FXML JFXPasswordField passwordField;
+	@FXML private JFXButton submit;
+	@FXML private JFXTextField emailField;
+	@FXML private JFXPasswordField passwordField;
 
-	@FXML Label errorsEmail;
-	@FXML Label errorsPassword;
+	@FXML private Label errorsEmail;
+	@FXML private Label errorsPassword;
 	
-	@FXML FlowPane loginPane;
+	@FXML private FlowPane loginPane;
 
 	@FXML
 	private void initialize() {
@@ -107,6 +107,11 @@ public class AuthController extends Controller {
 		if(response != null)  {
 			if(response.getStatus() == 200) {
 				employee = null;
+				FadeTransition ft = new FadeTransition(Duration.millis(800), loginPane);
+				ft.setFromValue(0.0);
+				ft.setToValue(1.0);
+				loginPane.toFront();
+				ft.play();
 				return true;
 			} else {
 				Logger.getGlobal().log(Level.WARNING, "Login request failed.\n\tStatus code " + response.getStatus() + "\n\tMessage: " + response.getJsonObject().get("message").getAsString());
@@ -132,7 +137,10 @@ public class AuthController extends Controller {
 			ft.play();
 			ft.setOnFinished((event) -> {
 				loginPane.toBack();
-				loginPane.opacityProperty().set(1.0);
+				emailField.setText("");
+				passwordField.setText("");
+				emailField.setDisable(false);
+				passwordField.setDisable(false);
 			});
 		} else {
 			emailField.setDisable(false);

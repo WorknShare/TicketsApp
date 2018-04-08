@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
+<StackPane xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.worknshare.tickets.controller.NavController">
 	<children>
 		<BorderPane prefWidth="1030.0" styleClass="root" stylesheets="@application.css">
 			<left>
@@ -30,7 +30,7 @@
 							</styleClass>
 						</JFXButton>
 						<JFXButton layoutX="10.0" layoutY="10.0" styleClass="menu-item" stylesheets="@application.css" text="Matériel" />
-						<JFXButton style="-fx-background-color: #007bff;" text="Se déconnecter" textAlignment="CENTER" textFill="WHITE">
+						<JFXButton fx:id="logoutButton" onAction="#logoutClicked" style="-fx-background-color: #007bff;" text="Se déconnecter" textAlignment="CENTER" textFill="WHITE">
 							<VBox.margin>
 								<Insets top="15.0" />
 							</VBox.margin>
