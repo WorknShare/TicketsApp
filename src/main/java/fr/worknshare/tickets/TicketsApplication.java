@@ -80,7 +80,7 @@ public class TicketsApplication extends Application {
 					StringWriter errors = new StringWriter();
 					record.getThrown().printStackTrace(new PrintWriter(errors));
 					builder.append(errors.toString());
-					
+
 					//Optional error dialog
 				}
 				return builder.toString();
@@ -108,13 +108,14 @@ public class TicketsApplication extends Application {
 			public synchronized void publish(final LogRecord record) {
 				super.publish(record);
 
-				switch(record.getLevel().getName()) {
-				case "SEVERE":
-					rollbar.error(record.getThrown());
-					break;
-				case "WARNING":
-					rollbar.warning(record.getThrown());
-					break;
+				if(rollbar != null)
+					switch(record.getLevel().getName()) {
+					case "SEVERE":
+						rollbar.error(record.getThrown());
+						break;
+					case "WARNING":
+						rollbar.warning(record.getThrown());
+						break;
 				}
 				flush();
 			}

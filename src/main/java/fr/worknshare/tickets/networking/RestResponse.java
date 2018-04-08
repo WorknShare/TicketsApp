@@ -52,6 +52,9 @@ public class RestResponse {
 		} catch (UnsupportedOperationException | IOException e) {
 			Logger.getGlobal().log(Level.SEVERE, "Unable to read HttpResponse", e);
 		}
+		
+		if(status == 404)
+			Logger.getGlobal().log(Level.WARNING, "Requested URL returned 404", new NotFoundException("Request returned status 404 NOT FOUND"));
 	}
 	
 	/**
