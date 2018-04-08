@@ -20,7 +20,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 /**
@@ -37,8 +37,8 @@ public class TicketsApplication extends Application {
 	public void start(Stage primaryStage) {
 		
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("view/LoginView.fxml"));
-			FlowPane rootLayout = (FlowPane) loader.load();
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("view/MainView.fxml"));
+			StackPane rootLayout = (StackPane) loader.load();
 			Scene scene = new Scene(rootLayout);
 			scene.getStylesheets().add(getClass().getResource("view/application.css").toExternalForm());
 			

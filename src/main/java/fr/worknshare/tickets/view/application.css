@@ -51,5 +51,12 @@
 
 .root {
     -fx-font-family: Roboto;
+    -fx-font-size: 14px;
     src: "/resources/roboto/Roboto-Regular.ttf";
+}
+
+.has-error {
+	-fx-focus-color: #ff4444;
+	-jfx-focus-color: #ff4444;
+	-fx-text-fill: #ff4444;
 }

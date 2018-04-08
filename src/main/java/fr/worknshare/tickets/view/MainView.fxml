@@ -6,39 +6,45 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefWidth="1030.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
-   <left>
-      <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" styleClass="sidebar" stylesheets="@application.css" BorderPane.alignment="CENTER">
-         <children>
-            <ImageView fitHeight="150.0" fitWidth="190.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@banner64_2.png" />
-               </image>
-               <VBox.margin>
-                  <Insets bottom="15.0" left="5.0" right="5.0" top="7.5" />
-               </VBox.margin>
-            </ImageView>
-            <JFXButton stylesheets="@application.css" text="Tickets">
-               <styleClass>
-                  <String fx:value="menu-item" />
-                  <String fx:value="active" />
-               </styleClass>
-            </JFXButton>
-            <JFXButton layoutX="10.0" layoutY="10.0" styleClass="menu-item" stylesheets="@application.css" text="Matériel" />
-            <JFXButton style="-fx-background-color: #007bff;" text="Se déconnecter" textAlignment="CENTER" textFill="WHITE">
-               <VBox.margin>
-                  <Insets top="15.0" />
-               </VBox.margin>
-            </JFXButton>
-         </children>
-         <BorderPane.margin>
-            <Insets right="15.0" />
-         </BorderPane.margin>
-      </VBox>
-   </left>
-   <opaqueInsets>
-      <Insets />
-   </opaqueInsets>
-</BorderPane>
+<StackPane xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
+	<children>
+		<BorderPane prefWidth="1030.0" styleClass="root" stylesheets="@application.css">
+			<left>
+				<VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" styleClass="sidebar" stylesheets="@application.css" BorderPane.alignment="CENTER">
+					<children>
+						<ImageView fitHeight="150.0" fitWidth="190.0" pickOnBounds="true" preserveRatio="true">
+							<image>
+								<Image url="@banner64_2.png" />
+							</image>
+							<VBox.margin>
+								<Insets bottom="15.0" left="5.0" right="5.0" top="7.5" />
+							</VBox.margin>
+						</ImageView>
+						<JFXButton stylesheets="@application.css" text="Tickets">
+							<styleClass>
+								<String fx:value="menu-item" />
+								<String fx:value="active" />
+							</styleClass>
+						</JFXButton>
+						<JFXButton layoutX="10.0" layoutY="10.0" styleClass="menu-item" stylesheets="@application.css" text="Matériel" />
+						<JFXButton style="-fx-background-color: #007bff;" text="Se déconnecter" textAlignment="CENTER" textFill="WHITE">
+							<VBox.margin>
+								<Insets top="15.0" />
+							</VBox.margin>
+						</JFXButton>
+					</children>
+					<BorderPane.margin>
+						<Insets right="15.0" />
+					</BorderPane.margin>
+				</VBox>
+			</left>
+			<opaqueInsets>
+				<Insets />
+			</opaqueInsets>
+		</BorderPane>
+		<fx:include fx:id="login" source="LoginView.fxml" />
+	</children>
+</StackPane>
