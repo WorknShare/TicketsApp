@@ -37,7 +37,7 @@ public abstract class Repository<T extends Model<T>> {
 	public final ArrayList<T> paginate(int page) {
 		return getRequest("page", page);
 	}
-	
+
 	/**
 	 * Request the list of records corresponding to the "search" pattern.
 	 * @return a list of records
@@ -45,7 +45,7 @@ public abstract class Repository<T extends Model<T>> {
 	public final ArrayList<T> where(String search) {
 		return getRequest("search", search);
 	}
-	
+
 	/**
 	 * Executes a simple array request using the GET method with a single parameter and returns the result.
 	 * @param paramName - the name of the parameter
@@ -82,7 +82,7 @@ public abstract class Repository<T extends Model<T>> {
 	 */
 	public T getById(int id) {
 		if(id < 1) throw new IllegalArgumentException("Requested resource's ID must be positive. " + id + " given.");
-		
+
 		RestRequest request = new RestRequest(getUrl(id));
 
 		RestResponse response = request.execute(HttpMethod.GET);
@@ -119,7 +119,7 @@ public abstract class Repository<T extends Model<T>> {
 	private final String getUrl(int id) {
 		return getUrl() + "/" + id;
 	}
-	
+
 	/**
 	 * Iterate through the response array and create a list of models
 	 * @param array - the array from the response containing the objects
@@ -133,7 +133,7 @@ public abstract class Repository<T extends Model<T>> {
 		});
 		return list;
 	}
-	
+
 	/**
 	 * Create an instance of the model based on the given JsonElement.
 	 * @param element - the element from the response

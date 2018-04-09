@@ -11,8 +11,8 @@ import javafx.fxml.FXML;
  * @author Jérémy LAMBERT
  *
  */
-public class NavController {
-	
+public class MainController {
+
 	@FXML private JFXButton logout;
 	@FXML private AuthController loginController;
 

@@ -35,21 +35,21 @@ public class TicketsApplication extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-		
+
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("view/MainView.fxml"));
 			StackPane rootLayout = (StackPane) loader.load();
 			Scene scene = new Scene(rootLayout);
 			scene.getStylesheets().add(getClass().getResource("view/application.css").toExternalForm());
-			
+
 			primaryStage.setTitle("Work'n Share Tickets");
 			primaryStage.setMinHeight(635);
 			primaryStage.setMinWidth(1050);
-			
+
 			primaryStage.getIcons().add(new Image(getClass().getResource("view/logo16.png").toExternalForm()));
 			primaryStage.getIcons().add(new Image(getClass().getResource("view/logo32.png").toExternalForm()));
 			primaryStage.getIcons().add(new Image(getClass().getResource("view/logo64.png").toExternalForm()));
-			
+
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch( Exception e ) {
@@ -127,7 +127,7 @@ public class TicketsApplication extends Application {
 					case "WARNING":
 						rollbar.warning(record.getThrown());
 						break;
-				}
+					}
 				flush();
 			}
 

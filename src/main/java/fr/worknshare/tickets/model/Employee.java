@@ -12,7 +12,7 @@ public final class Employee extends Model<Employee> {
 	private SimpleStringProperty phone;
 	private SimpleStringProperty address;
 	private SimpleIntegerProperty role;
-	
+
 	public Employee(int id) {
 		super(id);
 		name 	= new SimpleStringProperty();
@@ -26,47 +26,47 @@ public final class Employee extends Model<Employee> {
 	public final SimpleStringProperty getName() {
 		return name;
 	}
-	
+
 	public final void setName(String name) {
 		this.name.set(name);
 	}
-	
+
 	public final SimpleStringProperty getSurname() {
 		return surname;
 	}
-	
+
 	public final void setSurname(String surname) {
 		this.surname.set(surname);
 	}
-	
+
 	public final SimpleStringProperty getEmail() {
 		return email;
 	}
-	
+
 	public final void setEmail(String email) {
 		this.email.set(email);
 	}
-	
+
 	public final SimpleStringProperty getPhone() {
 		return phone;
 	}
-	
+
 	public final void setPhone(String phone) {
 		this.phone.set(phone);
 	}
-	
+
 	public final SimpleStringProperty getAddress() {
 		return address;
 	}
-	
+
 	public final void setAddress(String address) {
 		this.address.set(address);
 	}
-	
+
 	public final SimpleIntegerProperty getRole() {
 		return role;
 	}
-	
+
 	public final void setRole(int role) {
 		this.role.set(role);
 	}
@@ -78,5 +78,5 @@ public final class Employee extends Model<Employee> {
 	public final void setToken(String token) {
 		this.token = token;
 	}
-	
+
 }

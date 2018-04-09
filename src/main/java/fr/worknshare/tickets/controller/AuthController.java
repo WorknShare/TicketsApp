@@ -43,7 +43,7 @@ public class AuthController {
 	@FXML private Label errorsEmail;
 	@FXML private Label errorsPassword;
 	@FXML private Label error;
-	
+
 	@FXML private FlowPane loginPane;
 
 	@FXML
@@ -103,12 +103,12 @@ public class AuthController {
 				} else {
 					Logger.getGlobal().log(Level.WARNING, "Login request failed. Internal error.");
 				}
-				
+
 				emailField.setDisable(false);
 				passwordField.setDisable(false);
 				submit.setDisable(false);
 			}
-			
+
 		});
 	}
 
@@ -118,7 +118,7 @@ public class AuthController {
 	public void logout() {
 		logout(null);
 	}
-	
+
 
 	/**
 	 * Send a logout request. Sets the previous authenticated employee to null.
@@ -139,15 +139,15 @@ public class AuthController {
 						showLoginPane();
 					} else if(response.getStatus() != -1)				
 						Logger.getGlobal().log(Level.WARNING, "Logout request failed.\n\tStatus code " + response.getStatus() + "\n\tMessage: " + response.getJsonObject().get("message").getAsString());
-					 else {
+					else {
 						Logger.getGlobal().log(Level.WARNING, "Logout request failed. Remote host unreachable.");
 					}
 				} else
 					Logger.getGlobal().log(Level.WARNING, "Logout request failed. Internal error.");
-				
+
 				if(button != null) button.setDisable(false);
 			}
-			
+
 		});
 	}
 
@@ -155,12 +155,12 @@ public class AuthController {
 	public void submitClicked(ActionEvent e) {
 		submit();
 	}
-	
+
 	private void submit() {
 		resetInputs();
 		attempt(emailField.getText(), passwordField.getText());
 	}
-	
+
 	private void resetInputs() {
 		error.setVisible(false);
 		emailField.setDisable(true);
@@ -181,7 +181,7 @@ public class AuthController {
 		loginPane.toFront();
 		ft.play();
 	}
-	
+
 	public void hideLoginPane() {
 		FadeTransition ft = new FadeTransition(Duration.millis(800), loginPane);
 		ft.setFromValue(1.0);
@@ -196,7 +196,7 @@ public class AuthController {
 			submit.setDisable(false);
 		});
 	}
-	
+
 	/**
 	 * Handle a negative response. (Show error messages on view)
 	 * @param errors - the json object containing the response errors messages

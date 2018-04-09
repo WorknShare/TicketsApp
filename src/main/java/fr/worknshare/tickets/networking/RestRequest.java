@@ -140,7 +140,7 @@ public class RestRequest {
 	public void asyncExecute(HttpMethod method, RequestCallback callback) {
 
 		Thread thread = new Thread(() -> {
-			
+
 			RestResponse result = null;
 			try {
 				HttpClient client = HttpClientBuilder.create().build();
@@ -155,7 +155,7 @@ public class RestRequest {
 				Logger.getGlobal().log(Level.SEVERE, "Unable to execute Rest " + method.name() + " request", e);
 				result = new RestResponse();
 			}
-			
+
 			callback.setResponse(result);
 			Platform.runLater(callback);
 		});
