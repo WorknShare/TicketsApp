@@ -18,6 +18,6 @@ public class NavController {
 
 	@FXML
 	public void logoutClicked(ActionEvent e) {
-		loginController.logout();
+		loginController.logout(logout);
 	}
 }

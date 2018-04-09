@@ -13,6 +13,7 @@ import com.jfoenix.controls.JFXTextField;
 import fr.worknshare.tickets.Config;
 import fr.worknshare.tickets.model.Employee;
 import fr.worknshare.tickets.networking.HttpMethod;
+import fr.worknshare.tickets.networking.RequestCallback;
 import fr.worknshare.tickets.networking.RestRequest;
 import fr.worknshare.tickets.networking.RestResponse;
 import fr.worknshare.tickets.repository.EmployeeRepository;
@@ -65,67 +66,89 @@ public class AuthController {
 	 * 
 	 * @see Employee
 	 */
-	public boolean attempt(String email, String password) {
+	public void attempt(String email, String password) {
 		RestRequest request = new RestRequest(getUrl() + "login")
 				.param("email", email)
 				.param("password", password);
 
-		RestResponse response = request.execute(HttpMethod.POST);
-		if(response != null) {
-			if(response.getStatus() == 200) {
-				JsonObject payload = response.getJsonObject();
-				JsonElement data = payload.get("data");
-				if(data != null && data.isJsonObject()) {
-					this.employee = employeeRepository.parseObject(data.getAsJsonObject());
-					return true;
+		request.asyncExecute(HttpMethod.POST, new RequestCallback() {
+
+			@Override
+			public void run() {
+				RestResponse response = getResponse();
+				if(response != null) {
+					if(response.getStatus() == 200) {
+						JsonObject payload = response.getJsonObject();
+						JsonElement data = payload.get("data");
+						if(data != null && data.isJsonObject()) {
+							employee = employeeRepository.parseObject(data.getAsJsonObject());
+							hideLoginPane();
+							return;
+						} else {
+							//Malformed response
+							Logger.getGlobal().log(Level.INFO, "Login response malformed:\n" + response.getRaw());
+						}
+					} else {
+
+						if(response.getStatus() == 422) //Invalid credentials
+							handleResponse(response.getJsonObject().get("errors").getAsJsonObject());
+						else if(response.getStatus() != -1)				
+							Logger.getGlobal().log(Level.WARNING, "Login request failed.\n\tStatus code " + response.getStatus() + "\n\tMessage: " + response.getJsonObject().get("message").getAsString());
+						else {
+							Logger.getGlobal().log(Level.WARNING, "Login request failed. Remote host unreachable.");
+							error.setVisible(true);
+						}
+
+					}
 				} else {
-					//Malformed response
-					Logger.getGlobal().log(Level.INFO, "Login response malformed:\n" + response.getRaw());
+					Logger.getGlobal().log(Level.WARNING, "Login request failed. Internal error.");
 				}
-			} else {
-
-				if(response.getStatus() == 422) //Invalid credentials
-					handleResponse(response.getJsonObject().get("errors").getAsJsonObject());
-				else if(response.getStatus() != -1)				
-					Logger.getGlobal().log(Level.WARNING, "Login request failed.\n\tStatus code " + response.getStatus() + "\n\tMessage: " + response.getJsonObject().get("message").getAsString());
-				else {
-					Logger.getGlobal().log(Level.WARNING, "Login request failed. Remote host unreachable.");
-					error.setVisible(true);
-				}
-
+				
+				emailField.setDisable(false);
+				passwordField.setDisable(false);
+				submit.setDisable(false);
 			}
-		} else
-			Logger.getGlobal().log(Level.WARNING, "Login request failed. Internal error.");
-
-
-		return false;
+			
+		});
 	}
 
 	/**
-	 * Send a logout request. Sets the previously authenticated employee to null
-	 * @return true on successful logout
+	 * Send a logout request. Sets the previously authenticated employee to null.
 	 */
-	public boolean logout() {
+	public void logout() {
+		logout(null);
+	}
+	
+
+	/**
+	 * Send a logout request. Sets the previous authenticated employee to null.
+	 * @param button - the button to disable until the request is done, nullable
+	 */
+	public void logout(final JFXButton button) {
 		RestRequest request = new RestRequest(getUrl() + "logout");
 
-		RestResponse response = request.execute(HttpMethod.POST);
-		if(response != null)  {
-			if(response.getStatus() == 200) {
-				employee = null;
-				FadeTransition ft = new FadeTransition(Duration.millis(800), loginPane);
-				ft.setFromValue(0.0);
-				ft.setToValue(1.0);
-				loginPane.toFront();
-				ft.play();
-				return true;
-			} else if(response.getStatus() != -1)				
-				Logger.getGlobal().log(Level.WARNING, "Logout request failed.\n\tStatus code " + response.getStatus() + "\n\tMessage: " + response.getJsonObject().get("message").getAsString());
-			 else {
-				Logger.getGlobal().log(Level.WARNING, "Logout request failed. Remote host unreachable.");
+		if(button != null) button.setDisable(true);
+		request.asyncExecute(HttpMethod.POST, new RequestCallback() {
+
+			@Override
+			public void run() {
+				RestResponse response = getResponse();
+				if(response != null)  {
+					if(response.getStatus() == 200) {
+						employee = null;
+						showLoginPane();
+					} else if(response.getStatus() != -1)				
+						Logger.getGlobal().log(Level.WARNING, "Logout request failed.\n\tStatus code " + response.getStatus() + "\n\tMessage: " + response.getJsonObject().get("message").getAsString());
+					 else {
+						Logger.getGlobal().log(Level.WARNING, "Logout request failed. Remote host unreachable.");
+					}
+				} else
+					Logger.getGlobal().log(Level.WARNING, "Logout request failed. Internal error.");
+				
+				if(button != null) button.setDisable(false);
 			}
-		} else
-			Logger.getGlobal().log(Level.WARNING, "Logout request failed. Internal error.");
-		return false;
+			
+		});
 	}
 
 	@FXML
@@ -134,31 +157,15 @@ public class AuthController {
 	}
 	
 	private void submit() {
-		
 		resetInputs();
-
-		if(attempt(emailField.getText(), passwordField.getText())) {
-			FadeTransition ft = new FadeTransition(Duration.millis(800), loginPane);
-			ft.setFromValue(1.0);
-			ft.setToValue(0.0);
-			ft.play();
-			ft.setOnFinished((event) -> {
-				loginPane.toBack();
-				emailField.setText("");
-				passwordField.setText("");
-				emailField.setDisable(false);
-				passwordField.setDisable(false);
-			});
-		} else {
-			emailField.setDisable(false);
-			passwordField.setDisable(false);
-		}
+		attempt(emailField.getText(), passwordField.getText());
 	}
 	
 	private void resetInputs() {
 		error.setVisible(false);
 		emailField.setDisable(true);
 		passwordField.setDisable(true);
+		submit.setDisable(true);
 		emailField.getStyleClass().remove("has-error");
 		passwordField.getStyleClass().remove("has-error");
 		errorsEmail.setText("");
@@ -167,6 +174,29 @@ public class AuthController {
 		errorsPassword.setVisible(false);
 	}
 
+	public void showLoginPane() {
+		FadeTransition ft = new FadeTransition(Duration.millis(800), loginPane);
+		ft.setFromValue(0.0);
+		ft.setToValue(1.0);
+		loginPane.toFront();
+		ft.play();
+	}
+	
+	public void hideLoginPane() {
+		FadeTransition ft = new FadeTransition(Duration.millis(800), loginPane);
+		ft.setFromValue(1.0);
+		ft.setToValue(0.0);
+		ft.play();
+		ft.setOnFinished((event) -> {
+			loginPane.toBack();
+			emailField.setText("");
+			passwordField.setText("");
+			emailField.setDisable(false);
+			passwordField.setDisable(false);
+			submit.setDisable(false);
+		});
+	}
+	
 	/**
 	 * Handle a negative response. (Show error messages on view)
 	 * @param errors - the json object containing the response errors messages

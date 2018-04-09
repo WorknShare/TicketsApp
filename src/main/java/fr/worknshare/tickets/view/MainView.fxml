@@ -30,7 +30,7 @@
 							</styleClass>
 						</JFXButton>
 						<JFXButton layoutX="10.0" layoutY="10.0" styleClass="menu-item" stylesheets="@application.css" text="Matériel" />
-						<JFXButton fx:id="logoutButton" onAction="#logoutClicked" style="-fx-background-color: #007bff;" text="Se déconnecter" textAlignment="CENTER" textFill="WHITE">
+						<JFXButton fx:id="logout" onAction="#logoutClicked" style="-fx-background-color: #007bff;" text="Se déconnecter" textAlignment="CENTER" textFill="WHITE">
 							<VBox.margin>
 								<Insets top="15.0" />
 							</VBox.margin>

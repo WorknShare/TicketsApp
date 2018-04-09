@@ -16,12 +16,13 @@ import java.util.logging.Logger;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import com.google.gson.Gson;
+
+import javafx.application.Platform;
 
 /**
  * Rest chainable request builder.
@@ -95,7 +96,10 @@ public class RestRequest {
 
 	/**
 	 * Execute the request using the given HttpMethod
+	 * 
+	 * @param method - the Http method to use for this request
 	 * @return the result of the request
+	 * 
 	 * @see RestResponse
 	 * @see HttpMethod
 	 */
@@ -106,13 +110,13 @@ public class RestRequest {
 		try {
 
 			HttpClient client = HttpClientBuilder.create().build();
-			HttpPost request = (HttpPost) prepareRequest(method);
+			HttpRequestBase request = prepareRequest(method);
 
 			if(request != null) {
 				HttpResponse response = client.execute(request);
 				result = new RestResponse(response);
 			}
-			
+
 		} catch (IOException e) {
 			Logger.getGlobal().log(Level.SEVERE, "Unable to execute Rest " + method.name() + " request", e);
 			result = new RestResponse();
@@ -120,6 +124,43 @@ public class RestRequest {
 
 		return result;
 
+	}
+
+	/**
+	 * Execute the request asynchronously using the given HttpMethod and executes the given callback when done
+	 * 
+	 * @param method - the Http method to use for this request
+	 * @param callback - the action to execute when the request is done
+	 * @return the result of the request
+	 * 
+	 * @see RestResponse
+	 * @see HttpMethod
+	 * @see RequestCallback
+	 */
+	public void asyncExecute(HttpMethod method, RequestCallback callback) {
+
+		Thread thread = new Thread(() -> {
+			
+			RestResponse result = null;
+			try {
+				HttpClient client = HttpClientBuilder.create().build();
+				HttpRequestBase request = prepareRequest(method);
+
+				if(request != null) {
+					HttpResponse response = client.execute(request);
+					result = new RestResponse(response);
+				}
+
+			} catch (IOException e) {
+				Logger.getGlobal().log(Level.SEVERE, "Unable to execute Rest " + method.name() + " request", e);
+				result = new RestResponse();
+			}
+			
+			callback.setResponse(result);
+			Platform.runLater(callback);
+		});
+		thread.setDaemon(true);
+		thread.start();
 	}
 
 	/**
