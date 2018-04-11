@@ -44,6 +44,13 @@
 			<opaqueInsets>
 				<Insets />
 			</opaqueInsets>
+         <center>
+            <StackPane prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            	<children>
+            		<fx:include fx:id="tickets" source="TicketsView.fxml" />
+            	</children>
+            </StackPane>
+         </center>
 		</BorderPane>
 		<fx:include fx:id="login" source="LoginView.fxml" />
 	</children>

@@ -15,7 +15,8 @@ public class MainController {
 
 	@FXML private JFXButton logout;
 	@FXML private AuthController loginController;
-
+	@FXML private TicketsController ticketsController;
+	
 	@FXML
 	public void logoutClicked(ActionEvent e) {
 		loginController.logout(logout);

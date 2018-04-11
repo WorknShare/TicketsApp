@@ -60,3 +60,13 @@
 	-jfx-focus-color: #ff4444;
 	-fx-text-fill: #ff4444;
 }
+
+.tree-table-view {
+    -fx-tree-table-color: #e5e5e5;
+    -fx-tree-table-rippler-color: rgba(0, 150, 201, 1);
+    -fx-selection-bar: #e5e5e5;
+}
+
+.tree-table-view .jfx-text-field{
+    -fx-background-color: transparent;
+}

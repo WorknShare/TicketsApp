@@ -12,6 +12,7 @@ public final class Employee extends Model<Employee> {
 	private SimpleStringProperty phone;
 	private SimpleStringProperty address;
 	private SimpleIntegerProperty role;
+	private SimpleStringProperty fullName;
 
 	public Employee(int id) {
 		super(id);
@@ -21,6 +22,7 @@ public final class Employee extends Model<Employee> {
 		phone 	= new SimpleStringProperty();
 		address = new SimpleStringProperty();
 		role	= new SimpleIntegerProperty();
+		fullName= new SimpleStringProperty();
 	}
 
 	public final SimpleStringProperty getName() {
@@ -29,6 +31,7 @@ public final class Employee extends Model<Employee> {
 
 	public final void setName(String name) {
 		this.name.set(name);
+		this.fullName.set((surname != null ? surname.get() : " ") + name);
 	}
 
 	public final SimpleStringProperty getSurname() {
@@ -37,6 +40,7 @@ public final class Employee extends Model<Employee> {
 
 	public final void setSurname(String surname) {
 		this.surname.set(surname);
+		this.fullName.set(surname + (name != null ? " " + name.get() : ""));
 	}
 
 	public final SimpleStringProperty getEmail() {
@@ -77,6 +81,10 @@ public final class Employee extends Model<Employee> {
 
 	public final void setToken(String token) {
 		this.token = token;
+	}
+	
+	public final SimpleStringProperty getFullName() {
+		return fullName;
 	}
 
 }

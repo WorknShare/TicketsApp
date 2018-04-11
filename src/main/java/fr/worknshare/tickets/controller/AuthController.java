@@ -56,6 +56,8 @@ public class AuthController {
 				submit();
 			}
 		});
+		
+		//attempt("admin@worknshare.fr", "admin"); //TODO disable auto auth
 	}
 
 	/**
