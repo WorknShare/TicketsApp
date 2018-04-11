@@ -8,6 +8,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPasswordField;
+import com.jfoenix.controls.JFXSnackbar;
+import com.jfoenix.controls.JFXSnackbar.SnackbarEvent;
 import com.jfoenix.controls.JFXTextField;
 
 import fr.worknshare.tickets.Config;
@@ -42,10 +44,11 @@ public class AuthController {
 
 	@FXML private Label errorsEmail;
 	@FXML private Label errorsPassword;
-	@FXML private Label error;
 
 	@FXML private FlowPane loginPane;
 
+	private JFXSnackbar snackbar;
+	
 	@FXML
 	private void initialize() {
 		this.employeeRepository = new EmployeeRepository();
@@ -94,11 +97,13 @@ public class AuthController {
 
 						if(response.getStatus() == 422) //Invalid credentials
 							handleResponse(response.getJsonObject().get("errors").getAsJsonObject());
+						else if(response.getStatus() == 423)
+							snackbar.enqueue(new SnackbarEvent(response.getJsonObject().get("errors").getAsJsonObject().get("email").getAsString()));
 						else if(response.getStatus() != -1)				
 							Logger.getGlobal().log(Level.WARNING, "Login request failed.\n\tStatus code " + response.getStatus() + "\n\tMessage: " + response.getJsonObject().get("message").getAsString());
 						else {
 							Logger.getGlobal().log(Level.WARNING, "Login request failed. Remote host unreachable.");
-							error.setVisible(true);
+							snackbar.enqueue(new SnackbarEvent("Impossible de joindre le serveur distant."));
 						}
 
 					}
@@ -164,7 +169,6 @@ public class AuthController {
 	}
 
 	private void resetInputs() {
-		error.setVisible(false);
 		emailField.setDisable(true);
 		passwordField.setDisable(true);
 		submit.setDisable(true);
@@ -238,5 +242,9 @@ public class AuthController {
 
 	public Employee getEmployee() {
 		return this.employee;
+	}
+	
+	protected void setSnackbar(JFXSnackbar bar) {
+		this.snackbar = bar;
 	}
 }

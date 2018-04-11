@@ -12,7 +12,7 @@
 
 <FlowPane fx:id="loginPane" alignment="CENTER" columnHalignment="CENTER" minHeight="635.0" minWidth="1050.0" style="-fx-background-color: #f4f4f4;" styleClass="root" stylesheets="@application.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.worknshare.tickets.controller.AuthController">
    <children>
-      <VBox alignment="TOP_CENTER">
+      <VBox alignment="TOP_CENTER" prefWidth="1050.0">
          <children>
             <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
                <image>
@@ -22,12 +22,7 @@
                   <Insets bottom="30.0" />
                </VBox.margin>
             </ImageView>
-            <Label fx:id="error" styleClass="has-error" stylesheets="@application.css" text="Impossible de joindre le serveur distant" visible="false">
-               <VBox.margin>
-                  <Insets bottom="5.0" top="-20.0" />
-               </VBox.margin>
-            </Label>
-            <JFXTextField fx:id="emailField" focusColor="#007bff" prefWidth="200.0" promptText="Email" unFocusColor="#4d4d4d66">
+            <JFXTextField fx:id="emailField" focusColor="#007bff" maxWidth="200.0" prefWidth="200.0" promptText="Email" unFocusColor="#4d4d4d66">
                <VBox.margin>
                   <Insets bottom="25.0" />
                </VBox.margin>
@@ -37,14 +32,14 @@
                   <Insets bottom="5.0" top="-15.0" />
                </VBox.margin>
             </Label>
-            <JFXPasswordField fx:id="passwordField" focusColor="#007bff" promptText="Mot de passe" unFocusColor="#4d4d4d67">
+            <JFXPasswordField fx:id="passwordField" focusColor="#007bff" maxWidth="200.0" promptText="Mot de passe" unFocusColor="#4d4d4d67">
                <VBox.margin>
                   <Insets bottom="25.0" />
                </VBox.margin>
             </JFXPasswordField>
             <Label fx:id="errorsPassword" layoutX="95.0" layoutY="122.0" text="Errors" textAlignment="CENTER" textFill="#ff4444" visible="false">
                <VBox.margin>
-                  <Insets bottom="5.0" top="-15.0" />
+                  <Insets bottom="10.0" top="-15.0" />
                </VBox.margin>
             </Label>
             <JFXButton fx:id="submit" onAction="#submitClicked" style="-fx-background-color: #007bff;" text="Se connecter" textAlignment="CENTER" textFill="WHITE" />
