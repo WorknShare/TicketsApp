@@ -82,6 +82,10 @@ public class TicketsApplication extends Application {
 				builder.append(df.format(new Date(record.getMillis())));
 				builder.append("[").append(record.getLevel()).append("] ");
 
+				//If level is not info, add context
+				if(!record.getLevel().equals(Level.INFO))
+					builder.append("("+ record.getSourceClassName() + "." + record.getSourceMethodName() +") ");
+				
 				//Message
 				builder.append(formatMessage(record));
 				builder.append("\n");
