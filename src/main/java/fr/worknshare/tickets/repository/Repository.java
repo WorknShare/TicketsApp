@@ -1,6 +1,7 @@
 package fr.worknshare.tickets.repository;
 
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -11,6 +12,7 @@ import fr.worknshare.tickets.model.Model;
 import fr.worknshare.tickets.networking.HttpMethod;
 import fr.worknshare.tickets.networking.RestRequest;
 import fr.worknshare.tickets.networking.RestResponse;
+import fr.worknshare.tickets.view.Paginator;
 
 /**
  * Data controller for models. Requests, retrieve and send data to the REST API.
@@ -32,10 +34,31 @@ public abstract class Repository<T extends Model<T>> {
 	/**
 	 * Get the list of records for the given page.
 	 * @param page - the page number, must be positive
-	 * @return a list of records
+	 * @return a paginated response
+	 * 
+	 * @see PaginatedResponse
 	 */
-	public final ArrayList<T> paginate(int page) {
-		return getRequest("page", page);
+	public final PaginatedResponse<T> paginate(int page) {
+		PaginatedResponse<T> response = null;
+		ArrayList<T> list;
+		JsonObject data = getRequest("page", page);
+		if(data == null) return null;
+		
+		JsonElement elem = data.get("paginator");
+		if(elem != null && elem.isJsonObject()) {
+			Paginator paginator = Paginator.fromJson(elem.getAsJsonObject());
+			elem = data.get("items");
+			if(elem != null && elem.isJsonArray()) {
+				list = parseArray(elem.getAsJsonArray());
+				response = new PaginatedResponse<T>(paginator, list);
+			} else {
+				//TODO Malformed response 
+			}
+		} else {
+			//TODO Malformed response
+		}
+		
+		return response;
 	}
 
 	/**
@@ -43,28 +66,37 @@ public abstract class Repository<T extends Model<T>> {
 	 * @return a list of records
 	 */
 	public final ArrayList<T> where(String search) {
-		return getRequest("search", search);
+		ArrayList<T> list = null;
+		JsonObject data = getRequest("search", search);
+		JsonElement elem = data.get("items");
+		if(elem != null && elem.isJsonArray()) {
+				list = parseArray(elem.getAsJsonArray());
+		} else {
+				//TODO Malformed response 
+		}
+		return list;
 	}
 
 	/**
-	 * Executes a simple array request using the GET method with a single parameter and returns the result.
+	 * Executes a simple array request using the GET method with a single parameter and returns the raw result (data member).
 	 * @param paramName - the name of the parameter
 	 * @param paramValue - the value of the parameter
-	 * @return a list of records
+	 * @return the json object "data" from the response
 	 */
-	private final ArrayList<T> getRequest(String paramName, Object paramValue) {
+	private final JsonObject getRequest(String paramName, Object paramValue) {
 		RestRequest request = new RestRequest(getUrl())
 				.setUrlParam(true)
 				.param(paramName, paramValue);
 
 		RestResponse response = request.execute(HttpMethod.GET);
+		Logger.getGlobal().info(response.getRaw()); //TODO debug
 		if(response != null && response.getStatus() == 200) {
 			JsonObject payload = response.getJsonObject();
 			JsonElement data = payload.get("data");
-			if(data != null && data.isJsonArray()) {
-				return parseArray(data.getAsJsonArray());
+			if(data != null && data.isJsonObject()) {
+				return data.getAsJsonObject();
 			} else {
-				//Malformed response
+				//TODO Malformed response
 			}
 		} else {
 			//TODO Handle request failed
@@ -92,7 +124,7 @@ public abstract class Repository<T extends Model<T>> {
 			if(data != null && data.isJsonObject()) {
 				return parseObject(data.getAsJsonObject());
 			} else {
-				//Malformed response
+				//TODO Malformed response
 			}
 		} else {
 			//TODO Handle request failed

@@ -26,10 +26,13 @@ public class MainController {
 		snackbar = new JFXSnackbar(pane);
 		snackbar.getChildren().get(0).getStyleClass().add("error");
 		loginController.setSnackbar(snackbar);
+		loginController.setOnLogin(() -> {
+			ticketsController.refresh();
+		});
 	}
 	
 	@FXML
 	public void logoutClicked(ActionEvent e) {
-		loginController.logout(logout);
+			loginController.logout(logout);
 	}
 }

@@ -1,5 +1,8 @@
 package fr.worknshare.tickets.controller;
 
+import java.util.logging.Logger;
+
+import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
@@ -7,10 +10,14 @@ import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 
 import fr.worknshare.tickets.model.Employee;
 import fr.worknshare.tickets.model.Ticket;
+import fr.worknshare.tickets.repository.PaginatedResponse;
+import fr.worknshare.tickets.repository.TicketRepository;
+import fr.worknshare.tickets.view.Paginator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
@@ -21,11 +28,17 @@ import javafx.scene.paint.Color;
 
 public class TicketsController {
 
+	private TicketRepository ticketRepository;
+	private ObservableList<Ticket> ticketList;	
+
 	@FXML private JFXTreeTableView<Ticket> table;
+	@FXML private Label paginationLabel;
+	@FXML private JFXButton nextButton;
+	@FXML private JFXButton previousButton;
 
 	private void initIdColumn() {
 		JFXTreeTableColumn<Ticket, Integer> idColumn = new JFXTreeTableColumn<Ticket, Integer>("ID");
-		
+
 		idColumn.setCellValueFactory((TreeTableColumn.CellDataFeatures<Ticket, Integer> param) -> {
 			if (idColumn.validateValue(param)) {
 				return param.getValue().getValue().getId().asObject();
@@ -33,13 +46,13 @@ public class TicketsController {
 				return idColumn.getComputedValue(param);
 			}
 		});
-		
+
 		idColumn.setStyle("-fx-alignment: CENTER;");
 		idColumn.setSortable(false);
 		idColumn.setContextMenu(null);
 		table.getColumns().add(idColumn);
 	}
-	
+
 	private void initStatusColumn() {
 		JFXTreeTableColumn<Ticket, Integer> statusColumn = new JFXTreeTableColumn<Ticket, Integer>("Statut");
 		statusColumn.setCellValueFactory((TreeTableColumn.CellDataFeatures<Ticket, Integer> param) -> {
@@ -62,7 +75,7 @@ public class TicketsController {
 						setText(null);
 						setStyle("");
 					} else {
-						
+
 						setText(String.valueOf(item));
 
 						switch(item) {
@@ -104,7 +117,7 @@ public class TicketsController {
 		statusColumn.setContextMenu(null);
 		table.getColumns().add(statusColumn);
 	}
-	
+
 	private void initSerialColumn() {
 		JFXTreeTableColumn<Ticket, String> serialColumn = new JFXTreeTableColumn<Ticket, String>("Numéro de série");
 		serialColumn.setCellValueFactory((TreeTableColumn.CellDataFeatures<Ticket, String> param) -> {
@@ -118,7 +131,7 @@ public class TicketsController {
 		serialColumn.setContextMenu(null);
 		table.getColumns().add(serialColumn);
 	}
-	
+
 	private void initTypeColumn() {
 		JFXTreeTableColumn<Ticket, String> typeColumn = new JFXTreeTableColumn<Ticket, String>("Type");
 		typeColumn.setCellValueFactory((TreeTableColumn.CellDataFeatures<Ticket, String> param) -> {
@@ -132,7 +145,7 @@ public class TicketsController {
 		typeColumn.setContextMenu(null);
 		table.getColumns().add(typeColumn);
 	}
-	
+
 	private void initDescriptionColumn() {
 		JFXTreeTableColumn<Ticket, String> descriptionColumn = new JFXTreeTableColumn<Ticket, String>("Description");
 		descriptionColumn.setCellValueFactory((TreeTableColumn.CellDataFeatures<Ticket, String> param) -> {
@@ -146,7 +159,7 @@ public class TicketsController {
 		descriptionColumn.setContextMenu(null);
 		table.getColumns().add(descriptionColumn);
 	}
-	
+
 	private void initEmployeeColumn() {
 		JFXTreeTableColumn<Ticket, String> employeeColumn = new JFXTreeTableColumn<Ticket, String>("Employé affecté");
 		employeeColumn.setCellValueFactory((TreeTableColumn.CellDataFeatures<Ticket, String> param) -> {
@@ -161,7 +174,7 @@ public class TicketsController {
 		employeeColumn.setContextMenu(null);
 		table.getColumns().add(employeeColumn);
 	}
-	
+
 	private void initEmployeeSrcColumn() {
 		JFXTreeTableColumn<Ticket, String> employeeColumn = new JFXTreeTableColumn<Ticket, String>("Employé source");
 		employeeColumn.setCellValueFactory((TreeTableColumn.CellDataFeatures<Ticket, String> param) -> {
@@ -176,7 +189,7 @@ public class TicketsController {
 		employeeColumn.setContextMenu(null);
 		table.getColumns().add(employeeColumn);
 	}
-	
+
 	private void initCreatedColumn() {
 		JFXTreeTableColumn<Ticket, String> createColumn = new JFXTreeTableColumn<Ticket, String>("Date de création");
 		createColumn.setCellValueFactory((TreeTableColumn.CellDataFeatures<Ticket, String> param) -> {
@@ -190,7 +203,7 @@ public class TicketsController {
 		createColumn.setContextMenu(null);
 		table.getColumns().add(createColumn);
 	}
-	
+
 	private void initUpdatedColumn() {
 		JFXTreeTableColumn<Ticket, String> updateColumn = new JFXTreeTableColumn<Ticket, String>("Date de mise à jour");
 		updateColumn.setCellValueFactory((TreeTableColumn.CellDataFeatures<Ticket, String> param) -> {
@@ -204,16 +217,13 @@ public class TicketsController {
 		updateColumn.setContextMenu(null);
 		table.getColumns().add(updateColumn);
 	}
- 	
-	private void initColumns() {
-		ObservableList<Ticket> tickets = FXCollections.observableArrayList();
-		for(int i = 0 ; i < 20 ; i++)
-			tickets.add(new Ticket(i));
 
-		final TreeItem<Ticket> root = new RecursiveTreeItem<Ticket>(tickets, RecursiveTreeObject::getChildren);
+	private void initColumns() {
+
+		final TreeItem<Ticket> root = new RecursiveTreeItem<Ticket>(ticketList, RecursiveTreeObject::getChildren);
 		table.setRoot(root);
 		table.setShowRoot(false);
-		
+
 		initIdColumn();
 		initStatusColumn();
 		initSerialColumn();
@@ -224,12 +234,30 @@ public class TicketsController {
 		initCreatedColumn();
 		initUpdatedColumn();
 	}
-	
+
 	@FXML
 	private void initialize() {
 
+		ticketRepository = new TicketRepository();
+		ticketList = FXCollections.observableArrayList();
 		initColumns();
 
 	}
-	
+
+	public void refresh() {
+		Logger.getGlobal().info("test"); //TODO debug
+		PaginatedResponse<Ticket> response = ticketRepository.paginate(1);
+		if(response != null) {
+			Logger.getGlobal().info("test2"); //TODO debug
+			Paginator paginator = response.getPaginator();
+
+			ticketList.remove(0, ticketList.size()); //Empty the list
+			ticketList.addAll(response.getItems());
+
+			paginationLabel.setText("Page " + paginator.getCurrentPage() + "/" + paginator.getMaxPage());
+			previousButton.setDisable(paginator.getCurrentPage() == 1);
+			nextButton.setDisable(paginator.getCurrentPage() != paginator.getMaxPage());
+		}
+	}
+
 }

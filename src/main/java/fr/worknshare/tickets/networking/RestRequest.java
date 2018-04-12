@@ -22,6 +22,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 import com.google.gson.Gson;
 
+import fr.worknshare.tickets.controller.AuthController;
 import javafx.application.Platform;
 
 /**
@@ -176,6 +177,9 @@ public class RestRequest {
 			//Headers
 			request.addHeader("Accept", "application/json");
 			request.addHeader("Content-type", "application/json; charset=UTF-8");
+
+			if(AuthController.getEmployee() != null) //Add token to headers if authenticated
+				request.addHeader("Authorization", "Bearer " + AuthController.getEmployee().getToken());
 
 			//Parameters
 			if(parameters.size() > 0) {

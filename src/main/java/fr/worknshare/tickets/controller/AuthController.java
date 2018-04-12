@@ -36,7 +36,7 @@ import javafx.util.Duration;
 public class AuthController {
 
 	private EmployeeRepository employeeRepository;
-	private Employee employee;
+	private static Employee employee;
 
 	@FXML private JFXButton submit;
 	@FXML private JFXTextField emailField;
@@ -48,7 +48,9 @@ public class AuthController {
 	@FXML private FlowPane loginPane;
 
 	private JFXSnackbar snackbar;
-	
+
+	private Runnable loginCallback;
+
 	@FXML
 	private void initialize() {
 		this.employeeRepository = new EmployeeRepository();
@@ -59,8 +61,8 @@ public class AuthController {
 				submit();
 			}
 		});
-		
-		//attempt("admin@worknshare.fr", "admin"); //TODO disable auto auth
+
+		//attempt("admin@worknshare.fr", "password"); //TODO disable auto auth
 	}
 
 	/**
@@ -72,6 +74,7 @@ public class AuthController {
 	 * @see Employee
 	 */
 	public void attempt(String email, String password) {
+
 		RestRequest request = new RestRequest(getUrl() + "login")
 				.param("email", email)
 				.param("password", password);
@@ -88,6 +91,8 @@ public class AuthController {
 						if(data != null && data.isJsonObject()) {
 							employee = employeeRepository.parseObject(data.getAsJsonObject());
 							hideLoginPane();
+							if(loginCallback != null) loginCallback.run();
+
 							return;
 						} else {
 							//Malformed response
@@ -240,11 +245,20 @@ public class AuthController {
 		return host + "/api/";
 	}
 
-	public Employee getEmployee() {
-		return this.employee;
+	public static Employee getEmployee() {
+		return employee;
 	}
-	
+
 	protected void setSnackbar(JFXSnackbar bar) {
 		this.snackbar = bar;
 	}
+
+	/**
+	 * Set the behavior when the user successfully logged in
+	 * @param runnable
+	 */
+	public void setOnLogin(Runnable runnable) {
+		loginCallback = runnable;
+	}
+
 }
