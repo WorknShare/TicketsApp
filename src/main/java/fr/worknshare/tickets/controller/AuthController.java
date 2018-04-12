@@ -97,7 +97,7 @@ public class AuthController {
 
 						if(response.getStatus() == 422) //Invalid credentials
 							handleResponse(response.getJsonObject().get("errors").getAsJsonObject());
-						else if(response.getStatus() == 423)
+						else if(response.getStatus() == 423 || response.getStatus() == 403)
 							snackbar.enqueue(new SnackbarEvent(response.getJsonObject().get("errors").getAsJsonObject().get("email").getAsString()));
 						else if(response.getStatus() != -1)				
 							Logger.getGlobal().log(Level.WARNING, "Login request failed.\n\tStatus code " + response.getStatus() + "\n\tMessage: " + response.getJsonObject().get("message").getAsString());
