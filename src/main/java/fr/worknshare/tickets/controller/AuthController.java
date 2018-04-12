@@ -4,6 +4,14 @@ import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.http.client.CookieStore;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.jfoenix.controls.JFXButton;
@@ -50,6 +58,9 @@ public class AuthController {
 	private JFXSnackbar snackbar;
 
 	private Runnable loginCallback;
+	
+	private static HttpClient client = HttpClientBuilder.create().build();
+	private static HttpContext httpContext = new BasicHttpContext();
 
 	@FXML
 	private void initialize() {
@@ -62,7 +73,10 @@ public class AuthController {
 			}
 		});
 
-		//attempt("admin@worknshare.fr", "password"); //TODO disable auto auth
+		CookieStore cookieStore = new BasicCookieStore();		
+		httpContext.setAttribute(HttpClientContext.COOKIE_STORE, cookieStore);
+		
+		attempt("admin@worknshare.fr", "password"); //TODO disable auto auth
 	}
 
 	/**
@@ -261,4 +275,12 @@ public class AuthController {
 		loginCallback = runnable;
 	}
 
+	public static HttpClient getHttpClient() {
+		return client;
+	}
+	
+	public static HttpContext getContext() {
+		return httpContext;
+	}
+	
 }

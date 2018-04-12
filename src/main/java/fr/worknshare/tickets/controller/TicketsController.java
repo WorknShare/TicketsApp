@@ -1,7 +1,5 @@
 package fr.worknshare.tickets.controller;
 
-import java.util.logging.Logger;
-
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableView;
@@ -15,6 +13,7 @@ import fr.worknshare.tickets.repository.TicketRepository;
 import fr.worknshare.tickets.view.Paginator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
@@ -35,6 +34,8 @@ public class TicketsController {
 	@FXML private Label paginationLabel;
 	@FXML private JFXButton nextButton;
 	@FXML private JFXButton previousButton;
+
+	private int page;
 
 	private void initIdColumn() {
 		JFXTreeTableColumn<Ticket, Integer> idColumn = new JFXTreeTableColumn<Ticket, Integer>("ID");
@@ -240,15 +241,27 @@ public class TicketsController {
 
 		ticketRepository = new TicketRepository();
 		ticketList = FXCollections.observableArrayList();
+		page = 1;
 		initColumns();
 
 	}
 
+	@FXML
+	public void nextClicked(ActionEvent e) {
+		page++;
+		refresh();
+	}
+
+	@FXML
+	public void previousClicked(ActionEvent e) {
+		if(page > 1)
+			page--;
+		refresh();
+	}
+
 	public void refresh() {
-		Logger.getGlobal().info("test"); //TODO debug
-		PaginatedResponse<Ticket> response = ticketRepository.paginate(1);
+		PaginatedResponse<Ticket> response = ticketRepository.paginate(page);
 		if(response != null) {
-			Logger.getGlobal().info("test2"); //TODO debug
 			Paginator paginator = response.getPaginator();
 
 			ticketList.remove(0, ticketList.size()); //Empty the list
@@ -256,7 +269,7 @@ public class TicketsController {
 
 			paginationLabel.setText("Page " + paginator.getCurrentPage() + "/" + paginator.getMaxPage());
 			previousButton.setDisable(paginator.getCurrentPage() == 1);
-			nextButton.setDisable(paginator.getCurrentPage() != paginator.getMaxPage());
+			nextButton.setDisable(paginator.getCurrentPage() == paginator.getMaxPage());
 		}
 	}
 

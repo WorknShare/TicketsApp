@@ -14,11 +14,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
 
 import com.google.gson.Gson;
 
@@ -110,11 +108,10 @@ public class RestRequest {
 
 		try {
 
-			HttpClient client = HttpClientBuilder.create().build();
 			HttpRequestBase request = prepareRequest(method);
 
 			if(request != null) {
-				HttpResponse response = client.execute(request);
+				HttpResponse response = AuthController.getHttpClient().execute(request, AuthController.getContext());
 				result = new RestResponse(response);
 			}
 
@@ -144,11 +141,10 @@ public class RestRequest {
 
 			RestResponse result = null;
 			try {
-				HttpClient client = HttpClientBuilder.create().build();
 				HttpRequestBase request = prepareRequest(method);
 
 				if(request != null) {
-					HttpResponse response = client.execute(request);
+					HttpResponse response = AuthController.getHttpClient().execute(request, AuthController.getContext());
 					result = new RestResponse(response);
 				}
 
