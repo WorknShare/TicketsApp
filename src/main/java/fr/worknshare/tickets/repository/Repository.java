@@ -13,6 +13,7 @@ import com.google.gson.JsonObject;
 import fr.worknshare.tickets.Config;
 import fr.worknshare.tickets.model.Model;
 import fr.worknshare.tickets.networking.HttpMethod;
+import fr.worknshare.tickets.networking.RequestCallback;
 import fr.worknshare.tickets.networking.RestRequest;
 import fr.worknshare.tickets.networking.RestResponse;
 import fr.worknshare.tickets.view.Paginator;
@@ -46,103 +47,131 @@ public abstract class Repository<T extends Model<T>> {
 	/**
 	 * Get the list of records for the given page.
 	 * @param page - the page number, must be positive
-	 * @return a paginated response
-	 * 
-	 * @see PaginatedResponse
+	 * @param callback - the callback to execute when the request is done
 	 */
-	public final PaginatedResponse<T> paginate(int page) {
-		PaginatedResponse<T> response = null;
-		ArrayList<T> list;
-		JsonObject data = getRequest("page", page);
-		if(data == null) return null;
-		
-		JsonElement elem = data.get("paginator");
-		if(elem != null && elem.isJsonObject()) {
-			Paginator paginator = Paginator.fromJson(elem.getAsJsonObject());
-			elem = data.get("items");
-			if(elem != null && elem.isJsonArray()) {
-				list = parseArray(elem.getAsJsonArray());
-				response = new PaginatedResponse<T>(paginator, list);
-			} else {
-				//TODO Malformed response 
+	public final void paginate(int page, PaginatedRequestCallback<T> callback) {
+		request("page", page, new JsonCallback() {
+
+			@Override
+			public void run() {
+				PaginatedResponse<T> response = null;
+				ArrayList<T> list;
+				JsonObject data = getResponse();
+				JsonElement elem = data.get("paginator");
+				if(elem != null && elem.isJsonObject()) {
+					Paginator paginator = Paginator.fromJson(elem.getAsJsonObject());
+					elem = data.get("items");
+					if(elem != null && elem.isJsonArray()) {
+						list = parseArray(elem.getAsJsonArray());
+						response = new PaginatedResponse<T>(paginator, list);
+						callback.setResponse(response);
+						callback.run();
+					} else {
+						//TODO Malformed response 
+					}
+				} else {
+					//TODO Malformed response
+				}
 			}
-		} else {
-			//TODO Malformed response
-		}
-		
-		return response;
+			
+		});
 	}
 
 	/**
 	 * Request the list of records corresponding to the "search" pattern.
-	 * @return a list of records
+	 * @param search - the search criteria
+	 * @param callback - the callback to execute when the request is done
 	 */
-	public final ArrayList<T> where(String search) {
-		ArrayList<T> list = null;
-		JsonObject data = getRequest("search", search);
-		JsonElement elem = data.get("items");
-		if(elem != null && elem.isJsonArray()) {
-				list = parseArray(elem.getAsJsonArray());
-		} else {
-				//TODO Malformed response 
-		}
-		return list;
+	public final void where(String search, PaginatedRequestCallback<T> callback) {
+		request("search", search, new JsonCallback() {
+
+			@Override
+			public void run() {
+				PaginatedResponse<T> response = null;
+				ArrayList<T> list = null;
+				JsonObject data = getResponse();
+				JsonElement elem = data.get("items");
+				if(elem != null && elem.isJsonArray()) {
+						list = parseArray(elem.getAsJsonArray());
+						response = new PaginatedResponse<T>(new Paginator(1, 1, 10), list);
+						callback.setResponse(response);
+						callback.run();
+				} else {
+						//TODO Malformed response 
+				}
+			}
+			
+		});
 	}
 
 	/**
 	 * Executes a simple array request using the GET method with a single parameter and returns the raw result (data member).
 	 * @param paramName - the name of the parameter
 	 * @param paramValue - the value of the parameter
-	 * @return the json object "data" from the response
+	 * @param callback - the callback to execute when the request is done
 	 */
-	private final JsonObject getRequest(String paramName, Object paramValue) {
+	private final void request(String paramName, Object paramValue, JsonCallback callback) {
 		RestRequest request = new RestRequest(httpClient, getUrl())
 				.setUrlParam(true)
 				.context(httpContext)
 				.param(paramName, paramValue);
 
-		RestResponse response = request.execute(HttpMethod.GET);
-		Logger.getGlobal().info(response.getRaw()); //TODO debug
-		if(response != null && response.getStatus() == 200) {
-			JsonObject payload = response.getJsonObject();
-			JsonElement data = payload.get("data");
-			if(data != null && data.isJsonObject()) {
-				return data.getAsJsonObject();
-			} else {
-				//TODO Malformed response
-			}
-		} else {
-			//TODO Handle request failed
-		}
+		request.asyncExecute(HttpMethod.GET, new RequestCallback() {
 
-		return null;
+			@Override
+			public void run() {
+				RestResponse response = getResponse();
+				Logger.getGlobal().info(response.getRaw()); //TODO debug
+				if(response != null && response.getStatus() == 200) {
+					JsonObject payload = response.getJsonObject();
+					JsonElement data = payload.get("data");
+					if(data != null && data.isJsonObject()) {
+						callback.setResponse(data.getAsJsonObject());
+						callback.run();
+					} else {
+						//TODO Malformed response
+					}
+				} else {
+					//TODO Handle request failed
+				}
+			}
+			
+		});
 	}
 
 	/**
 	 * Get a single record for this model based on its ID.
 	 * @param id
+	 * @param callback - the callback to execute when the request is done
 	 * @return an instance of the model, null if not found
 	 * 
 	 * @throws IllegalArgumentException if id is not positive.
 	 */
-	public T getById(int id) {
+	public void getById(int id, ObjectCallback<T> callback) {
 		if(id < 1) throw new IllegalArgumentException("Requested resource's ID must be positive. " + id + " given.");
 
 		RestRequest request = new RestRequest(httpClient, getUrl(id)).context(httpContext);
 
-		RestResponse response = request.execute(HttpMethod.GET);
-		if(response != null && response.getStatus() == 200) {
-			JsonObject payload = response.getJsonObject();
-			JsonElement data = payload.get("data");
-			if(data != null && data.isJsonObject()) {
-				return parseObject(data.getAsJsonObject());
-			} else {
-				//TODO Malformed response
+		request.asyncExecute(HttpMethod.GET, new RequestCallback() {
+
+			@Override
+			public void run() {
+				RestResponse response = getResponse();
+				if(response != null && response.getStatus() == 200) {
+					JsonObject payload = response.getJsonObject();
+					JsonElement data = payload.get("data");
+					if(data != null && data.isJsonObject()) {
+						callback.setObject(parseObject(data.getAsJsonObject()));
+						callback.run();
+					} else {
+						//TODO Malformed response
+					}
+				} else {
+					//TODO Handle request failed
+				}
 			}
-		} else {
-			//TODO Handle request failed
-		}
-		return null;
+			
+		});
 	}
 
 	/**

@@ -1,7 +1,7 @@
 package fr.worknshare.tickets.networking;
 
 /**
- * Custom Runnable usde as callbacks for REST requests
+ * Custom Runnable used as callbacks for REST requests
  * @author Jérémy LAMBERT
  *
  * @see Runnable

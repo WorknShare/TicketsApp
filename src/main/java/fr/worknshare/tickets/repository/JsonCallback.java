@@ -1,0 +1,27 @@
+package fr.worknshare.tickets.repository;
+
+import com.google.gson.JsonObject;
+
+/**
+ * Custom Runnable used as callbacks for json REST requests
+ * @author Jérémy LAMBERT
+ *
+ * @see Runnable
+ */
+public abstract class JsonCallback implements Runnable {
+
+	private JsonObject response;
+	
+	protected void setResponse(JsonObject response) {
+		this.response = response;
+	}
+	
+	/**
+	 * Get the response from the request. All checks have to be done.
+	 * @return the response, can be null
+	 */
+	public JsonObject getResponse() {
+		return response;
+	}
+
+}	

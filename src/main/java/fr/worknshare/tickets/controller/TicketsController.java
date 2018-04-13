@@ -4,6 +4,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXSpinner;
 import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
@@ -11,6 +12,7 @@ import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 
 import fr.worknshare.tickets.model.Employee;
 import fr.worknshare.tickets.model.Ticket;
+import fr.worknshare.tickets.repository.PaginatedRequestCallback;
 import fr.worknshare.tickets.repository.PaginatedResponse;
 import fr.worknshare.tickets.repository.TicketRepository;
 import fr.worknshare.tickets.view.Paginator;
@@ -37,7 +39,8 @@ public class TicketsController implements RequestController {
 	@FXML private Label paginationLabel;
 	@FXML private JFXButton nextButton;
 	@FXML private JFXButton previousButton;
-
+	@FXML private JFXSpinner loader;
+	
 	private int page;
 	private HttpClient httpClient;
 	private HttpContext httpContext;
@@ -265,17 +268,31 @@ public class TicketsController implements RequestController {
 	}
 
 	public void refresh() {
-		PaginatedResponse<Ticket> response = ticketRepository.paginate(page);
-		if(response != null) {
-			Paginator paginator = response.getPaginator();
+		table.setDisable(true);
+		previousButton.setDisable(true);
+		nextButton.setDisable(true);
+		paginationLabel.getStyleClass().add("text-muted");
+		loader.setVisible(true);
+		
+		ticketRepository.paginate(page, new PaginatedRequestCallback<Ticket>() {
+			
+			@Override
+			public void run() {
+				PaginatedResponse<Ticket> response = getResponse();
+				Paginator paginator = response.getPaginator();
 
-			ticketList.remove(0, ticketList.size()); //Empty the list
-			ticketList.addAll(response.getItems());
+				ticketList.remove(0, ticketList.size()); //Empty the list
+				ticketList.addAll(response.getItems());
 
-			paginationLabel.setText("Page " + paginator.getCurrentPage() + "/" + paginator.getMaxPage());
-			previousButton.setDisable(paginator.getCurrentPage() == 1);
-			nextButton.setDisable(paginator.getCurrentPage() == paginator.getMaxPage());
-		}
+				paginationLabel.setText("Page " + paginator.getCurrentPage() + "/" + paginator.getMaxPage());
+				paginationLabel.getStyleClass().remove("text-muted");
+				previousButton.setDisable(paginator.getCurrentPage() == 1);
+				nextButton.setDisable(paginator.getCurrentPage() == paginator.getMaxPage());
+				
+				table.setDisable(false);
+				loader.setVisible(false);
+			}
+		});
 	}
 
 	@Override
