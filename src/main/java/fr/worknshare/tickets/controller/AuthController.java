@@ -4,12 +4,7 @@ import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
 import com.google.gson.JsonElement;
@@ -41,7 +36,7 @@ import javafx.util.Duration;
  * @author Jérémy LAMBERT
  *
  */
-public class AuthController {
+public class AuthController implements RequestController {
 
 	private EmployeeRepository employeeRepository;
 	private static Employee employee;
@@ -59,8 +54,8 @@ public class AuthController {
 
 	private Runnable loginCallback;
 	
-	private static HttpClient client = HttpClientBuilder.create().build();
-	private static HttpContext httpContext = new BasicHttpContext();
+	private HttpClient httpClient;
+	private HttpContext httpContext;
 
 	@FXML
 	private void initialize() {
@@ -72,11 +67,7 @@ public class AuthController {
 				submit();
 			}
 		});
-
-		CookieStore cookieStore = new BasicCookieStore();		
-		httpContext.setAttribute(HttpClientContext.COOKIE_STORE, cookieStore);
 		
-		attempt("admin@worknshare.fr", "password"); //TODO disable auto auth
 	}
 
 	/**
@@ -89,7 +80,8 @@ public class AuthController {
 	 */
 	public void attempt(String email, String password) {
 
-		RestRequest request = new RestRequest(getUrl() + "login")
+		RestRequest request = new RestRequest(httpClient, getUrl() + "login")
+				.context(httpContext)
 				.param("email", email)
 				.param("password", password);
 
@@ -151,7 +143,7 @@ public class AuthController {
 	 * @param button - the button to disable until the request is done, nullable
 	 */
 	public void logout(final JFXButton button) {
-		RestRequest request = new RestRequest(getUrl() + "logout");
+		RestRequest request = new RestRequest(httpClient, getUrl() + "logout").context(httpContext);
 
 		if(button != null) button.setDisable(true);
 		request.asyncExecute(HttpMethod.POST, new RequestCallback() {
@@ -274,13 +266,22 @@ public class AuthController {
 	public void setOnLogin(Runnable runnable) {
 		loginCallback = runnable;
 	}
-
-	public static HttpClient getHttpClient() {
-		return client;
+	
+	/**
+	 * Set the Http client used for auth requests
+	 * @param client
+	 */
+	@Override
+	public void setHttpClient(HttpClient client) {
+		httpClient = client;
 	}
 	
-	public static HttpContext getContext() {
-		return httpContext;
+	/**
+	 * Set the Http context used for auth requests
+	 * @param context
+	 */
+	@Override
+	public void setHttpContext(HttpContext context) {
+		httpContext = context;
 	}
-	
 }

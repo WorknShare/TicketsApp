@@ -3,6 +3,9 @@ package fr.worknshare.tickets.repository;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.protocol.HttpContext;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -22,6 +25,15 @@ import fr.worknshare.tickets.view.Paginator;
  */
 public abstract class Repository<T extends Model<T>> {
 
+	private HttpClient httpClient;
+	private HttpContext httpContext;
+
+	public Repository(HttpClient client, HttpContext context) {
+		this.httpClient = client;
+		this.httpContext = context;
+	}
+	
+	public Repository() {}
 
 	/**
 	 * Get the name of the resource. Will be used in URLs when doing requests.
@@ -84,8 +96,9 @@ public abstract class Repository<T extends Model<T>> {
 	 * @return the json object "data" from the response
 	 */
 	private final JsonObject getRequest(String paramName, Object paramValue) {
-		RestRequest request = new RestRequest(getUrl())
+		RestRequest request = new RestRequest(httpClient, getUrl())
 				.setUrlParam(true)
+				.context(httpContext)
 				.param(paramName, paramValue);
 
 		RestResponse response = request.execute(HttpMethod.GET);
@@ -115,7 +128,7 @@ public abstract class Repository<T extends Model<T>> {
 	public T getById(int id) {
 		if(id < 1) throw new IllegalArgumentException("Requested resource's ID must be positive. " + id + " given.");
 
-		RestRequest request = new RestRequest(getUrl(id));
+		RestRequest request = new RestRequest(httpClient, getUrl(id)).context(httpContext);
 
 		RestResponse response = request.execute(HttpMethod.GET);
 		if(response != null && response.getStatus() == 200) {
@@ -172,5 +185,43 @@ public abstract class Repository<T extends Model<T>> {
 	 * @return an instance of the model with filled values
 	 */
 	public abstract T parseObject(JsonObject object);
+
+	/**
+	 * Get the HttpClient used for requests in this repository
+	 * @return the HttpClient used for requests in this repository
+	 * 
+	 * @see HttpClient
+	 */
+	public final HttpClient getHttpClient() {
+		return httpClient;
+	}
+
+	/**
+	 * Set the HttpClient used for requests in this repository
+	 * 
+	 * @see HttpClient
+	 */
+	public final void setHttpClient(HttpClient httpClient) {
+		this.httpClient = httpClient;
+	}
+
+	/**
+	 * Get the HttpContext used for requests in this repository
+	 * @return the HttpContext used for requests in this repository
+	 * 
+	 * @see HttpContext
+	 */
+	public final HttpContext getHttpContext() {
+		return httpContext;
+	}
+
+	/**
+	 * Set the HttpContext used for requests in this repository
+	 * 
+	 * @see HttpContext
+	 */
+	public final void setHttpContext(HttpContext httpContext) {
+		this.httpContext = httpContext;
+	}
 
 }

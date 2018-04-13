@@ -1,5 +1,8 @@
 package fr.worknshare.tickets.controller;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.protocol.HttpContext;
+
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableView;
@@ -25,7 +28,7 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 
-public class TicketsController {
+public class TicketsController implements RequestController {
 
 	private TicketRepository ticketRepository;
 	private ObservableList<Ticket> ticketList;	
@@ -36,6 +39,8 @@ public class TicketsController {
 	@FXML private JFXButton previousButton;
 
 	private int page;
+	private HttpClient httpClient;
+	private HttpContext httpContext;
 
 	private void initIdColumn() {
 		JFXTreeTableColumn<Ticket, Integer> idColumn = new JFXTreeTableColumn<Ticket, Integer>("ID");
@@ -271,6 +276,18 @@ public class TicketsController {
 			previousButton.setDisable(paginator.getCurrentPage() == 1);
 			nextButton.setDisable(paginator.getCurrentPage() == paginator.getMaxPage());
 		}
+	}
+
+	@Override
+	public void setHttpClient(HttpClient client) {
+		this.httpClient = client;
+		ticketRepository.setHttpClient(httpClient);
+	}
+
+	@Override
+	public void setHttpContext(HttpContext context) {
+		this.httpContext = context;
+		ticketRepository.setHttpContext(httpContext);
 	}
 
 }

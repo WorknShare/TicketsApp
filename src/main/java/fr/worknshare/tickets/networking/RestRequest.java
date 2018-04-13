@@ -14,9 +14,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.protocol.HttpContext;
 
 import com.google.gson.Gson;
 
@@ -36,14 +38,19 @@ public class RestRequest {
 	private String url;
 	private boolean urlParam;
 	private Hashtable<String, Object> parameters;
-
-	public RestRequest(String url) {
+	private HttpClient client;
+	private HttpContext context;
+	
+	public RestRequest(HttpClient client, String url) {
+		this.client = client;
 		this.url = url;
 		this.urlParam = false;
 		this.parameters = new Hashtable<>();
 	}
 
-	public RestRequest() {}
+	public RestRequest(HttpClient client) {
+		this.client = client;
+	}
 
 	/**
 	 * Set the request URL
@@ -61,6 +68,28 @@ public class RestRequest {
 	 */
 	public String getUrl() {
 		return url;
+	}
+	
+	/**
+	 * Set the request context
+	 * @param context
+	 * @return current instance, used to chain the builder
+	 * 
+	 * @see HttpContext
+	 */
+	public RestRequest context(HttpContext context) {
+		this.context = context;
+		return this;
+	}
+	
+	/**
+	 * Get the request context
+	 * @return the request context
+	 * 
+	 * @see HttpContext
+	 */
+	public HttpContext getContext() {
+		return context;
 	}
 
 	/**
@@ -111,7 +140,7 @@ public class RestRequest {
 			HttpRequestBase request = prepareRequest(method);
 
 			if(request != null) {
-				HttpResponse response = AuthController.getHttpClient().execute(request, AuthController.getContext());
+				HttpResponse response = client.execute(request, context);
 				result = new RestResponse(response);
 			}
 
@@ -144,7 +173,7 @@ public class RestRequest {
 				HttpRequestBase request = prepareRequest(method);
 
 				if(request != null) {
-					HttpResponse response = AuthController.getHttpClient().execute(request, AuthController.getContext());
+					HttpResponse response = client.execute(request, context);
 					result = new RestResponse(response);
 				}
 

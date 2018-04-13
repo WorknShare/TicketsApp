@@ -1,5 +1,8 @@
 package fr.worknshare.tickets.repository;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.protocol.HttpContext;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -12,6 +15,13 @@ public final class TicketRepository extends Repository<Ticket> {
 	private EquipmentRepository equipmentRepository;
 
 	public TicketRepository() {
+		super();
+		employeeRepository = new EmployeeRepository();
+		equipmentRepository = new EquipmentRepository();
+	}
+	
+	public TicketRepository(HttpClient client, HttpContext context) {
+		super(client, context);
 		employeeRepository = new EmployeeRepository();
 		equipmentRepository = new EquipmentRepository();
 	}
