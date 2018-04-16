@@ -6,7 +6,7 @@ import fr.worknshare.tickets.view.Paginator;
 import javafx.beans.property.SimpleIntegerProperty;
 
 /**
- * Super-class for models.
+ * Super-class for models. Any members of the model may not be filled, depending on the request that created it.
  * 
  * @author Jérémy LAMBERT
  *

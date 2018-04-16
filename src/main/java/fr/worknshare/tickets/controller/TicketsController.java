@@ -40,7 +40,7 @@ public class TicketsController implements RequestController {
 	@FXML private JFXButton nextButton;
 	@FXML private JFXButton previousButton;
 	@FXML private JFXSpinner loader;
-	
+
 	private int page;
 	private HttpClient httpClient;
 	private HttpContext httpContext;
@@ -273,24 +273,25 @@ public class TicketsController implements RequestController {
 		nextButton.setDisable(true);
 		paginationLabel.getStyleClass().add("text-muted");
 		loader.setVisible(true);
-		
+
 		ticketRepository.paginate(page, new PaginatedRequestCallback<Ticket>() {
-			
+
 			@Override
 			public void run() {
 				PaginatedResponse<Ticket> response = getResponse();
 				Paginator paginator = response.getPaginator();
 
-				ticketList.remove(0, ticketList.size()); //Empty the list
+				ticketList.clear();
 				ticketList.addAll(response.getItems());
 
 				paginationLabel.setText("Page " + paginator.getCurrentPage() + "/" + paginator.getMaxPage());
 				paginationLabel.getStyleClass().remove("text-muted");
 				previousButton.setDisable(paginator.getCurrentPage() == 1);
 				nextButton.setDisable(paginator.getCurrentPage() == paginator.getMaxPage());
-				
+
 				table.setDisable(false);
 				loader.setVisible(false);
+
 			}
 		});
 	}

@@ -1,15 +1,18 @@
 package fr.worknshare.tickets.model;
 
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 public final class Equipment extends Model<Equipment> {
 
 	private SimpleStringProperty name;
+	private SimpleIntegerProperty equipmentTypeId;
 	private EquipmentType equipmentType;
 
 	public Equipment(int id) {
 		super(id);
-		name 	= new SimpleStringProperty();
+		name 			= new SimpleStringProperty();
+		equipmentTypeId = new SimpleIntegerProperty();
 	}
 
 	public final SimpleStringProperty getName() {
@@ -26,6 +29,14 @@ public final class Equipment extends Model<Equipment> {
 
 	public void setEquipmentType(EquipmentType equipmentType) {
 		this.equipmentType = equipmentType;
+	}
+
+	public final SimpleIntegerProperty getEquipmentTypeId() {
+		return equipmentTypeId;
+	}
+
+	public final void setEquipmentTypeId(int id) {
+		this.equipmentTypeId.set(id);
 	}
 
 }

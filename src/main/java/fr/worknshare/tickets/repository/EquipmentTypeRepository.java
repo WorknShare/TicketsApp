@@ -12,7 +12,13 @@ public final class EquipmentTypeRepository extends Repository<EquipmentType> {
 	private EquipmentRepository equipmentRepository;
 
 	public EquipmentTypeRepository() {
+		super();
 		equipmentRepository = new EquipmentRepository();
+	}
+	
+	public EquipmentTypeRepository(EquipmentRepository equipmentRepository) {
+		super();
+		this.equipmentRepository = equipmentRepository;
 	}
 
 	@Override
@@ -42,7 +48,7 @@ public final class EquipmentTypeRepository extends Repository<EquipmentType> {
 			}
 			
 			//Paginator
-			element = object.get("equipment");
+			element = object.get("paginator");
 			if(element != null && element.isJsonObject()) equipmentType.setPaginator(Paginator.fromJson(element.getAsJsonObject()));
 
 			return equipmentType;

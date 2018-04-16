@@ -1,5 +1,6 @@
 package fr.worknshare.tickets.repository;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
@@ -28,13 +29,17 @@ public abstract class Repository<T extends Model<T>> {
 
 	private HttpClient httpClient;
 	private HttpContext httpContext;
+	private SimpleDateFormat dateFormat;
 
 	public Repository(HttpClient client, HttpContext context) {
-		this.httpClient = client;
-		this.httpContext = context;
+		this();
+		this.httpClient 	= client;
+		this.httpContext 	= context;
 	}
 	
-	public Repository() {}
+	public Repository() {
+		dateFormat = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
+	}
 
 	/**
 	 * Get the name of the resource. Will be used in URLs when doing requests.
@@ -251,6 +256,10 @@ public abstract class Repository<T extends Model<T>> {
 	 */
 	public final void setHttpContext(HttpContext httpContext) {
 		this.httpContext = httpContext;
+	}
+	
+	public final SimpleDateFormat getDateFormatter() {
+		return dateFormat;
 	}
 
 }

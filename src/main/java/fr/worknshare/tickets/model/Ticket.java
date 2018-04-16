@@ -31,6 +31,7 @@ public final class Ticket extends Model<Ticket> {
 		description 	   = new SimpleStringProperty();
 		createdAt		   = new SimpleStringProperty();
 		updatedAt		   = new SimpleStringProperty();
+		dateFormatter 	   = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 	}
 
 	public final SimpleIntegerProperty getStatus() {
