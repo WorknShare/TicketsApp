@@ -111,7 +111,7 @@ public class AuthController implements RequestController {
 						else if(response.getStatus() == 423 || response.getStatus() == 403)
 							snackbar.enqueue(new SnackbarEvent(response.getJsonObject().get("errors").getAsJsonObject().get("email").getAsString()));
 						else if(response.getStatus() != -1)				
-							Logger.getGlobal().log(Level.WARNING, "Login request failed.\n\tStatus code " + response.getStatus() + "\n\tMessage: " + response.getJsonObject().get("message").getAsString());
+							Logger.getGlobal().log(Level.WARNING, "Login request failed.\n\tStatus code " + response.getStatus() + "\n\tMessage: " + response.getJsonObject().get("error").getAsString());
 						else {
 							Logger.getGlobal().log(Level.WARNING, "Login request failed. Remote host unreachable.");
 							snackbar.enqueue(new SnackbarEvent("Impossible de joindre le serveur distant."));

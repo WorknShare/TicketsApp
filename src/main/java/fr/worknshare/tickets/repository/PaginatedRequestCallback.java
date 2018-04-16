@@ -7,11 +7,11 @@ package fr.worknshare.tickets.repository;
  * @see Runnable
  * @see PaginatedResponse
  */
-public abstract class PaginatedRequestCallback<T> implements Runnable {
+public abstract class PaginatedRequestCallback<T> extends RestCallback {
 
 	private PaginatedResponse<T> response;
 	
-	protected void setResponse(PaginatedResponse<T> response) {
+	protected void setPaginatedResponse(PaginatedResponse<T> response) {
 		this.response = response;
 	}
 	
@@ -19,7 +19,7 @@ public abstract class PaginatedRequestCallback<T> implements Runnable {
 	 * Get the response from the request. All checks have to be done.
 	 * @return the response, can be null
 	 */
-	public PaginatedResponse<T> getResponse() {
+	public PaginatedResponse<T> getPaginatedResponse() {
 		return response;
 	}
 

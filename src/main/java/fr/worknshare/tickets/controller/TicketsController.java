@@ -4,6 +4,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXSnackbar;
+import com.jfoenix.controls.JFXSnackbar.SnackbarEvent;
 import com.jfoenix.controls.JFXSpinner;
 import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableView;
@@ -12,6 +14,7 @@ import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 
 import fr.worknshare.tickets.model.Employee;
 import fr.worknshare.tickets.model.Ticket;
+import fr.worknshare.tickets.repository.FailCallback;
 import fr.worknshare.tickets.repository.PaginatedRequestCallback;
 import fr.worknshare.tickets.repository.PaginatedResponse;
 import fr.worknshare.tickets.repository.TicketRepository;
@@ -40,6 +43,8 @@ public class TicketsController implements RequestController {
 	@FXML private JFXButton nextButton;
 	@FXML private JFXButton previousButton;
 	@FXML private JFXSpinner loader;
+	
+	private JFXSnackbar snackbar;
 
 	private int page;
 	private HttpClient httpClient;
@@ -278,7 +283,7 @@ public class TicketsController implements RequestController {
 
 			@Override
 			public void run() {
-				PaginatedResponse<Ticket> response = getResponse();
+				PaginatedResponse<Ticket> response = getPaginatedResponse();
 				Paginator paginator = response.getPaginator();
 
 				ticketList.clear();
@@ -293,6 +298,20 @@ public class TicketsController implements RequestController {
 				loader.setVisible(false);
 
 			}
+		}, 
+				new FailCallback() {
+
+					@Override
+					public void run() {
+						snackbar.enqueue(new SnackbarEvent(getFullMessage()));
+						paginationLabel.setText("Page 1/1");
+						table.setDisable(false);
+						previousButton.setDisable(true);
+						nextButton.setDisable(true);
+						table.setDisable(false);
+						loader.setVisible(false);
+					}
+			
 		});
 	}
 
@@ -306,6 +325,10 @@ public class TicketsController implements RequestController {
 	public void setHttpContext(HttpContext context) {
 		this.httpContext = context;
 		ticketRepository.setHttpContext(httpContext);
+	}
+
+	public void setSnackbar(JFXSnackbar snackbar) {
+		this.snackbar = snackbar;
 	}
 
 }

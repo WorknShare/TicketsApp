@@ -49,6 +49,7 @@ public class MainController {
 			ticketsController.refresh();
 		});
 		
+		ticketsController.setSnackbar(snackbar);
 		ticketsController.setHttpClient(client);
 		ticketsController.setHttpContext(context);
 	}
