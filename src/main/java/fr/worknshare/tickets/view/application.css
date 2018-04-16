@@ -35,6 +35,13 @@
 	-fx-text-fill: transparent;
 }
 
+.check-button {
+	-fx-background-image: url("check-mark.png");
+	-fx-background-position: center;
+	-fx-background-repeat: no-repeat;
+	-fx-text-fill: transparent;
+}
+
 .h1 {
 	-fx-font-size: 20px;
 	-fx-padding: 10px 0px 10px 0px;	
@@ -86,4 +93,8 @@
 .error.jfx-snackbar-content {
 	-fx-font-weight: bold;
 	-fx-background-color: #CC0000;
+}
+
+.opaque {
+	-fx-background-color: #f4f4f4;
 }

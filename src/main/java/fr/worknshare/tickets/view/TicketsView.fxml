@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 
 
-<VBox xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.worknshare.tickets.controller.TicketsController">
+<VBox xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.worknshare.tickets.controller.TicketsController" styleClass="opaque">
 	<children>
        <Label styleClass="h1" stylesheets="@application.css" text="Tickets" />
        <JFXTreeTableView fx:id="table" minHeight="500.0" minWidth="800.0" prefHeight="500.0" prefWidth="800.0" showRoot="false" stylesheets="@application.css" VBox.vgrow="ALWAYS" />
