@@ -15,7 +15,7 @@
          <VBox.margin>
             <Insets bottom="15.0" />
          </VBox.margin></Label>
-      <Label fx:id="equipmentLabel1" layoutX="10.0" layoutY="70.0" text="Matériel concerné :">
+      <Label fx:id="equipmentLabel" layoutX="10.0" layoutY="70.0" text="Matériel concerné :">
          <font>
             <Font size="14.0" />
          </font>
@@ -23,7 +23,7 @@
             <Insets bottom="5.0" />
          </VBox.margin>
       </Label>
-      <Label fx:id="equipmentLabel" text="Description du problème :">
+      <Label text="Description du problème :">
          <VBox.margin>
             <Insets bottom="5.0" />
          </VBox.margin>
@@ -44,13 +44,13 @@
             <Insets />
          </VBox.margin>
          <children>
-            <JFXButton text="Retour">
+            <JFXButton text="Retour" fx:id="back">
                <graphic>
                   <Label styleClass="previous-button" stylesheets="@application.css" text="&lt;" />
                </graphic>
             </JFXButton>
             <Pane HBox.hgrow="ALWAYS" />
-            <JFXButton ripplerFill="#eeeeee80" style="-fx-background-color: #39ae54;" text="Créer" textFill="WHITE">
+            <JFXButton ripplerFill="#eeeeee80" style="-fx-background-color: #39ae54;" text="Créer" textFill="WHITE" fx:id="submit">
                <graphic>
                   <Label styleClass="check-button" stylesheets="@application.css" text="VV" />
                </graphic>

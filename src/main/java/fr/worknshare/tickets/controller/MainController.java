@@ -28,6 +28,7 @@ public class MainController {
 	@FXML private StackPane pane;
 	@FXML private AuthController loginController;
 	@FXML private TicketsController ticketsController;
+	@FXML private TicketCreateController ticketCreateController;
 	
 	private HttpClient client = HttpClientBuilder.create().build();
 	private HttpContext context = new BasicHttpContext();
@@ -52,6 +53,10 @@ public class MainController {
 		ticketsController.setSnackbar(snackbar);
 		ticketsController.setHttpClient(client);
 		ticketsController.setHttpContext(context);
+		
+		ticketCreateController.setSnackbar(snackbar);
+		ticketCreateController.setHttpClient(client);
+		ticketCreateController.setHttpContext(context);
 	}
 	
 	@FXML

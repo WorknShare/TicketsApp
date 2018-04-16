@@ -14,8 +14,11 @@ import com.google.gson.JsonObject;
 import fr.worknshare.tickets.model.Employee;
 import fr.worknshare.tickets.model.Equipment;
 import fr.worknshare.tickets.model.Ticket;
+import fr.worknshare.tickets.networking.HttpMethod;
+import fr.worknshare.tickets.networking.RequestCallback;
+import fr.worknshare.tickets.networking.RestRequest;
 
-public final class TicketRepository extends Repository<Ticket> {
+public final class TicketRepository extends Repository<Ticket> implements CreateRepository<Ticket> {
 
 	private EmployeeRepository employeeRepository;
 	private EquipmentRepository equipmentRepository;
@@ -87,11 +90,12 @@ public final class TicketRepository extends Repository<Ticket> {
 			if(element != null && element.isJsonObject()) {
 				Equipment equipment = equipmentRepository.parseObject(element.getAsJsonObject());
 				ticket.setEquipment(equipment);
-				
+				ticket.setIdEquipment(equipment.getId().get());
+
 				//Type
 				if(equipment != null) ticket.setEquipmentType(equipment.getEquipmentType());
 			}
- 
+
 			//Created at
 			element = object.get("created_at");
 			if(element != null && element.isJsonPrimitive()) {
@@ -115,10 +119,22 @@ public final class TicketRepository extends Repository<Ticket> {
 					Logger.getGlobal().log(Level.WARNING, "Unable to parse date", e);
 				}
 			}
-			
+
 			return ticket;
 		}
 		return null;
+	}
+
+	@Override
+	public void create(Ticket resource, RequestCallback callback) {
+
+		RestRequest request = new RestRequest(getHttpClient(), getUrl())
+				.setUrlParam(true)
+				.context(getHttpContext())
+				.param("description", resource.getDescription())
+				.param("id_equipment", resource.getIdEquipment());
+		
+		request.asyncExecute(HttpMethod.POST, callback);
 	}
 
 }

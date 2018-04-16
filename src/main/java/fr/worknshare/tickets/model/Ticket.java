@@ -13,6 +13,7 @@ public final class Ticket extends Model<Ticket> {
 	private SimpleStringProperty createdAt;
 	private SimpleStringProperty updatedAt;
 
+	private SimpleIntegerProperty idEquipment;
 	private Equipment equipment;
 	private EquipmentType equipmentType;
 
@@ -112,6 +113,14 @@ public final class Ticket extends Model<Ticket> {
 
 	public final void setEquipmentType(EquipmentType equipmentType) {
 		this.equipmentType = equipmentType;
+	}
+
+	public final SimpleIntegerProperty getIdEquipment() {
+		return idEquipment;
+	}
+
+	public final void setIdEquipment(int idEquipment) {
+		this.idEquipment.set(idEquipment);;
 	}
 
 }

@@ -210,7 +210,7 @@ public abstract class Repository<T extends Model<T>> {
 	 * Generate the URL based on the Host in the config and the resource name
 	 * @return the url to make a request for this model
 	 */
-	private final String getUrl() {
+	protected final String getUrl() {
 		String host = Config.getInstance().get("Host");
 		if(host == null) throw new NullPointerException("Host is undefined");
 
