@@ -23,7 +23,6 @@ import fr.worknshare.tickets.networking.RestRequest;
 import fr.worknshare.tickets.networking.RestResponse;
 import fr.worknshare.tickets.repository.EmployeeRepository;
 import javafx.animation.FadeTransition;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
@@ -102,6 +101,7 @@ public class AuthController implements RequestController {
 							return;
 						} else {
 							//Malformed response
+							snackbar.enqueue(new SnackbarEvent("Erreur : Réponse malformée", "error"));
 							Logger.getGlobal().log(Level.INFO, "Login response malformed:\n" + response.getRaw());
 						}
 					} else {
@@ -109,12 +109,12 @@ public class AuthController implements RequestController {
 						if(response.getStatus() == 422) //Invalid credentials
 							handleResponse(response.getJsonObject().get("errors").getAsJsonObject());
 						else if(response.getStatus() == 423 || response.getStatus() == 403)
-							snackbar.enqueue(new SnackbarEvent(response.getJsonObject().get("errors").getAsJsonObject().get("email").getAsString()));
+							snackbar.enqueue(new SnackbarEvent(response.getJsonObject().get("errors").getAsJsonObject().get("email").getAsString(), "error"));
 						else if(response.getStatus() != -1)				
 							Logger.getGlobal().log(Level.WARNING, "Login request failed.\n\tStatus code " + response.getStatus() + "\n\tMessage: " + response.getJsonObject().get("error").getAsString());
 						else {
 							Logger.getGlobal().log(Level.WARNING, "Login request failed. Remote host unreachable.");
-							snackbar.enqueue(new SnackbarEvent("Impossible de joindre le serveur distant."));
+							snackbar.enqueue(new SnackbarEvent("Impossible de joindre le serveur distant.", "error"));
 						}
 
 					}
@@ -170,7 +170,7 @@ public class AuthController implements RequestController {
 	}
 
 	@FXML
-	public void submitClicked(ActionEvent e) {
+	public void submitClicked() {
 		submit();
 	}
 
@@ -255,6 +255,10 @@ public class AuthController implements RequestController {
 		return employee;
 	}
 
+	/**
+	 * Set the snackbar used to display errors
+	 * @param bar
+	 */
 	protected void setSnackbar(JFXSnackbar bar) {
 		this.snackbar = bar;
 	}

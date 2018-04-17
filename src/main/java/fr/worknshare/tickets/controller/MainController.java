@@ -11,9 +11,10 @@ import org.apache.http.protocol.HttpContext;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXSnackbar;
 
-import javafx.event.ActionEvent;
+import fr.worknshare.tickets.model.Equipment;
 import javafx.fxml.FXML;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 
 /**
  * Controller used for the navigation
@@ -24,8 +25,14 @@ import javafx.scene.layout.StackPane;
 public class MainController {
 
 	private JFXSnackbar snackbar;
+	
 	@FXML private JFXButton logout;
 	@FXML private StackPane pane;
+	
+	@FXML private JFXButton menuTickets;
+	@FXML private VBox tickets;
+	
+	
 	@FXML private AuthController loginController;
 	@FXML private TicketsController ticketsController;
 	@FXML private TicketCreateController ticketCreateController;
@@ -35,8 +42,8 @@ public class MainController {
 	
 	@FXML
 	private void initialize() {
+		
 		snackbar = new JFXSnackbar(pane);
-		snackbar.getChildren().get(0).getStyleClass().add("error");
 		
 		CookieStore cookieStore = new BasicCookieStore();		
 		context.setAttribute(HttpClientContext.COOKIE_STORE, cookieStore);
@@ -54,14 +61,27 @@ public class MainController {
 		ticketsController.setHttpClient(client);
 		ticketsController.setHttpContext(context);
 		
+		ticketCreateController.setTicketRepository(ticketsController.getTicketRepository());
 		ticketCreateController.setSnackbar(snackbar);
-		ticketCreateController.setHttpClient(client);
-		ticketCreateController.setHttpContext(context);
+		ticketCreateController.setTicketCreatedCallback(() -> {
+			tickets.toFront();
+			ticketsController.setPage(1);
+			ticketsController.refresh();
+		});
+		
+		ticketCreateController.setSelectedEquipment(new Equipment(1)); //TODO equipment select test
 	}
 	
 	@FXML
-	public void logoutClicked(ActionEvent e) {
-			loginController.logout(logout);
+	public void logoutClicked() {
+		loginController.logout(logout);
+	}
+	
+	@FXML
+	public void onMenuTicketsClicked() {
+		tickets.toFront();
+		ticketsController.setPage(1);
+		ticketsController.refresh();
 	}
 	
 	public HttpClient getHttpClient() {

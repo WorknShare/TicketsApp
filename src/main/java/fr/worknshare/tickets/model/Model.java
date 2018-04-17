@@ -24,6 +24,10 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 		return id;
 	}
 	
+	public final void setId(int id) {
+		this.id.set(id);
+	}
+	
 	public final Paginator getPaginator() {
 		return paginator;
 	}

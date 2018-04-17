@@ -18,7 +18,7 @@ import fr.worknshare.tickets.networking.HttpMethod;
 import fr.worknshare.tickets.networking.RequestCallback;
 import fr.worknshare.tickets.networking.RestRequest;
 
-public final class TicketRepository extends Repository<Ticket> implements CreateRepository<Ticket> {
+public final class TicketRepository extends Repository<Ticket> implements CreatorRepository<Ticket> {
 
 	private EmployeeRepository employeeRepository;
 	private EquipmentRepository equipmentRepository;
@@ -131,8 +131,8 @@ public final class TicketRepository extends Repository<Ticket> implements Create
 		RestRequest request = new RestRequest(getHttpClient(), getUrl())
 				.setUrlParam(true)
 				.context(getHttpContext())
-				.param("description", resource.getDescription())
-				.param("id_equipment", resource.getIdEquipment());
+				.param("description", resource.getDescription().get())
+				.param("id_equipment", resource.getIdEquipment().get());
 		
 		request.asyncExecute(HttpMethod.POST, callback);
 	}

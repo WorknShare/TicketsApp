@@ -90,9 +90,14 @@
     -fx-text-fill: #ff4081;
 }
 
-.error.jfx-snackbar-content {
+.jfx-snackbar-content:error {
 	-fx-font-weight: bold;
 	-fx-background-color: #CC0000;
+}
+
+.jfx-snackbar-content:success {
+	-fx-font-weight: bold;
+	-fx-background-color: #00a65a;
 }
 
 .opaque {

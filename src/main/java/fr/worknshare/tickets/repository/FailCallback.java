@@ -23,6 +23,8 @@ public abstract class FailCallback extends RestCallback {
 		JsonElement element = getResponse().getJsonObject().get("error");
 		if(element != null && element.isJsonPrimitive()) 
 			message = element.getAsString();
+		else
+			message = "Erreur sur le serveur distant";
 	}
 
 	/**
@@ -42,7 +44,7 @@ public abstract class FailCallback extends RestCallback {
 	 * @return a built message for the user
 	 */
 	public String getFullMessage() {
-		return getStatus() != 200 ? getStatus() + " : " + getMessage() : "Erreur interne: " + getMessage();
+		return getStatus() != 200 ? getStatus() + " : " + getMessage() : "Erreur interne : " + getMessage();
 	}
 
 }	

@@ -26,6 +26,7 @@ public final class Ticket extends Model<Ticket> {
 
 	public Ticket(int id) {
 		super(id);
+		idEquipment		   = new SimpleIntegerProperty();
 		status			   = new SimpleIntegerProperty();
 		idEmployeeSource   = new SimpleIntegerProperty();
 		idEmployeeAssigned = new SimpleIntegerProperty();
@@ -120,7 +121,7 @@ public final class Ticket extends Model<Ticket> {
 	}
 
 	public final void setIdEquipment(int idEquipment) {
-		this.idEquipment.set(idEquipment);;
+		this.idEquipment.set(idEquipment);
 	}
 
 }
