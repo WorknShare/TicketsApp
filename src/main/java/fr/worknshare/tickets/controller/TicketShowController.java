@@ -37,7 +37,7 @@ import javafx.scene.paint.Color;
  * @author Jérémy LAMBERT
  *
  */
-public class TicketShowController extends Controller {
+public class TicketShowController extends Controller implements Authorizable, Backable {
 
 	private TicketRepository ticketRepository;
 	private Ticket ticket;
@@ -123,7 +123,7 @@ public class TicketShowController extends Controller {
 	}
 
 	@FXML
-	private void backClicked() {
+	public void backClicked() {
 		if(backPanel != null)
 			backPanel.toFront();
 	}
@@ -207,6 +207,7 @@ public class TicketShowController extends Controller {
 		this.backPanel = pane;
 	}
 
+	@Override
 	public void updateAuthorizations() {
 		int role = AuthController.getEmployee().getRole().get();
 		statusBox.setDisable(role != 1 && role != 4);

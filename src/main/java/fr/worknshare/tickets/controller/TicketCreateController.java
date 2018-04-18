@@ -24,7 +24,7 @@ import javafx.scene.layout.Pane;
  * @author Jérémy LAMBERT
  *
  */
-public class TicketCreateController extends Controller {
+public class TicketCreateController extends Controller implements Backable {
 
 	private TicketRepository ticketRepository;
 
@@ -40,9 +40,13 @@ public class TicketCreateController extends Controller {
 	private Pane backPanel;
 
 	@FXML
-	private void backClicked() {
+	public void backClicked() {
 		if(backPanel != null)
 			backPanel.toFront();
+	}
+	
+	public final void setBackPanel(Pane pane) {
+		this.backPanel = pane;
 	}
 
 	@FXML
