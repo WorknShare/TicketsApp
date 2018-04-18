@@ -1,5 +1,6 @@
 package fr.worknshare.tickets.repository;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
@@ -28,13 +29,17 @@ public abstract class Repository<T extends Model<T>> {
 
 	private HttpClient httpClient;
 	private HttpContext httpContext;
+	private SimpleDateFormat dateFormat;
 
 	public Repository(HttpClient client, HttpContext context) {
-		this.httpClient = client;
-		this.httpContext = context;
+		this();
+		this.httpClient 	= client;
+		this.httpContext 	= context;
 	}
 	
-	public Repository() {}
+	public Repository() {
+		dateFormat = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
+	}
 
 	/**
 	 * Get the name of the resource. Will be used in URLs when doing requests.
@@ -48,15 +53,16 @@ public abstract class Repository<T extends Model<T>> {
 	 * Get the list of records for the given page.
 	 * @param page - the page number, must be positive
 	 * @param callback - the callback to execute when the request is done
+	 * @param failCallback - the callback to execute when the request failed
 	 */
-	public final void paginate(int page, PaginatedRequestCallback<T> callback) {
+	public final void paginate(int page, PaginatedRequestCallback<T> callback, FailCallback failCallback) {
 		request("page", page, new JsonCallback() {
 
 			@Override
 			public void run() {
 				PaginatedResponse<T> response = null;
 				ArrayList<T> list;
-				JsonObject data = getResponse();
+				JsonObject data = getObject();
 				JsonElement elem = data.get("paginator");
 				if(elem != null && elem.isJsonObject()) {
 					Paginator paginator = Paginator.fromJson(elem.getAsJsonObject());
@@ -64,44 +70,56 @@ public abstract class Repository<T extends Model<T>> {
 					if(elem != null && elem.isJsonArray()) {
 						list = parseArray(elem.getAsJsonArray());
 						response = new PaginatedResponse<T>(paginator, list);
-						callback.setResponse(response);
+						callback.setResponse(getResponse());
+						callback.setPaginatedResponse(response);
 						callback.run();
 					} else {
-						//TODO Malformed response 
+						failCallback.setResponse(getResponse());
+						failCallback.setMessage("Réponse malformée");
+						failCallback.run();
+						Logger.getGlobal().warning("Malformed paginate response (missing expected \"items\"):\n\t" + getResponse().getRaw());
 					}
 				} else {
-					//TODO Malformed response
+					failCallback.setResponse(getResponse());
+					failCallback.setMessage("Réponse malformée");
+					failCallback.run();
+					Logger.getGlobal().warning("Malformed paginate response (missing expected \"paginator\"):\n\t" + getResponse().getRaw());
 				}
 			}
 			
-		});
+		}, failCallback);
 	}
 
 	/**
 	 * Request the list of records corresponding to the "search" pattern.
 	 * @param search - the search criteria
 	 * @param callback - the callback to execute when the request is done
+	 * @param failCallback - the callback to execute if the request fails
 	 */
-	public final void where(String search, PaginatedRequestCallback<T> callback) {
+	public final void where(String search, PaginatedRequestCallback<T> callback, FailCallback failCallback) {
 		request("search", search, new JsonCallback() {
 
 			@Override
 			public void run() {
 				PaginatedResponse<T> response = null;
 				ArrayList<T> list = null;
-				JsonObject data = getResponse();
+				JsonObject data = getObject();
 				JsonElement elem = data.get("items");
 				if(elem != null && elem.isJsonArray()) {
 						list = parseArray(elem.getAsJsonArray());
 						response = new PaginatedResponse<T>(new Paginator(1, 1, 10), list);
-						callback.setResponse(response);
+						callback.setResponse(getResponse());
+						callback.setPaginatedResponse(response);
 						callback.run();
 				} else {
-						//TODO Malformed response 
+					failCallback.setResponse(getResponse());
+					failCallback.setMessage("Réponse malformée");
+					failCallback.run();
+					Logger.getGlobal().warning("Malformed where response (missing expected \"items\"):\n\t" + getResponse().getRaw());
 				}
 			}
 			
-		});
+		}, failCallback);
 	}
 
 	/**
@@ -109,8 +127,9 @@ public abstract class Repository<T extends Model<T>> {
 	 * @param paramName - the name of the parameter
 	 * @param paramValue - the value of the parameter
 	 * @param callback - the callback to execute when the request is done
+	 * @param failCallback - the callback to execute if the request fails
 	 */
-	private final void request(String paramName, Object paramValue, JsonCallback callback) {
+	private final void request(String paramName, Object paramValue, JsonCallback callback, FailCallback failCallback) {
 		RestRequest request = new RestRequest(httpClient, getUrl())
 				.setUrlParam(true)
 				.context(httpContext)
@@ -126,13 +145,19 @@ public abstract class Repository<T extends Model<T>> {
 					JsonObject payload = response.getJsonObject();
 					JsonElement data = payload.get("data");
 					if(data != null && data.isJsonObject()) {
-						callback.setResponse(data.getAsJsonObject());
+						callback.setResponse(response);
+						callback.setObject(data.getAsJsonObject());
 						callback.run();
 					} else {
-						//TODO Malformed response
+						failCallback.setResponse(getResponse());
+						failCallback.setMessage("Réponse malformée");
+						failCallback.run();
+						Logger.getGlobal().warning("Malformed paginate response (missing expected \"data\"):\n\t" + getResponse().getRaw());
 					}
 				} else {
-					//TODO Handle request failed
+					failCallback.setResponse(response);
+					failCallback.run();
+					Logger.getGlobal().warning("Repository request failed: " + response.getStatus() + " " + failCallback.getMessage());
 				}
 			}
 			
@@ -143,11 +168,12 @@ public abstract class Repository<T extends Model<T>> {
 	 * Get a single record for this model based on its ID.
 	 * @param id
 	 * @param callback - the callback to execute when the request is done
+	 * @param failCallback - the callback to execute if the request fails
 	 * @return an instance of the model, null if not found
 	 * 
 	 * @throws IllegalArgumentException if id is not positive.
 	 */
-	public void getById(int id, ObjectCallback<T> callback) {
+	public void getById(int id, ObjectCallback<T> callback, FailCallback failCallback) {
 		if(id < 1) throw new IllegalArgumentException("Requested resource's ID must be positive. " + id + " given.");
 
 		RestRequest request = new RestRequest(httpClient, getUrl(id)).context(httpContext);
@@ -161,13 +187,19 @@ public abstract class Repository<T extends Model<T>> {
 					JsonObject payload = response.getJsonObject();
 					JsonElement data = payload.get("data");
 					if(data != null && data.isJsonObject()) {
+						callback.setResponse(response);
 						callback.setObject(parseObject(data.getAsJsonObject()));
 						callback.run();
 					} else {
-						//TODO Malformed response
+						failCallback.setResponse(getResponse());
+						failCallback.setMessage("Réponse malformée");
+						failCallback.run();
+						Logger.getGlobal().warning("Malformed paginate response (missing expected \"data\"):\n\t" + getResponse().getRaw());
 					}
 				} else {
-					//TODO Handle request failed
+					failCallback.setResponse(response);
+					failCallback.run();
+					Logger.getGlobal().warning("Repository getById request failed: " + response.getStatus() + " " + failCallback.getMessage());
 				}
 			}
 			
@@ -178,7 +210,7 @@ public abstract class Repository<T extends Model<T>> {
 	 * Generate the URL based on the Host in the config and the resource name
 	 * @return the url to make a request for this model
 	 */
-	private final String getUrl() {
+	protected final String getUrl() {
 		String host = Config.getInstance().get("Host");
 		if(host == null) throw new NullPointerException("Host is undefined");
 
@@ -190,7 +222,7 @@ public abstract class Repository<T extends Model<T>> {
 	 * @param id - the id of the resource, must be positive
 	 * @return the full url to make a request for this model and resource
 	 */
-	private final String getUrl(int id) {
+	protected final String getUrl(int id) {
 		return getUrl() + "/" + id;
 	}
 
@@ -251,6 +283,10 @@ public abstract class Repository<T extends Model<T>> {
 	 */
 	public final void setHttpContext(HttpContext httpContext) {
 		this.httpContext = httpContext;
+	}
+	
+	public final SimpleDateFormat getDateFormatter() {
+		return dateFormat;
 	}
 
 }

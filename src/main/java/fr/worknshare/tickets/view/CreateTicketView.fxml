@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTextArea?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox maxHeight="1.7976931348623157E308" styleClass="opaque" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.worknshare.tickets.controller.TicketCreateController">
+	<children>
+       <Label styleClass="h1" stylesheets="@application.css" text="Créer un ticket">
+         <VBox.margin>
+            <Insets bottom="15.0" />
+         </VBox.margin></Label>
+      <Label fx:id="equipmentLabel" layoutX="10.0" layoutY="70.0" text="Matériel concerné :">
+         <font>
+            <Font size="14.0" />
+         </font>
+         <VBox.margin>
+            <Insets bottom="5.0" />
+         </VBox.margin>
+      </Label>
+      <Label text="Description du problème :">
+         <VBox.margin>
+            <Insets bottom="5.0" />
+         </VBox.margin>
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <JFXTextArea fx:id="description" focusColor="#007bff" promptText="Décrivez le problème..." style="-fx-background-color: #fff;" unFocusColor="#4d4d4d66" VBox.vgrow="ALWAYS">
+         <padding>
+            <Insets bottom="5.0" />
+         </padding>
+         <VBox.margin>
+            <Insets bottom="10.0" />
+         </VBox.margin>
+      </JFXTextArea>
+      <HBox>
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
+         <children>
+            <JFXButton text="Retour" fx:id="back" onAction="#backClicked">
+               <graphic>
+                  <Label styleClass="previous-button" stylesheets="@application.css" text="&lt;" />
+               </graphic>
+            </JFXButton>
+            <Pane HBox.hgrow="ALWAYS" />
+            <JFXButton ripplerFill="#eeeeee80" style="-fx-background-color: #39ae54;" text="Créer" textFill="WHITE" fx:id="submit" onAction="#submitClicked">
+               <graphic>
+                  <Label styleClass="check-button" stylesheets="@application.css" text="VV" />
+               </graphic>
+               <HBox.margin>
+                  <Insets right="5.0" bottom="5.0" />
+               </HBox.margin></JFXButton>
+         </children>
+      </HBox>
+    </children>
+</VBox>

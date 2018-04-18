@@ -8,11 +8,11 @@ import com.google.gson.JsonObject;
  *
  * @see Runnable
  */
-public abstract class JsonCallback implements Runnable {
+public abstract class JsonCallback extends RestCallback {
 
 	private JsonObject response;
 	
-	protected void setResponse(JsonObject response) {
+	protected void setObject(JsonObject response) {
 		this.response = response;
 	}
 	
@@ -20,7 +20,7 @@ public abstract class JsonCallback implements Runnable {
 	 * Get the response from the request. All checks have to be done.
 	 * @return the response, can be null
 	 */
-	public JsonObject getResponse() {
+	public JsonObject getObject() {
 		return response;
 	}
 

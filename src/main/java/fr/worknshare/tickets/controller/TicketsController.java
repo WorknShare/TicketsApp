@@ -4,7 +4,9 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXSnackbar.SnackbarEvent;
 import com.jfoenix.controls.JFXSpinner;
+import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
@@ -12,6 +14,7 @@ import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 
 import fr.worknshare.tickets.model.Employee;
 import fr.worknshare.tickets.model.Ticket;
+import fr.worknshare.tickets.repository.FailCallback;
 import fr.worknshare.tickets.repository.PaginatedRequestCallback;
 import fr.worknshare.tickets.repository.PaginatedResponse;
 import fr.worknshare.tickets.repository.TicketRepository;
@@ -25,14 +28,18 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableRow;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 
-public class TicketsController implements RequestController {
+public class TicketsController extends Controller implements RequestController {
 
 	private TicketRepository ticketRepository;
+	private TicketShowController ticketShowController;
+
 	private ObservableList<Ticket> ticketList;	
 
 	@FXML private JFXTreeTableView<Ticket> table;
@@ -40,10 +47,13 @@ public class TicketsController implements RequestController {
 	@FXML private JFXButton nextButton;
 	@FXML private JFXButton previousButton;
 	@FXML private JFXSpinner loader;
-	
+	@FXML private JFXTextField searchbar;
+
 	private int page;
 	private HttpClient httpClient;
 	private HttpContext httpContext;
+	private FailCallback failCallback;
+	private PaginatedRequestCallback<Ticket> callback;
 
 	private void initIdColumn() {
 		JFXTreeTableColumn<Ticket, Integer> idColumn = new JFXTreeTableColumn<Ticket, Integer>("ID");
@@ -83,9 +93,10 @@ public class TicketsController implements RequestController {
 					if (item == null || empty) {
 						setText(null);
 						setStyle("");
+						setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 					} else {
 
-						setText(String.valueOf(item));
+						setStyle("-fx-alignment: CENTER;");
 
 						switch(item) {
 						case 0:
@@ -244,13 +255,85 @@ public class TicketsController implements RequestController {
 		initUpdatedColumn();
 	}
 
+	private void initFailCallback() {
+		failCallback = new FailCallback() {
+
+			@Override
+			public void run() {
+				getSnackbar().enqueue(new SnackbarEvent(getFullMessage(), "error"));
+				paginationLabel.setText("Page 1/1");
+				table.setDisable(false);
+				previousButton.setDisable(true);
+				nextButton.setDisable(true);
+				table.setDisable(false);
+				loader.setVisible(false);
+				searchbar.setDisable(false);
+			}
+
+		};
+	}
+
+	private void initCallback() {
+		callback = new PaginatedRequestCallback<Ticket>() {
+
+			@Override
+			public void run() {
+				PaginatedResponse<Ticket> response = getPaginatedResponse();
+				Paginator paginator = response.getPaginator();
+
+				ticketList.addAll(response.getItems());
+
+				paginationLabel.setText("Page " + paginator.getCurrentPage() + "/" + paginator.getMaxPage());
+				paginationLabel.getStyleClass().remove("text-muted");
+				previousButton.setDisable(paginator.getCurrentPage() == 1);
+				nextButton.setDisable(paginator.getCurrentPage() == paginator.getMaxPage());
+
+				table.setDisable(false);
+				loader.setVisible(false);
+				searchbar.setDisable(false);
+
+			}
+		};
+	}
+	
+	private void initDoubleClickListener() {
+		table.setRowFactory( tv -> {
+			TreeTableRow<Ticket> row = new TreeTableRow<Ticket>();
+			row.setOnMouseClicked(event -> {
+				if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
+					Ticket ticket = row.getItem();
+					ticketShowController.showTicket(ticket);
+				}
+			});
+			return row;
+		});
+	}
+
 	@FXML
 	private void initialize() {
 
 		ticketRepository = new TicketRepository();
 		ticketList = FXCollections.observableArrayList();
 		page = 1;
+		initDoubleClickListener();
 		initColumns();
+		initFailCallback();
+		initCallback();
+
+		//Submit on enter
+		searchbar.setOnKeyPressed((event) -> {
+			if (event.getCode().equals(KeyCode.ENTER)) {
+				if(searchbar.getText() != null) {
+					String text = searchbar.getText().trim();
+					if(!text.isEmpty())
+						search(text);
+					else {
+						setPage(1);
+						refresh();
+					}						
+				}
+			}
+		});
 
 	}
 
@@ -267,32 +350,29 @@ public class TicketsController implements RequestController {
 		refresh();
 	}
 
-	public void refresh() {
+	private void prepareRequest() {
 		table.setDisable(true);
 		previousButton.setDisable(true);
 		nextButton.setDisable(true);
 		paginationLabel.getStyleClass().add("text-muted");
 		loader.setVisible(true);
-		
-		ticketRepository.paginate(page, new PaginatedRequestCallback<Ticket>() {
-			
-			@Override
-			public void run() {
-				PaginatedResponse<Ticket> response = getResponse();
-				Paginator paginator = response.getPaginator();
+		searchbar.setDisable(true);
+		ticketList.clear();
+	}
 
-				ticketList.remove(0, ticketList.size()); //Empty the list
-				ticketList.addAll(response.getItems());
+	public void refresh() {
+		prepareRequest();
+		ticketRepository.paginate(page, callback, failCallback);
+	}
 
-				paginationLabel.setText("Page " + paginator.getCurrentPage() + "/" + paginator.getMaxPage());
-				paginationLabel.getStyleClass().remove("text-muted");
-				previousButton.setDisable(paginator.getCurrentPage() == 1);
-				nextButton.setDisable(paginator.getCurrentPage() == paginator.getMaxPage());
-				
-				table.setDisable(false);
-				loader.setVisible(false);
-			}
-		});
+	public void search(String search) {
+		prepareRequest();
+		ticketRepository.where(search, callback, failCallback);
+	}
+
+	public void setPage(int page) {
+		this.page = page;
+		this.searchbar.setText(null);
 	}
 
 	@Override
@@ -307,4 +387,11 @@ public class TicketsController implements RequestController {
 		ticketRepository.setHttpContext(httpContext);
 	}
 
+	public TicketRepository getTicketRepository() {
+		return ticketRepository;
+	}
+
+	public void setTicketShowController(TicketShowController controller) {
+		this.ticketShowController = controller;
+	}
 }

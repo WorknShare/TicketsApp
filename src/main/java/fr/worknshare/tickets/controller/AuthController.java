@@ -11,7 +11,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPasswordField;
-import com.jfoenix.controls.JFXSnackbar;
 import com.jfoenix.controls.JFXSnackbar.SnackbarEvent;
 import com.jfoenix.controls.JFXTextField;
 
@@ -23,7 +22,6 @@ import fr.worknshare.tickets.networking.RestRequest;
 import fr.worknshare.tickets.networking.RestResponse;
 import fr.worknshare.tickets.repository.EmployeeRepository;
 import javafx.animation.FadeTransition;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
@@ -36,7 +34,7 @@ import javafx.util.Duration;
  * @author Jérémy LAMBERT
  *
  */
-public class AuthController implements RequestController {
+public class AuthController extends Controller implements RequestController {
 
 	private EmployeeRepository employeeRepository;
 	private static Employee employee;
@@ -49,8 +47,6 @@ public class AuthController implements RequestController {
 	@FXML private Label errorsPassword;
 
 	@FXML private FlowPane loginPane;
-
-	private JFXSnackbar snackbar;
 
 	private Runnable loginCallback;
 	
@@ -102,6 +98,7 @@ public class AuthController implements RequestController {
 							return;
 						} else {
 							//Malformed response
+							getSnackbar().enqueue(new SnackbarEvent("Erreur : Réponse malformée", "error"));
 							Logger.getGlobal().log(Level.INFO, "Login response malformed:\n" + response.getRaw());
 						}
 					} else {
@@ -109,12 +106,12 @@ public class AuthController implements RequestController {
 						if(response.getStatus() == 422) //Invalid credentials
 							handleResponse(response.getJsonObject().get("errors").getAsJsonObject());
 						else if(response.getStatus() == 423 || response.getStatus() == 403)
-							snackbar.enqueue(new SnackbarEvent(response.getJsonObject().get("errors").getAsJsonObject().get("email").getAsString()));
+							getSnackbar().enqueue(new SnackbarEvent(response.getJsonObject().get("errors").getAsJsonObject().get("email").getAsString(), "error"));
 						else if(response.getStatus() != -1)				
-							Logger.getGlobal().log(Level.WARNING, "Login request failed.\n\tStatus code " + response.getStatus() + "\n\tMessage: " + response.getJsonObject().get("message").getAsString());
+							Logger.getGlobal().log(Level.WARNING, "Login request failed.\n\tStatus code " + response.getStatus() + "\n\tMessage: " + response.getJsonObject().get("error").getAsString());
 						else {
 							Logger.getGlobal().log(Level.WARNING, "Login request failed. Remote host unreachable.");
-							snackbar.enqueue(new SnackbarEvent("Impossible de joindre le serveur distant."));
+							getSnackbar().enqueue(new SnackbarEvent("Impossible de joindre le serveur distant.", "error"));
 						}
 
 					}
@@ -170,7 +167,7 @@ public class AuthController implements RequestController {
 	}
 
 	@FXML
-	public void submitClicked(ActionEvent e) {
+	public void submitClicked() {
 		submit();
 	}
 
@@ -253,10 +250,6 @@ public class AuthController implements RequestController {
 
 	public static Employee getEmployee() {
 		return employee;
-	}
-
-	protected void setSnackbar(JFXSnackbar bar) {
-		this.snackbar = bar;
 	}
 
 	/**

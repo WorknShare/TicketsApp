@@ -38,19 +38,23 @@ public class RestResponse {
 	protected RestResponse(HttpResponse response) {
 		status = response.getStatusLine().getStatusCode();
 		
-		try {
-			BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-			String line;
-			StringBuffer resultStr = new StringBuffer();
-			while ((line = rd.readLine()) != null) {
-				resultStr.append(line);
+		if(status != 204) {
+			try {
+				BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+				String line;
+				StringBuffer resultStr = new StringBuffer();
+				while ((line = rd.readLine()) != null) {
+					resultStr.append(line);
+				}
+				raw = resultStr.toString();
+				
+				JsonParser parser = new JsonParser();
+				jsonObject = parser.parse(raw).getAsJsonObject();
+			} catch (UnsupportedOperationException | IOException e) {
+				Logger.getGlobal().log(Level.SEVERE, "Unable to read HttpResponse", e);
 			}
-			raw = resultStr.toString();
-			
-			JsonParser parser = new JsonParser();
-			jsonObject = parser.parse(raw).getAsJsonObject();
-		} catch (UnsupportedOperationException | IOException e) {
-			Logger.getGlobal().log(Level.SEVERE, "Unable to read HttpResponse", e);
+		} else {
+			raw = null;
 		}
 		
 		if(status == 404)

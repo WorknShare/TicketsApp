@@ -6,7 +6,7 @@ package fr.worknshare.tickets.repository;
  *
  * @see Runnable
  */
-public abstract class ObjectCallback<T> implements Runnable {
+public abstract class ObjectCallback<T> extends RestCallback {
 
 	private T object;
 

@@ -13,6 +13,7 @@ public final class Ticket extends Model<Ticket> {
 	private SimpleStringProperty createdAt;
 	private SimpleStringProperty updatedAt;
 
+	private SimpleIntegerProperty idEquipment;
 	private Equipment equipment;
 	private EquipmentType equipmentType;
 
@@ -25,12 +26,14 @@ public final class Ticket extends Model<Ticket> {
 
 	public Ticket(int id) {
 		super(id);
+		idEquipment		   = new SimpleIntegerProperty();
 		status			   = new SimpleIntegerProperty();
 		idEmployeeSource   = new SimpleIntegerProperty();
 		idEmployeeAssigned = new SimpleIntegerProperty();
 		description 	   = new SimpleStringProperty();
 		createdAt		   = new SimpleStringProperty();
 		updatedAt		   = new SimpleStringProperty();
+		dateFormatter 	   = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 	}
 
 	public final SimpleIntegerProperty getStatus() {
@@ -111,6 +114,14 @@ public final class Ticket extends Model<Ticket> {
 
 	public final void setEquipmentType(EquipmentType equipmentType) {
 		this.equipmentType = equipmentType;
+	}
+
+	public final SimpleIntegerProperty getIdEquipment() {
+		return idEquipment;
+	}
+
+	public final void setIdEquipment(int idEquipment) {
+		this.idEquipment.set(idEquipment);
 	}
 
 }

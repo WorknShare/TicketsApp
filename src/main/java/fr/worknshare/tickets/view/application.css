@@ -21,6 +21,19 @@
 	-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
 }
 
+.combo-box-base:disabled {
+    -fx-opacity: 1.0;
+}
+
+.combo-box:disabled .list-cell 
+{
+    -fx-opacity: 1.0;
+}
+
+.combo-box:disabled .arrow, .combo-box:disabled .arrow-button {
+    -fx-background-color: transparent;
+}
+
 .next-button {
 	-fx-background-image: url("right.png");
 	-fx-background-position: center;
@@ -30,6 +43,13 @@
 
 .previous-button {
 	-fx-background-image: url("left.png");
+	-fx-background-position: center;
+	-fx-background-repeat: no-repeat;
+	-fx-text-fill: transparent;
+}
+
+.check-button {
+	-fx-background-image: url("check-mark.png");
 	-fx-background-position: center;
 	-fx-background-repeat: no-repeat;
 	-fx-text-fill: transparent;
@@ -67,6 +87,10 @@
     -fx-selection-bar: #e5e5e5;
 }
 
+.tree-table-view:focused {
+  -fx-background-color: transparent,-fx-box-border,-fx-control-inner-background;
+}
+
 .tree-table-view .jfx-text-field{
     -fx-background-color: transparent;
 }
@@ -83,7 +107,16 @@
     -fx-text-fill: #ff4081;
 }
 
-.error.jfx-snackbar-content {
+.jfx-snackbar-content:error {
 	-fx-font-weight: bold;
 	-fx-background-color: #CC0000;
+}
+
+.jfx-snackbar-content:success {
+	-fx-font-weight: bold;
+	-fx-background-color: #00a65a;
+}
+
+.opaque {
+	-fx-background-color: #f4f4f4;
 }

@@ -11,7 +11,7 @@ import org.apache.http.protocol.HttpContext;
  * @see HttpContext
  *
  */
-public interface RequestController {
+interface RequestController {
 
 	/**
 	 * Set the Http client used for requests
