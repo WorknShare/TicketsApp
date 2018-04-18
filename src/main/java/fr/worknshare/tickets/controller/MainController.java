@@ -12,6 +12,10 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXSnackbar;
 
 import fr.worknshare.tickets.model.Equipment;
+import fr.worknshare.tickets.repository.EmployeeRepository;
+import fr.worknshare.tickets.repository.EquipmentRepository;
+import fr.worknshare.tickets.repository.EquipmentTypeRepository;
+import fr.worknshare.tickets.repository.TicketRepository;
 import javafx.fxml.FXML;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -39,6 +43,24 @@ public class MainController extends Controller {
 	private HttpClient client = HttpClientBuilder.create().build();
 	private HttpContext context = new BasicHttpContext();
 	
+	private EmployeeRepository employeeRepository;
+	private EquipmentRepository equipmentRepository;
+	private EquipmentTypeRepository equipmentTypeRepository;
+	private TicketRepository ticketRepository;
+	
+	private void initRepositories() {
+		employeeRepository = new EmployeeRepository(client, context);
+		equipmentRepository = new EquipmentRepository(client, context);
+		equipmentTypeRepository = equipmentRepository.getEquipmentTypeRepository();
+		ticketRepository = new TicketRepository(client, context, employeeRepository, equipmentRepository);
+		
+		loginController.setEmployeeRepository(employeeRepository);
+		ticketsController.setTicketRepository(ticketRepository);
+		ticketCreateController.setTicketRepository(ticketRepository);
+		ticketShowController.setTicketRepository(ticketRepository);
+		ticketShowController.setEmployeeRepository(employeeRepository);
+	}
+	
 	@FXML
 	private void initialize() {
 		
@@ -46,6 +68,8 @@ public class MainController extends Controller {
 		
 		CookieStore cookieStore = new BasicCookieStore();		
 		context.setAttribute(HttpClientContext.COOKIE_STORE, cookieStore);
+		
+		initRepositories();
 		
 		loginController.setHttpClient(client);
 		loginController.setHttpContext(context);
@@ -63,7 +87,6 @@ public class MainController extends Controller {
 		ticketsController.setHttpContext(context);
 		ticketsController.setTicketShowController(ticketShowController);
 		
-		ticketCreateController.setTicketRepository(ticketsController.getTicketRepository());
 		ticketCreateController.setSnackbar(getSnackbar());
 		ticketCreateController.setTicketCreatedCallback(() -> {
 			tickets.toFront();
@@ -75,8 +98,6 @@ public class MainController extends Controller {
 		
 		ticketShowController.setBackPanel(tickets);
 		ticketShowController.setSnackbar(getSnackbar());
-		ticketShowController.setTicketRepository(ticketsController.getTicketRepository());
-		ticketShowController.setEmployeeRepository(loginController.getEmployeeRepository());
 	}
 	
 	@FXML

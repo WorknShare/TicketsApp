@@ -55,7 +55,6 @@ public class AuthController extends Controller implements RequestController {
 
 	@FXML
 	private void initialize() {
-		this.employeeRepository = new EmployeeRepository();
 
 		//Submit on enter
 		passwordField.setOnKeyPressed((event) -> {
@@ -278,6 +277,10 @@ public class AuthController extends Controller implements RequestController {
 	public void setHttpContext(HttpContext context) {
 		httpContext = context;
 		employeeRepository.setHttpContext(httpContext);
+	}
+	
+	public void setEmployeeRepository(EmployeeRepository employeeRepository) {
+		this.employeeRepository = employeeRepository;
 	}
 	
 	public EmployeeRepository getEmployeeRepository() {

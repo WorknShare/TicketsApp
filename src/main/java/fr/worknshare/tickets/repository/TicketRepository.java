@@ -23,16 +23,16 @@ public final class TicketRepository extends Repository<Ticket> implements Creato
 	private EmployeeRepository employeeRepository;
 	private EquipmentRepository equipmentRepository;
 
-	public TicketRepository() {
-		super();
-		employeeRepository = new EmployeeRepository();
-		equipmentRepository = new EquipmentRepository();
-	}
-
 	public TicketRepository(HttpClient client, HttpContext context) {
 		super(client, context);
-		employeeRepository = new EmployeeRepository();
-		equipmentRepository = new EquipmentRepository();
+		employeeRepository = new EmployeeRepository(client, context);
+		equipmentRepository = new EquipmentRepository(client, context);
+	}
+	
+	public TicketRepository(HttpClient client, HttpContext context, EmployeeRepository employeeRepository, EquipmentRepository equipmentRepository) {
+		super(client, context);
+		this.employeeRepository = employeeRepository;
+		this.equipmentRepository = equipmentRepository;
 	}
 
 	@Override

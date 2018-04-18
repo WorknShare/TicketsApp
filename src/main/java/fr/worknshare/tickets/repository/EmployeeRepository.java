@@ -3,6 +3,9 @@ package fr.worknshare.tickets.repository;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.protocol.HttpContext;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -11,6 +14,10 @@ import fr.worknshare.tickets.view.Paginator;
 
 public final class EmployeeRepository extends Repository<Employee> {
 
+	public EmployeeRepository(HttpClient client, HttpContext context) {
+		super(client, context);
+	}
+	
 	@Override
 	public String getResourceName() {
 		return "employee";

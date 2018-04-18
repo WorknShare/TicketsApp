@@ -312,7 +312,6 @@ public class TicketsController extends Controller implements RequestController {
 	@FXML
 	private void initialize() {
 
-		ticketRepository = new TicketRepository();
 		ticketList = FXCollections.observableArrayList();
 		page = 1;
 		initDoubleClickListener();
@@ -387,6 +386,10 @@ public class TicketsController extends Controller implements RequestController {
 		ticketRepository.setHttpContext(httpContext);
 	}
 
+	public void setTicketRepository(TicketRepository ticketRepository) {
+		this.ticketRepository = ticketRepository;
+	}
+	
 	public TicketRepository getTicketRepository() {
 		return ticketRepository;
 	}
