@@ -4,7 +4,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
 
 import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXSnackbar;
 import com.jfoenix.controls.JFXSnackbar.SnackbarEvent;
 import com.jfoenix.controls.JFXSpinner;
 import com.jfoenix.controls.JFXTextField;
@@ -29,15 +28,18 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableRow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 
-public class TicketsController implements RequestController {
+public class TicketsController extends Controller implements RequestController {
 
 	private TicketRepository ticketRepository;
+	private TicketShowController ticketShowController;
+
 	private ObservableList<Ticket> ticketList;	
 
 	@FXML private JFXTreeTableView<Ticket> table;
@@ -46,8 +48,6 @@ public class TicketsController implements RequestController {
 	@FXML private JFXButton previousButton;
 	@FXML private JFXSpinner loader;
 	@FXML private JFXTextField searchbar;
-
-	private JFXSnackbar snackbar;
 
 	private int page;
 	private HttpClient httpClient;
@@ -260,7 +260,7 @@ public class TicketsController implements RequestController {
 
 			@Override
 			public void run() {
-				snackbar.enqueue(new SnackbarEvent(getFullMessage(), "error"));
+				getSnackbar().enqueue(new SnackbarEvent(getFullMessage(), "error"));
 				paginationLabel.setText("Page 1/1");
 				table.setDisable(false);
 				previousButton.setDisable(true);
@@ -272,7 +272,7 @@ public class TicketsController implements RequestController {
 
 		};
 	}
-	
+
 	private void initCallback() {
 		callback = new PaginatedRequestCallback<Ticket>() {
 
@@ -296,12 +296,26 @@ public class TicketsController implements RequestController {
 		};
 	}
 	
+	private void initDoubleClickListener() {
+		table.setRowFactory( tv -> {
+			TreeTableRow<Ticket> row = new TreeTableRow<Ticket>();
+			row.setOnMouseClicked(event -> {
+				if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
+					Ticket ticket = row.getItem();
+					ticketShowController.showTicket(ticket);
+				}
+			});
+			return row;
+		});
+	}
+
 	@FXML
 	private void initialize() {
 
 		ticketRepository = new TicketRepository();
 		ticketList = FXCollections.observableArrayList();
 		page = 1;
+		initDoubleClickListener();
 		initColumns();
 		initFailCallback();
 		initCallback();
@@ -345,12 +359,12 @@ public class TicketsController implements RequestController {
 		searchbar.setDisable(true);
 		ticketList.clear();
 	}
-	
+
 	public void refresh() {
 		prepareRequest();
 		ticketRepository.paginate(page, callback, failCallback);
 	}
-	
+
 	public void search(String search) {
 		prepareRequest();
 		ticketRepository.where(search, callback, failCallback);
@@ -373,16 +387,11 @@ public class TicketsController implements RequestController {
 		ticketRepository.setHttpContext(httpContext);
 	}
 
-	/**
-	 * Set the snackbar used to display errors
-	 * @param snackbar
-	 */
-	public void setSnackbar(JFXSnackbar snackbar) {
-		this.snackbar = snackbar;
-	}
-
 	public TicketRepository getTicketRepository() {
 		return ticketRepository;
 	}
 
+	public void setTicketShowController(TicketShowController controller) {
+		this.ticketShowController = controller;
+	}
 }

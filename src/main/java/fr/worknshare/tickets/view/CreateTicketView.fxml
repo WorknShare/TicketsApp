@@ -44,7 +44,7 @@
             <Insets />
          </VBox.margin>
          <children>
-            <JFXButton text="Retour" fx:id="back">
+            <JFXButton text="Retour" fx:id="back" onAction="#backClicked">
                <graphic>
                   <Label styleClass="previous-button" stylesheets="@application.css" text="&lt;" />
                </graphic>

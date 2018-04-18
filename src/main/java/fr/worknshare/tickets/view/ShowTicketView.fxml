@@ -12,9 +12,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="1.7976931348623157E308" styleClass="opaque" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="1.7976931348623157E308" styleClass="opaque" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.worknshare.tickets.controller.TicketShowController" fx:id="pane">
 	<children>
-       <Label styleClass="h1" stylesheets="@application.css" text="Ticket n°#">
+       <Label fx:id="header" styleClass="h1" stylesheets="@application.css" text="Ticket n°#">
          <VBox.margin>
             <Insets bottom="15.0" />
          </VBox.margin></Label>
@@ -85,7 +85,7 @@
                   <Font size="14.0" />
                </font>
             </Label>
-            <JFXButton fx:id="equipmentButton" text="EQUIPMENT_BUTTON">
+            <JFXButton fx:id="equipmentButton" onAction="#equipmentButtonClicked" text="EQUIPMENT_BUTTON">
                <font>
                   <Font size="14.0" />
                </font>
@@ -113,7 +113,7 @@
             <Insets />
          </VBox.margin>
          <children>
-            <JFXButton fx:id="back" text="Retour">
+            <JFXButton fx:id="back" onAction="#backClicked" text="Retour">
                <graphic>
                   <Label styleClass="previous-button" stylesheets="@application.css" text="&lt;" />
                </graphic>

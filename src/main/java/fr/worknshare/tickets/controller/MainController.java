@@ -22,9 +22,7 @@ import javafx.scene.layout.VBox;
  * @author Jérémy LAMBERT
  *
  */
-public class MainController {
-
-	private JFXSnackbar snackbar;
+public class MainController extends Controller {
 	
 	@FXML private JFXButton logout;
 	@FXML private StackPane pane;
@@ -36,6 +34,7 @@ public class MainController {
 	@FXML private AuthController loginController;
 	@FXML private TicketsController ticketsController;
 	@FXML private TicketCreateController ticketCreateController;
+	@FXML private TicketShowController ticketShowController;
 	
 	private HttpClient client = HttpClientBuilder.create().build();
 	private HttpContext context = new BasicHttpContext();
@@ -43,7 +42,7 @@ public class MainController {
 	@FXML
 	private void initialize() {
 		
-		snackbar = new JFXSnackbar(pane);
+		setSnackbar(new JFXSnackbar(pane));
 		
 		CookieStore cookieStore = new BasicCookieStore();		
 		context.setAttribute(HttpClientContext.COOKIE_STORE, cookieStore);
@@ -52,17 +51,18 @@ public class MainController {
 		loginController.setHttpContext(context);
 		loginController.attempt("admin@worknshare.fr", "password"); //TODO disable auto auth
 		
-		loginController.setSnackbar(snackbar);
+		loginController.setSnackbar(getSnackbar());
 		loginController.setOnLogin(() -> {
 			ticketsController.refresh();
 		});
 		
-		ticketsController.setSnackbar(snackbar);
+		ticketsController.setSnackbar(getSnackbar());
 		ticketsController.setHttpClient(client);
 		ticketsController.setHttpContext(context);
+		ticketsController.setTicketShowController(ticketShowController);
 		
 		ticketCreateController.setTicketRepository(ticketsController.getTicketRepository());
-		ticketCreateController.setSnackbar(snackbar);
+		ticketCreateController.setSnackbar(getSnackbar());
 		ticketCreateController.setTicketCreatedCallback(() -> {
 			tickets.toFront();
 			ticketsController.setPage(1);
@@ -70,6 +70,9 @@ public class MainController {
 		});
 		
 		ticketCreateController.setSelectedEquipment(new Equipment(1)); //TODO equipment select test
+		
+		ticketShowController.setBackPanel(tickets);
+		ticketShowController.setSnackbar(getSnackbar());
 	}
 	
 	@FXML
