@@ -267,6 +267,7 @@ public class AuthController extends Controller implements RequestController {
 	@Override
 	public void setHttpClient(HttpClient client) {
 		httpClient = client;
+		employeeRepository.setHttpClient(httpClient);
 	}
 	
 	/**
@@ -276,5 +277,10 @@ public class AuthController extends Controller implements RequestController {
 	@Override
 	public void setHttpContext(HttpContext context) {
 		httpContext = context;
+		employeeRepository.setHttpContext(httpContext);
+	}
+	
+	public EmployeeRepository getEmployeeRepository() {
+		return employeeRepository;
 	}
 }
