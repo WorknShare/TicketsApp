@@ -222,7 +222,7 @@ public abstract class Repository<T extends Model<T>> {
 	 * @param id - the id of the resource, must be positive
 	 * @return the full url to make a request for this model and resource
 	 */
-	private final String getUrl(int id) {
+	protected final String getUrl(int id) {
 		return getUrl() + "/" + id;
 	}
 

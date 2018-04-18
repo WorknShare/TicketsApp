@@ -137,4 +137,16 @@ public final class TicketRepository extends Repository<Ticket> implements Creato
 		request.asyncExecute(HttpMethod.POST, callback);
 	}
 
+	/**
+	 * Update the status of the given ticket on the remote server
+	 * @param ticket
+	 */
+	public void updateStatus(Ticket ticket, int status, RequestCallback callback) {
+		RestRequest request = new RestRequest(getHttpClient(), getUrl(ticket.getId().get()))
+				.context(getHttpContext())
+				.param("status", status);
+		
+		request.asyncExecute(HttpMethod.PUT, callback);
+	}
+
 }

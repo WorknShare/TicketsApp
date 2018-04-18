@@ -21,6 +21,19 @@
 	-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
 }
 
+.combo-box-base:disabled {
+    -fx-opacity: 1.0;
+}
+
+.combo-box:disabled .list-cell 
+{
+    -fx-opacity: 1.0;
+}
+
+.combo-box:disabled .arrow, .combo-box:disabled .arrow-button {
+    -fx-background-color: transparent;
+}
+
 .next-button {
 	-fx-background-image: url("right.png");
 	-fx-background-position: center;
@@ -72,6 +85,10 @@
     -fx-tree-table-color: #e5e5e5;
     -fx-tree-table-rippler-color: rgba(0, 150, 201, 1);
     -fx-selection-bar: #e5e5e5;
+}
+
+.tree-table-view:focused {
+  -fx-background-color: transparent,-fx-box-border,-fx-control-inner-background;
 }
 
 .tree-table-view .jfx-text-field{
