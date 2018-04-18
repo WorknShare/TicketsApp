@@ -117,7 +117,7 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 						}
 					}
 
-					if (arrowButton != null)
+					if(arrowButton != null)
 						arrowButton.setBackground(getBackground());
 				}
 
@@ -153,7 +153,9 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 						RestResponse response = getResponse();
 						if(response.getStatus() == 204) {
 							ticket.setStatus(status);
+							currentStatus = ticket.getStatus().get();
 							getSnackbar().enqueue(new SnackbarEvent("Le statut du ticket a été modifié avec succès.", "success"));
+							return;
 						} else if(response.getStatus() == 403) {
 							getSnackbar().enqueue(new SnackbarEvent("Vous n'êtes pas autorisé à faire cela.", "error"));
 							Logger.getGlobal().log(Level.WARNING, "Ticket status update request returned 403 status code.");
@@ -174,6 +176,11 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 								}
 							}
 						}
+						
+						//Restore status to previous one
+						currentStatus = -1;
+						statusBox.getSelectionModel().select(ticket.getStatus().get());
+						currentStatus = ticket.getStatus().get();
 					}
 				});
 			}
