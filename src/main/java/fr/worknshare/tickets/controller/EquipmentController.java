@@ -8,11 +8,13 @@ import com.jfoenix.controls.JFXSpinner;
 import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
+import com.jfoenix.controls.JFXSnackbar.SnackbarEvent;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 
 import fr.worknshare.tickets.model.Equipment;
 import fr.worknshare.tickets.model.Ticket;
 import fr.worknshare.tickets.repository.EquipmentRepository;
+import fr.worknshare.tickets.repository.FailCallback;
 import fr.worknshare.tickets.repository.PaginatedRequestCallback;
 import fr.worknshare.tickets.repository.PaginatedResponse;
 import fr.worknshare.tickets.repository.TicketRepository;
@@ -25,7 +27,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 
-public class EquipmentController implements RequestController{
+public class EquipmentController extends Controller implements RequestController{
 	
 	private EquipmentRepository equipmentRepository;
 	private ObservableList<Equipment> ticketList;	
@@ -82,7 +84,6 @@ public class EquipmentController implements RequestController{
 		table.getColumns().add(typeColumn);
 	}
 	
-	@SuppressWarnings("restriction")
 	private void initSiteColumn() {
 		JFXTreeTableColumn<Equipment, String> siteColumn = new JFXTreeTableColumn<Equipment, String>("Site");
 		siteColumn.setCellValueFactory((TreeTableColumn.CellDataFeatures<Equipment, String> param) -> {
@@ -142,10 +143,10 @@ public class EquipmentController implements RequestController{
 			
 			@Override
 			public void run() {
-				PaginatedResponse<Equipment> response = getResponse();
+				PaginatedResponse<Equipment> response = getPaginatedResponse();
 				Paginator paginator = response.getPaginator();
 
-				ticketList.remove(0, ticketList.size()); //Empty the list
+				ticketList.clear(); //Empty the list
 				ticketList.addAll(response.getItems());
 
 				paginationLabel.setText("Page " + paginator.getCurrentPage() + "/" + paginator.getMaxPage());
@@ -156,6 +157,19 @@ public class EquipmentController implements RequestController{
 				table.setDisable(false);
 				loader.setVisible(false);
 			}
+		}, new FailCallback() {
+
+			@Override
+			public void run() {
+				getSnackbar().enqueue(new SnackbarEvent(getFullMessage(), "error"));
+				paginationLabel.setText("Page 1/1");
+				table.setDisable(false);
+				previousButton.setDisable(true);
+				nextButton.setDisable(true);
+				table.setDisable(false);
+				loader.setVisible(false);
+			}
+
 		});
 	}
 	
