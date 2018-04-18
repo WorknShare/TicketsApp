@@ -129,11 +129,25 @@ public abstract class Repository<T extends Model<T>> {
 	 * @param callback - the callback to execute when the request is done
 	 * @param failCallback - the callback to execute if the request fails
 	 */
-	private final void request(String paramName, Object paramValue, JsonCallback callback, FailCallback failCallback) {
-		RestRequest request = new RestRequest(httpClient, getUrl())
+	protected final void request(String paramName, Object paramValue, JsonCallback callback, FailCallback failCallback) {
+		request(paramName, paramValue, callback, failCallback, getUrl());
+	}
+	
+	/**
+	 * Executes a simple array request using the GET method with a single parameter and returns the raw result (data member).
+	 * @param paramName - the name of the parameter
+	 * @param paramValue - the value of the parameter
+	 * @param callback - the callback to execute when the request is done
+	 * @param failCallback - the callback to execute if the request fails
+	 * @param url - the request url
+	 */
+	protected final void request(String paramName, Object paramValue, JsonCallback callback, FailCallback failCallback, String url) {
+		RestRequest request = new RestRequest(httpClient, url)
 				.setUrlParam(true)
-				.context(httpContext)
-				.param(paramName, paramValue);
+				.context(httpContext);
+		
+		if(paramName != null & paramValue != null)
+			request.param(paramName, paramValue);
 
 		request.asyncExecute(HttpMethod.GET, new RequestCallback() {
 

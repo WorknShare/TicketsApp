@@ -14,6 +14,9 @@ import fr.worknshare.tickets.model.Employee;
 import fr.worknshare.tickets.model.Ticket;
 import fr.worknshare.tickets.networking.RequestCallback;
 import fr.worknshare.tickets.networking.RestResponse;
+import fr.worknshare.tickets.repository.EmployeeRepository;
+import fr.worknshare.tickets.repository.FailCallback;
+import fr.worknshare.tickets.repository.PaginatedRequestCallback;
 import fr.worknshare.tickets.repository.TicketRepository;
 import fr.worknshare.tickets.view.StatusItem;
 import javafx.beans.binding.Bindings;
@@ -40,20 +43,25 @@ import javafx.scene.paint.Color;
 public class TicketShowController extends Controller implements Authorizable, Backable {
 
 	private TicketRepository ticketRepository;
+	private EmployeeRepository employeeRepository;
 	private Ticket ticket;
+	private Employee noneEmployee;
 	int currentStatus;
+	int currentAssignedEmployee;
+	
+	private ObservableList<Employee> employeeItems; 
 
 	@FXML private VBox pane;
 	@FXML private Label header;
 	@FXML private Label createdAtLabel;
 	@FXML private Label updatedAtLabel;
 	@FXML private Label employeeSrcLabel;
-	@FXML private Label employeeAssignedLabel;
 	@FXML private JFXButton back;
 	@FXML private JFXButton equipmentButton;
 	@FXML private JFXTextArea description;
+	@FXML private JFXComboBox<Employee> employeeAssigned;
 	@FXML private JFXComboBox<StatusItem> statusBox;
-
+	
 	private Pane backPanel;
 
 	private void initStatusBox() {
@@ -120,6 +128,11 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 	@FXML
 	private void initialize() {
 		initStatusBox();
+		noneEmployee = new Employee(0);
+		noneEmployee.setSurname("Aucun");
+		noneEmployee.setName("");
+		employeeItems = FXCollections.observableArrayList();
+		employeeAssigned.setItems(employeeItems);
 	}
 
 	@FXML
@@ -168,6 +181,11 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 	}
 
 	@FXML
+	private void onEmployeeAssignedChanged() {
+		//TODO show equipment panel
+	}
+	
+	@FXML
 	private void equipmentButtonClicked() {
 		//TODO show equipment panel
 	}
@@ -175,6 +193,7 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 	public void showTicket(Ticket ticket) {
 		this.ticket = ticket;
 		currentStatus = -1;
+		currentAssignedEmployee = -1;
 		Employee employeeSrc = ticket.getEmployeeSource();
 		Employee employeeAssigned = ticket.getEmployeeAssigned();
 
@@ -182,13 +201,14 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 		createdAtLabel.setText(ticket.getCreatedAt().get());
 		updatedAtLabel.setText(ticket.getUpdatedAt().get());
 		employeeSrcLabel.setText(employeeSrc.getSurname().get() + " " + employeeSrc.getName().get());
-		employeeAssignedLabel.setText(employeeAssigned != null ? employeeAssigned.getSurname().get() + " " + employeeAssigned.getName().get() : "Aucun");
 		equipmentButton.setText(ticket.getEquipment().getName().get());
 		description.setText(ticket.getDescription().get());
 		statusBox.getSelectionModel().select(ticket.getStatus().get());
+		this.employeeAssigned.getSelectionModel().select(employeeAssigned != null ? employeeAssigned : noneEmployee);
 
 		pane.toFront();
 		currentStatus = ticket.getStatus().get();
+		currentAssignedEmployee = employeeAssigned != null ? employeeAssigned.getId().get() : 0;
 	}
 
 	public final TicketRepository getTicketRepository() {
@@ -197,6 +217,10 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 
 	public final void setTicketRepository(TicketRepository ticketRepository) {
 		this.ticketRepository = ticketRepository;
+	}
+	
+	public final void setEmployeeRepository(EmployeeRepository employeeRepository) {
+		this.employeeRepository = employeeRepository;
 	}
 
 	/**
@@ -211,6 +235,26 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 	public void updateAuthorizations() {
 		int role = AuthController.getEmployee().getRole().get();
 		statusBox.setDisable(role != 1 && role != 4);
+	}
+	
+	public void updateEmployees() {
+		employeeItems.clear();
+		
+		employeeRepository.getTechnicians(new PaginatedRequestCallback<Employee>() {
+			
+			@Override
+			public void run() {
+				employeeItems.add(noneEmployee);
+				employeeItems.addAll(getPaginatedResponse().getItems());
+			}
+		},
+			new FailCallback() {
+				
+				@Override
+				public void run() {
+					getSnackbar().enqueue(new SnackbarEvent(getFullMessage(), "error"));
+				}
+			});
 	}
 
 }

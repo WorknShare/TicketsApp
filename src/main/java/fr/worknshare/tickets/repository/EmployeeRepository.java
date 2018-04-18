@@ -1,9 +1,13 @@
 package fr.worknshare.tickets.repository;
 
+import java.util.ArrayList;
+import java.util.logging.Logger;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import fr.worknshare.tickets.model.Employee;
+import fr.worknshare.tickets.view.Paginator;
 
 public final class EmployeeRepository extends Repository<Employee> {
 
@@ -49,6 +53,32 @@ public final class EmployeeRepository extends Repository<Employee> {
 			return employee;
 		}
 		return null;
+	}
+	
+	public void getTechnicians(PaginatedRequestCallback<Employee> callback, FailCallback failCallback) {
+		request(null, null, new JsonCallback() {
+
+			@Override
+			public void run() {
+				PaginatedResponse<Employee> response = null;
+				ArrayList<Employee> list = null;
+				JsonObject data = getObject();
+				JsonElement elem = data.get("items");
+				if(elem != null && elem.isJsonArray()) {
+						list = parseArray(elem.getAsJsonArray());
+						response = new PaginatedResponse<Employee>(new Paginator(1, 1, 10), list);
+						callback.setResponse(getResponse());
+						callback.setPaginatedResponse(response);
+						callback.run();
+				} else {
+					failCallback.setResponse(getResponse());
+					failCallback.setMessage("Réponse malformée");
+					failCallback.run();
+					Logger.getGlobal().warning("Malformed where response (missing expected \"items\"):\n\t" + getResponse().getRaw());
+				}
+			}
+			
+		}, failCallback, getUrl() + "/tech");
 	}
 
 }

@@ -55,6 +55,7 @@ public class MainController extends Controller {
 		loginController.setOnLogin(() -> {
 			ticketsController.refresh();
 			ticketShowController.updateAuthorizations();
+			ticketShowController.updateEmployees();
 		});
 		
 		ticketsController.setSnackbar(getSnackbar());
@@ -75,6 +76,7 @@ public class MainController extends Controller {
 		ticketShowController.setBackPanel(tickets);
 		ticketShowController.setSnackbar(getSnackbar());
 		ticketShowController.setTicketRepository(ticketsController.getTicketRepository());
+		ticketShowController.setEmployeeRepository(loginController.getEmployeeRepository());
 	}
 	
 	@FXML

@@ -76,11 +76,7 @@
                   <Font size="14.0" />
                </font>
             </Label>
-            <Label fx:id="employeeAssignedLabel" text="EMPLOYEE_ASSIGNED" GridPane.columnIndex="3" GridPane.rowIndex="1">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Label>
+            <JFXComboBox fx:id="employeeAssigned" focusColor="#007bff" onAction="#onEmployeeAssignedChanged" promptText="mployé assigné" unFocusColor="#4d4d4d66" GridPane.columnIndex="3" GridPane.rowIndex="1" />
          </children>
          <VBox.margin>
             <Insets />
@@ -91,7 +87,7 @@
             <Insets bottom="5.0" />
          </VBox.margin>
          <children>
-            <Label fx:id="equipmentLabel" text="Matériel concerné :">
+            <Label text="Matériel concerné :">
                <font>
                   <Font size="14.0" />
                </font>
