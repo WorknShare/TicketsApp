@@ -152,7 +152,6 @@ public class AuthController extends Controller implements RequestController {
 					if(response.getStatus() == 200) {
 						employee = null;
 						showLoginPane();
-						if(logoutCallback != null) logoutCallback.run();
 					} else if(response.getStatus() != -1)				
 						Logger.getGlobal().log(Level.WARNING, "Logout request failed.\n\tStatus code " + response.getStatus() + "\n\tMessage: " + response.getJsonObject().get("message").getAsString());
 					else {
@@ -195,6 +194,10 @@ public class AuthController extends Controller implements RequestController {
 		ft.setToValue(1.0);
 		loginPane.toFront();
 		ft.play();
+		if(logoutCallback != null) 
+			ft.setOnFinished((event) -> {
+				logoutCallback.run();
+			});
 	}
 
 	public void hideLoginPane() {

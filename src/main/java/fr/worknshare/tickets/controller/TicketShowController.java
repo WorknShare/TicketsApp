@@ -285,6 +285,8 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 		int role = AuthController.getEmployee().getRole().get();
 		statusBox.setDisable(role != 1 && role != 4);
 		employeeAssigned.setDisable(role > 2);
+		currentStatus = -1;
+		currentAssignedEmployee = null;
 	}
 
 	public void updateEmployees() {

@@ -11,12 +11,12 @@ import org.apache.http.protocol.HttpContext;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXSnackbar;
 
-import fr.worknshare.tickets.model.Equipment;
 import fr.worknshare.tickets.repository.EmployeeRepository;
 import fr.worknshare.tickets.repository.EquipmentRepository;
 import fr.worknshare.tickets.repository.EquipmentTypeRepository;
 import fr.worknshare.tickets.repository.TicketRepository;
 import javafx.fxml.FXML;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
@@ -34,6 +34,7 @@ public class MainController extends Controller {
 	@FXML private JFXButton menuTickets;
 	@FXML private VBox tickets;
 
+	@FXML private FlowPane login;
 
 	@FXML private AuthController loginController;
 	@FXML private TicketsController ticketsController;
@@ -73,7 +74,7 @@ public class MainController extends Controller {
 
 		loginController.setHttpClient(client);
 		loginController.setHttpContext(context);
-		loginController.attempt("admin@worknshare.fr", "password"); //TODO disable auto auth
+		//loginController.attempt("admin@worknshare.fr", "password"); //TODO disable auto auth
 
 		loginController.setSnackbar(getSnackbar());
 		loginController.setOnLogin(() -> {
@@ -86,6 +87,9 @@ public class MainController extends Controller {
 			equipmentRepository.clearCache();
 			equipmentTypeRepository.clearCache();
 			ticketRepository.clearCache();
+			
+			tickets.toFront();
+			login.toFront();
 		});
 
 		ticketsController.setSnackbar(getSnackbar());
