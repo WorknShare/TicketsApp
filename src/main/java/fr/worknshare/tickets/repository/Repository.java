@@ -31,7 +31,7 @@ public abstract class Repository<T extends Model<T>> {
 	private HttpClient httpClient;
 	private HttpContext httpContext;
 	private SimpleDateFormat dateFormat;
-	
+
 	private Hashtable<Integer, T> models; //Hashtable is synchronized so thread safe
 
 	public Repository(HttpClient client, HttpContext context) {
@@ -40,7 +40,7 @@ public abstract class Repository<T extends Model<T>> {
 		this.httpContext 	= context;
 		this.models			= new Hashtable<>();
 	}
-	
+
 	public Repository() {
 		dateFormat = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
 	}
@@ -90,7 +90,7 @@ public abstract class Repository<T extends Model<T>> {
 					Logger.getGlobal().warning("Malformed paginate response (missing expected \"paginator\"):\n\t" + getResponse().getRaw());
 				}
 			}
-			
+
 		}, failCallback);
 	}
 
@@ -110,11 +110,11 @@ public abstract class Repository<T extends Model<T>> {
 				JsonObject data = getObject();
 				JsonElement elem = data.get("items");
 				if(elem != null && elem.isJsonArray()) {
-						list = parseArray(elem.getAsJsonArray());
-						response = new PaginatedResponse<T>(new Paginator(1, 1, 10), list);
-						callback.setResponse(getResponse());
-						callback.setPaginatedResponse(response);
-						callback.run();
+					list = parseArray(elem.getAsJsonArray());
+					response = new PaginatedResponse<T>(new Paginator(1, 1, 10), list);
+					callback.setResponse(getResponse());
+					callback.setPaginatedResponse(response);
+					callback.run();
 				} else {
 					failCallback.setResponse(getResponse());
 					failCallback.setMessage("Réponse malformée");
@@ -122,7 +122,7 @@ public abstract class Repository<T extends Model<T>> {
 					Logger.getGlobal().warning("Malformed where response (missing expected \"items\"):\n\t" + getResponse().getRaw());
 				}
 			}
-			
+
 		}, failCallback);
 	}
 
@@ -136,7 +136,7 @@ public abstract class Repository<T extends Model<T>> {
 	protected final void request(String paramName, Object paramValue, JsonCallback callback, FailCallback failCallback) {
 		request(paramName, paramValue, callback, failCallback, getUrl());
 	}
-	
+
 	/**
 	 * Executes a simple array request using the GET method with a single parameter and returns the raw result (data member).
 	 * @param paramName - the name of the parameter
@@ -149,7 +149,7 @@ public abstract class Repository<T extends Model<T>> {
 		RestRequest request = new RestRequest(httpClient, url)
 				.setUrlParam(true)
 				.context(httpContext);
-		
+
 		if(paramName != null & paramValue != null)
 			request.param(paramName, paramValue);
 
@@ -177,7 +177,7 @@ public abstract class Repository<T extends Model<T>> {
 					Logger.getGlobal().warning("Repository request failed: " + response.getStatus() + " " + failCallback.getMessage());
 				}
 			}
-			
+
 		});
 	}
 
@@ -219,7 +219,7 @@ public abstract class Repository<T extends Model<T>> {
 					Logger.getGlobal().warning("Repository getById request failed: " + response.getStatus() + " " + failCallback.getMessage());
 				}
 			}
-			
+
 		});
 	}
 
@@ -301,11 +301,11 @@ public abstract class Repository<T extends Model<T>> {
 	public final void setHttpContext(HttpContext httpContext) {
 		this.httpContext = httpContext;
 	}
-	
+
 	public final SimpleDateFormat getDateFormatter() {
 		return dateFormat;
 	}
-	
+
 	/**
 	 * Store a loaded model into the cache.
 	 * @param model
@@ -313,7 +313,7 @@ public abstract class Repository<T extends Model<T>> {
 	protected void registerModel(T model) {
 		models.put(new Integer(model.getId().get()), model);
 	}
-	
+
 	/**
 	 * Get a model from the cache.
 	 * @param id - the id
@@ -322,7 +322,7 @@ public abstract class Repository<T extends Model<T>> {
 	public T getFromCache(Integer id) {
 		return models.get(id);
 	}
-	
+
 	/**
 	 * Clear all models stored in cache. This does not guarantee they are freed from memory.
 	 */

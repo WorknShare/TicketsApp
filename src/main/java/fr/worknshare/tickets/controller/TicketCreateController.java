@@ -44,7 +44,7 @@ public class TicketCreateController extends Controller implements Backable {
 		if(backPanel != null)
 			backPanel.toFront();
 	}
-	
+
 	public final void setBackPanel(Pane pane) {
 		this.backPanel = pane;
 	}

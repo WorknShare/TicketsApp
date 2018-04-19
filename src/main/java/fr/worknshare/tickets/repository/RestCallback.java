@@ -10,11 +10,11 @@ import fr.worknshare.tickets.networking.RestResponse;
 public abstract class RestCallback implements Runnable {
 
 	private RestResponse response;
-	
+
 	protected void setResponse(RestResponse response) {
 		this.response = response;
 	}
-	
+
 	/**
 	 * Get the response from the request. All checks have to be done.
 	 * @return the response, can be null
@@ -30,5 +30,5 @@ public abstract class RestCallback implements Runnable {
 	public int getStatus() {
 		return response.getStatus();
 	}
-	
+
 }

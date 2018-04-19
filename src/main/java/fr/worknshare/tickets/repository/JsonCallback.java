@@ -11,11 +11,11 @@ import com.google.gson.JsonObject;
 public abstract class JsonCallback extends RestCallback {
 
 	private JsonObject response;
-	
+
 	protected void setObject(JsonObject response) {
 		this.response = response;
 	}
-	
+
 	/**
 	 * Get the response from the request. All checks have to be done.
 	 * @return the response, can be null

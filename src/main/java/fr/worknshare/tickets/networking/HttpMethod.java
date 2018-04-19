@@ -22,13 +22,13 @@ public enum HttpMethod {
 	PUT(HttpPut.class),
 	PATCH(HttpPatch.class),
 	DELETE(HttpDelete.class);
-	
+
 	private Class<? extends HttpRequestBase> cls;
-	
+
 	HttpMethod(Class<? extends HttpRequestBase> cls) {
 		this.cls = cls;
 	}
-	
+
 	/**
 	 * Get the correct HttpRequestBase subclass for the method.
 	 * @return the class to use for the method
@@ -36,7 +36,7 @@ public enum HttpMethod {
 	protected Class<? extends HttpRequestBase> getRequestClass() {
 		return cls;
 	}
-	
+
 	/**
 	 * Instantiate and get a request for this method.
 	 * @param url - the url of the request
@@ -53,5 +53,5 @@ public enum HttpMethod {
 		HttpRequestBase request = cls.getDeclaredConstructor(String.class).newInstance(url);
 		return request;
 	}
-	
+
 }

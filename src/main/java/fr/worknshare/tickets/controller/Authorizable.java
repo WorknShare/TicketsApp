@@ -12,5 +12,5 @@ interface Authorizable {
 	 * The role can be get using "AuthController.getEmployee().getRole().get()"
 	 */
 	void updateAuthorizations();
-	
+
 }

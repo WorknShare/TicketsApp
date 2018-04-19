@@ -82,11 +82,11 @@ public final class Employee extends Model<Employee> {
 	public final void setToken(String token) {
 		this.token = token;
 	}
-	
+
 	public final SimpleStringProperty getFullName() {
 		return fullName;
 	}
-	
+
 	public String toString() {
 		return surname.get() + " " + name.get();
 	}

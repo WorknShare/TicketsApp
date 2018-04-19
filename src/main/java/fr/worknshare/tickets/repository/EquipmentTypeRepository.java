@@ -14,12 +14,12 @@ public final class EquipmentTypeRepository extends Repository<EquipmentType> {
 
 	private EquipmentRepository equipmentRepository;
 
-	
+
 	public EquipmentTypeRepository(HttpClient client, HttpContext context) {
 		super(client, context);
 		equipmentRepository = new EquipmentRepository(client, context, this);
 	}
-	
+
 	public EquipmentTypeRepository(HttpClient client, HttpContext context, EquipmentRepository equipmentRepository) {
 		super(client, context);
 		this.equipmentRepository = equipmentRepository;
@@ -35,17 +35,17 @@ public final class EquipmentTypeRepository extends Repository<EquipmentType> {
 
 		JsonElement element = object.get("id_equipment_type");
 		if(element != null && element.isJsonPrimitive()) {
-			
+
 			EquipmentType equipmentType = getFromCache(element.getAsInt());
 			if(equipmentType == null)			
 				equipmentType = new EquipmentType(element.getAsInt());
 
 			EquipmentType finalEquipmentType = equipmentType; //Must create another effectively final variable for the forEach lambda in equipment parsing
-			
+
 			//Name
 			element = object.get("name");
 			if(element != null && element.isJsonPrimitive()) finalEquipmentType.setName(element.getAsString());
-			
+
 			//Equipment
 			element = object.get("equipment");
 			if(element != null && element.isJsonArray()) {
@@ -55,7 +55,7 @@ public final class EquipmentTypeRepository extends Repository<EquipmentType> {
 						finalEquipmentType.addEquipment(equipmentRepository.parseObject(elem.getAsJsonObject()));
 				});
 			}
-			
+
 			//Paginator
 			element = object.get("paginator");
 			if(element != null && element.isJsonObject()) finalEquipmentType.setPaginator(Paginator.fromJson(element.getAsJsonObject()));

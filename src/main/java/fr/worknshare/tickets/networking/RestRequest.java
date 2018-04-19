@@ -40,7 +40,7 @@ public class RestRequest {
 	private Hashtable<String, Object> parameters;
 	private HttpClient client;
 	private HttpContext context;
-	
+
 	public RestRequest(HttpClient client, String url) {
 		this.client = client;
 		this.url = url;
@@ -69,7 +69,7 @@ public class RestRequest {
 	public String getUrl() {
 		return url;
 	}
-	
+
 	/**
 	 * Set the request context
 	 * @param context
@@ -81,7 +81,7 @@ public class RestRequest {
 		this.context = context;
 		return this;
 	}
-	
+
 	/**
 	 * Get the request context
 	 * @return the request context

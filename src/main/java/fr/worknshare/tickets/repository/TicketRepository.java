@@ -45,7 +45,7 @@ public final class TicketRepository extends Repository<Ticket> implements Creato
 
 		JsonElement element = object.get("id_ticket");
 		if(element != null && element.isJsonPrimitive()) {
-			
+
 			Ticket ticket = getFromCache(element.getAsInt());
 			if(ticket == null)			
 				ticket = new Ticket(element.getAsInt());

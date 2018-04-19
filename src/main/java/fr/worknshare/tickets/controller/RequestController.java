@@ -18,11 +18,11 @@ interface RequestController {
 	 * @param client
 	 */
 	void setHttpClient(HttpClient client);
-	
+
 	/**
 	 * Set the Http context used for requests
 	 * @param context
 	 */
 	void setHttpContext(HttpContext context);
-	
+
 }

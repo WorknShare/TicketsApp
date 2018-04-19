@@ -18,5 +18,5 @@ public interface CreatorRepository<T> {
 	 * @param callback - the callback to execute when the request is done
 	 */
 	void create(T resource, RequestCallback callback);
-	
+
 }

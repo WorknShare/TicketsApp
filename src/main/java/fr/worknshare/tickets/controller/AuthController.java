@@ -50,7 +50,7 @@ public class AuthController extends Controller implements RequestController {
 
 	private Runnable loginCallback;
 	private Runnable logoutCallback;
-	
+
 	private HttpClient httpClient;
 	private HttpContext httpContext;
 
@@ -63,7 +63,7 @@ public class AuthController extends Controller implements RequestController {
 				submit();
 			}
 		});
-		
+
 	}
 
 	/**
@@ -260,7 +260,7 @@ public class AuthController extends Controller implements RequestController {
 	public void setOnLogin(Runnable runnable) {
 		loginCallback = runnable;
 	}
-	
+
 	/**
 	 * Set the behavior when the user successfully logs out
 	 * @param runnable
@@ -268,7 +268,7 @@ public class AuthController extends Controller implements RequestController {
 	public void setOnLogout(Runnable runnable) {
 		logoutCallback = runnable;
 	}
-	
+
 	/**
 	 * Set the Http client used for auth requests
 	 * @param client
@@ -278,7 +278,7 @@ public class AuthController extends Controller implements RequestController {
 		httpClient = client;
 		employeeRepository.setHttpClient(httpClient);
 	}
-	
+
 	/**
 	 * Set the Http context used for auth requests
 	 * @param context
@@ -288,11 +288,11 @@ public class AuthController extends Controller implements RequestController {
 		httpContext = context;
 		employeeRepository.setHttpContext(httpContext);
 	}
-	
+
 	public void setEmployeeRepository(EmployeeRepository employeeRepository) {
 		this.employeeRepository = employeeRepository;
 	}
-	
+
 	public EmployeeRepository getEmployeeRepository() {
 		return employeeRepository;
 	}

@@ -15,7 +15,7 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 
 	private SimpleIntegerProperty id;
 	private Paginator paginator;
-	
+
 	public Model(int id) {
 		this.id = new SimpleIntegerProperty(id);
 	}
@@ -23,11 +23,11 @@ public abstract class Model<T> extends RecursiveTreeObject<T> {
 	public final SimpleIntegerProperty getId() {
 		return id;
 	}
-	
+
 	public final void setId(int id) {
 		this.id.set(id);
 	}
-	
+
 	public final Paginator getPaginator() {
 		return paginator;
 	}
