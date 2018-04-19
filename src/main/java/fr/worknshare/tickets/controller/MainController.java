@@ -118,6 +118,7 @@ public class MainController extends Controller {
 	public void onMenuTicketsClicked() {
 		tickets.toFront();
 		ticketsController.setPage(1);
+		ticketsController.resetFilter();
 		ticketsController.refresh();
 		menuTickets.getStyleClass().add("active");
 	}
