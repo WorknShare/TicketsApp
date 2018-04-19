@@ -9,11 +9,11 @@ package fr.worknshare.tickets.networking;
 public abstract class RequestCallback implements Runnable {
 
 	private RestResponse response;
-	
+
 	protected void setResponse(RestResponse response) {
 		this.response = response;
 	}
-	
+
 	/**
 	 * Get the response from the request. All checks have to be done.
 	 * @return the response, can be null

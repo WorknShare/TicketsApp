@@ -43,22 +43,22 @@
          <children>
             <Label text="Employé source :" GridPane.rowIndex="1">
                <font>
-                  <Font size="14.0" />
+                  <Font name="System Bold" size="14.0" />
                </font>
             </Label>
             <Label text="Employé affecté :" GridPane.columnIndex="2" GridPane.rowIndex="1">
                <font>
-                  <Font size="14.0" />
+                  <Font name="System Bold" size="14.0" />
                </font>
             </Label>
             <Label text="Date de création : ">
                <font>
-                  <Font size="14.0" />
+                  <Font name="System Bold" size="14.0" />
                </font>
             </Label>
             <Label text="Dernière mise à jour : " textAlignment="CENTER" GridPane.columnIndex="2">
                <font>
-                  <Font size="14.0" />
+                  <Font name="System Bold" size="14.0" />
                </font>
             </Label>
             <Label fx:id="createdAtLabel" text="CREATED_AT" GridPane.columnIndex="1">
@@ -76,7 +76,7 @@
                   <Font size="14.0" />
                </font>
             </Label>
-            <JFXComboBox fx:id="employeeAssigned" focusColor="#007bff" onAction="#onEmployeeAssignedChanged" promptText="mployé assigné" unFocusColor="#4d4d4d66" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+            <JFXComboBox fx:id="employeeAssigned" focusColor="#007bff" onAction="#onEmployeeAssignedChanged" promptText="Employé assigné" unFocusColor="#4d4d4d66" GridPane.columnIndex="3" GridPane.rowIndex="1" />
          </children>
          <VBox.margin>
             <Insets />
@@ -89,7 +89,7 @@
          <children>
             <Label text="Matériel concerné :">
                <font>
-                  <Font size="14.0" />
+                  <Font name="System Bold" size="14.0" />
                </font>
             </Label>
             <JFXButton fx:id="equipmentButton" onAction="#equipmentButtonClicked" text="EQUIPMENT_BUTTON">
@@ -99,12 +99,12 @@
             </JFXButton>
          </children>
       </HBox>
-      <Label text="Description du problème :">
+      <Label text="Description du problème :" >
          <VBox.margin>
             <Insets bottom="5.0" />
          </VBox.margin>
          <font>
-            <Font size="14.0" />
+            <Font size="14.0" name="System Bold" />
          </font>
       </Label>
       <JFXTextArea fx:id="description" editable="false" focusColor="#007bff" promptText="Description du problème" style="-fx-background-color: #fff;" text="DESCRIPTION" unFocusColor="#4d4d4d66" VBox.vgrow="ALWAYS">

@@ -1,5 +1,8 @@
 package fr.worknshare.tickets.repository;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.protocol.HttpContext;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -11,13 +14,14 @@ public final class EquipmentTypeRepository extends Repository<EquipmentType> {
 
 	private EquipmentRepository equipmentRepository;
 
-	public EquipmentTypeRepository() {
-		super();
-		equipmentRepository = new EquipmentRepository();
+
+	public EquipmentTypeRepository(HttpClient client, HttpContext context) {
+		super(client, context);
+		equipmentRepository = new EquipmentRepository(client, context, this);
 	}
-	
-	public EquipmentTypeRepository(EquipmentRepository equipmentRepository) {
-		super();
+
+	public EquipmentTypeRepository(HttpClient client, HttpContext context, EquipmentRepository equipmentRepository) {
+		super(client, context);
 		this.equipmentRepository = equipmentRepository;
 	}
 
@@ -31,27 +35,33 @@ public final class EquipmentTypeRepository extends Repository<EquipmentType> {
 
 		JsonElement element = object.get("id_equipment_type");
 		if(element != null && element.isJsonPrimitive()) {
-			EquipmentType equipmentType = new EquipmentType(element.getAsInt());
+
+			EquipmentType equipmentType = getFromCache(element.getAsInt());
+			if(equipmentType == null)			
+				equipmentType = new EquipmentType(element.getAsInt());
+
+			EquipmentType finalEquipmentType = equipmentType; //Must create another effectively final variable for the forEach lambda in equipment parsing
 
 			//Name
 			element = object.get("name");
-			if(element != null && element.isJsonPrimitive()) equipmentType.setName(element.getAsString());
-			
+			if(element != null && element.isJsonPrimitive()) finalEquipmentType.setName(element.getAsString());
+
 			//Equipment
 			element = object.get("equipment");
 			if(element != null && element.isJsonArray()) {
 				JsonArray array = element.getAsJsonArray();
 				array.forEach((elem) -> {
 					if(elem.isJsonObject())
-						equipmentType.addEquipment(equipmentRepository.parseObject(elem.getAsJsonObject()));
+						finalEquipmentType.addEquipment(equipmentRepository.parseObject(elem.getAsJsonObject()));
 				});
 			}
-			
+
 			//Paginator
 			element = object.get("paginator");
-			if(element != null && element.isJsonObject()) equipmentType.setPaginator(Paginator.fromJson(element.getAsJsonObject()));
+			if(element != null && element.isJsonObject()) finalEquipmentType.setPaginator(Paginator.fromJson(element.getAsJsonObject()));
 
-			return equipmentType;
+			registerModel(finalEquipmentType);
+			return finalEquipmentType;
 		}
 		return null;
 	}

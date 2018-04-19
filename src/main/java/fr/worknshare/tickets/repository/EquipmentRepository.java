@@ -1,5 +1,8 @@
 package fr.worknshare.tickets.repository;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.protocol.HttpContext;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import javafx.beans.property.SimpleStringProperty;
@@ -11,16 +14,16 @@ public final class EquipmentRepository extends Repository<Equipment> {
 	private EquipmentTypeRepository equipmentTypeRepository;
 	private SiteRepository siteRepository;
 
-
-	public EquipmentRepository() {
-		super();
-		equipmentTypeRepository = new EquipmentTypeRepository(this);
+	public EquipmentRepository(HttpClient client, HttpContext context) {
+		super(client, context);
 		siteRepository = new SiteRepository();
+		equipmentTypeRepository = new EquipmentTypeRepository(client, context, this);
 	}
 
-	public EquipmentRepository(EquipmentTypeRepository equipmentTypeRepository) {
-		super();
+	public EquipmentRepository(HttpClient client, HttpContext context, EquipmentTypeRepository equipmentTypeRepository) {
+		super(client, context);
 		this.equipmentTypeRepository = equipmentTypeRepository;
+		siteRepository = new SiteRepository();
 	}
 
 	@Override
@@ -33,7 +36,10 @@ public final class EquipmentRepository extends Repository<Equipment> {
 
 		JsonElement element = object.get("id_equipment");
 		if(element != null && element.isJsonPrimitive()) {
-			Equipment equipment = new Equipment(element.getAsInt());
+
+			Equipment equipment = getFromCache(element.getAsInt());
+			if(equipment == null)
+				equipment = new Equipment(element.getAsInt());
 
 			//Serial number
 			element = object.get("serial_number");
@@ -51,10 +57,15 @@ public final class EquipmentRepository extends Repository<Equipment> {
 			element = object.get("site");
 			if(element != null && element.isJsonObject()) equipment.setSite(siteRepository.parseObject(element.getAsJsonObject()));
 
+			registerModel(equipment);
 			return equipment;
 
 		}
 		return null;
+	}
+
+	public EquipmentTypeRepository getEquipmentTypeRepository() {
+		return equipmentTypeRepository;
 	}
 
 }

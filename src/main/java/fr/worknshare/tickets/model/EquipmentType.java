@@ -26,11 +26,11 @@ public final class EquipmentType extends Model<EquipmentType> {
 	public ArrayList<Equipment> getEquipment() {
 		return equipment;
 	}
-	
+
 	public void addEquipment(Equipment equipment) {
 		this.equipment.add(equipment);
 	}
-	
+
 	public boolean removeEquipment(Equipment equipment) {
 		return this.equipment.remove(equipment);
 	}

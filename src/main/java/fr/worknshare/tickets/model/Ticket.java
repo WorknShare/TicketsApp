@@ -21,19 +21,21 @@ public final class Ticket extends Model<Ticket> {
 	private SimpleIntegerProperty idEmployeeAssigned;
 	private Employee employeeSource;
 	private Employee employeeAssigned;
+	private SimpleStringProperty employeeAssignedName;
 
 	private SimpleDateFormat dateFormatter;
 
 	public Ticket(int id) {
 		super(id);
-		idEquipment		   = new SimpleIntegerProperty();
-		status			   = new SimpleIntegerProperty();
-		idEmployeeSource   = new SimpleIntegerProperty();
-		idEmployeeAssigned = new SimpleIntegerProperty();
-		description 	   = new SimpleStringProperty();
-		createdAt		   = new SimpleStringProperty();
-		updatedAt		   = new SimpleStringProperty();
-		dateFormatter 	   = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		idEquipment		   	= new SimpleIntegerProperty();
+		status			   	= new SimpleIntegerProperty();
+		idEmployeeSource   	= new SimpleIntegerProperty();
+		idEmployeeAssigned 	= new SimpleIntegerProperty();
+		description 	   	= new SimpleStringProperty();
+		createdAt		   	= new SimpleStringProperty();
+		updatedAt		   	= new SimpleStringProperty();
+		dateFormatter 	   	= new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		employeeAssignedName= new SimpleStringProperty();
 	}
 
 	public final SimpleIntegerProperty getStatus() {
@@ -74,6 +76,7 @@ public final class Ticket extends Model<Ticket> {
 
 	public final void setEmployeeSource(Employee employeeSource) {
 		this.employeeSource = employeeSource;
+		this.setIdEmployeeSource(employeeSource.getId().get());
 	}
 
 	public final Employee getEmployeeAssigned() {
@@ -82,6 +85,11 @@ public final class Ticket extends Model<Ticket> {
 
 	public final void setEmployeeAssigned(Employee employeeAssigned) {
 		this.employeeAssigned = employeeAssigned;
+		if(employeeAssigned != null) {
+			this.setIdEmployeeAssigned(employeeAssigned.getId().get());
+			this.employeeAssignedName.set(employeeAssigned.getFullName().get());
+		} else
+			this.employeeAssignedName.set("");
 	}
 
 	public final SimpleIntegerProperty getIdEmployeeSource() {
@@ -122,6 +130,10 @@ public final class Ticket extends Model<Ticket> {
 
 	public final void setIdEquipment(int idEquipment) {
 		this.idEquipment.set(idEquipment);
+	}
+
+	public final SimpleStringProperty getEmployeeAssignedName() {
+		return employeeAssignedName;
 	}
 
 }

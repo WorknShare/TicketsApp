@@ -46,9 +46,9 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 	private EmployeeRepository employeeRepository;
 	private Ticket ticket;
 	private Employee noneEmployee;
-	int currentStatus;
-	int currentAssignedEmployee;
-	
+	private int currentStatus;
+	private Employee currentAssignedEmployee;
+
 	private ObservableList<Employee> employeeItems; 
 
 	@FXML private VBox pane;
@@ -61,7 +61,7 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 	@FXML private JFXTextArea description;
 	@FXML private JFXComboBox<Employee> employeeAssigned;
 	@FXML private JFXComboBox<StatusItem> statusBox;
-	
+
 	private Pane backPanel;
 
 	private void initStatusBox() {
@@ -117,7 +117,7 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 						}
 					}
 
-					if (arrowButton != null)
+					if(arrowButton != null)
 						arrowButton.setBackground(getBackground());
 				}
 
@@ -153,7 +153,9 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 						RestResponse response = getResponse();
 						if(response.getStatus() == 204) {
 							ticket.setStatus(status);
+							currentStatus = ticket.getStatus().get();
 							getSnackbar().enqueue(new SnackbarEvent("Le statut du ticket a été modifié avec succès.", "success"));
+							return;
 						} else if(response.getStatus() == 403) {
 							getSnackbar().enqueue(new SnackbarEvent("Vous n'êtes pas autorisé à faire cela.", "error"));
 							Logger.getGlobal().log(Level.WARNING, "Ticket status update request returned 403 status code.");
@@ -161,7 +163,7 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 							JsonObject object = response.getJsonObject();
 							if(object.has("errors")) {
 								JsonObject errors = object.get("errors").getAsJsonObject();
-								if(errors.has("id_equipment"))
+								if(errors.has("status"))
 									getSnackbar().enqueue(new SnackbarEvent(errors.get("status").getAsString(), "error"));
 							} else {
 								JsonElement element = object.get("error");
@@ -174,6 +176,11 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 								}
 							}
 						}
+
+						//Restore status to previous one
+						currentStatus = -1;
+						statusBox.getSelectionModel().select(ticket.getStatus().get());
+						currentStatus = ticket.getStatus().get();
 					}
 				});
 			}
@@ -182,9 +189,51 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 
 	@FXML
 	private void onEmployeeAssignedChanged() {
-		//TODO show equipment panel
+		if(currentAssignedEmployee != null) {
+			Employee employee = employeeAssigned.getSelectionModel().getSelectedItem();
+			if(currentAssignedEmployee != employee) {
+				ticketRepository.updateEmployeeAssigned(ticket, employee, new RequestCallback() {
+
+					@Override
+					public void run() {
+						RestResponse response = getResponse();
+						if(response.getStatus() == 204) {
+							ticket.setEmployeeAssigned(employee == noneEmployee ? null : employee);
+							currentAssignedEmployee = ticket.getEmployeeAssigned();
+							getSnackbar().enqueue(new SnackbarEvent("Le technicien a été assigné à ce ticket avec succès.", "success"));
+							return;
+						} else if(response.getStatus() == 403) {
+							getSnackbar().enqueue(new SnackbarEvent("Vous n'êtes pas autorisé à faire cela.", "error"));
+							Logger.getGlobal().log(Level.WARNING, "Ticket assign request returned 403 status code.");
+						} else {
+							JsonObject object = response.getJsonObject();
+							if(object.has("errors")) {
+								JsonObject errors = object.get("errors").getAsJsonObject();
+								if(errors.has("employee"))
+									getSnackbar().enqueue(new SnackbarEvent(errors.get("employee").getAsString(), "error"));
+							} else {
+								JsonElement element = object.get("error");
+								if(element != null && element.isJsonPrimitive()) {
+									getSnackbar().enqueue(new SnackbarEvent(response.getStatus() + " : " + element.getAsString(), "error"));
+									Logger.getGlobal().log(Level.SEVERE, "Ticket assign request failed.\n\tStatus code " + response.getStatus() + "\n\tMessage: " + element.getAsString());
+								} else {
+									getSnackbar().enqueue(new SnackbarEvent("Erreur " + response.getStatus(), "error"));
+									Logger.getGlobal().log(Level.SEVERE, "Ticket assign request failed.\n\tStatus code " + response.getStatus());
+								}
+							}
+						}
+
+						//Restore employee to previous one
+						Employee previousAssignedEmployee = ticket.getEmployeeAssigned() == null ? noneEmployee : ticket.getEmployeeAssigned();
+						currentAssignedEmployee = null;
+						employeeAssigned.getSelectionModel().select(previousAssignedEmployee);
+						currentAssignedEmployee = previousAssignedEmployee;
+					}
+				});
+			}
+		}
 	}
-	
+
 	@FXML
 	private void equipmentButtonClicked() {
 		//TODO show equipment panel
@@ -193,7 +242,7 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 	public void showTicket(Ticket ticket) {
 		this.ticket = ticket;
 		currentStatus = -1;
-		currentAssignedEmployee = -1;
+		currentAssignedEmployee = null;
 		Employee employeeSrc = ticket.getEmployeeSource();
 		Employee employeeAssigned = ticket.getEmployeeAssigned();
 
@@ -208,7 +257,7 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 
 		pane.toFront();
 		currentStatus = ticket.getStatus().get();
-		currentAssignedEmployee = employeeAssigned != null ? employeeAssigned.getId().get() : 0;
+		currentAssignedEmployee = employeeAssigned == null ? noneEmployee : employeeAssigned;
 	}
 
 	public final TicketRepository getTicketRepository() {
@@ -218,7 +267,7 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 	public final void setTicketRepository(TicketRepository ticketRepository) {
 		this.ticketRepository = ticketRepository;
 	}
-	
+
 	public final void setEmployeeRepository(EmployeeRepository employeeRepository) {
 		this.employeeRepository = employeeRepository;
 	}
@@ -236,26 +285,28 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 		int role = AuthController.getEmployee().getRole().get();
 		statusBox.setDisable(role != 1 && role != 4);
 		employeeAssigned.setDisable(role > 2);
+		currentStatus = -1;
+		currentAssignedEmployee = null;
 	}
-	
+
 	public void updateEmployees() {
 		employeeItems.clear();
-		
+
 		employeeRepository.getTechnicians(new PaginatedRequestCallback<Employee>() {
-			
+
 			@Override
 			public void run() {
 				employeeItems.add(noneEmployee);
 				employeeItems.addAll(getPaginatedResponse().getItems());
 			}
 		},
-			new FailCallback() {
-				
-				@Override
-				public void run() {
-					getSnackbar().enqueue(new SnackbarEvent(getFullMessage(), "error"));
-				}
-			});
+				new FailCallback() {
+
+			@Override
+			public void run() {
+				getSnackbar().enqueue(new SnackbarEvent(getFullMessage(), "error"));
+			}
+		});
 	}
 
 }

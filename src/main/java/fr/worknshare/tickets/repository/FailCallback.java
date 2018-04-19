@@ -34,11 +34,11 @@ public abstract class FailCallback extends RestCallback {
 	public String getMessage() {
 		return message;
 	}
-	
+
 	protected void setMessage(String message) {
 		this.message = message;
 	}
-	
+
 	/**
 	 * Get a message displayable to the user
 	 * @return a built message for the user

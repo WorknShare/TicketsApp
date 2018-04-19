@@ -10,11 +10,11 @@ package fr.worknshare.tickets.repository;
 public abstract class PaginatedRequestCallback<T> extends RestCallback {
 
 	private PaginatedResponse<T> response;
-	
+
 	protected void setPaginatedResponse(PaginatedResponse<T> response) {
 		this.response = response;
 	}
-	
+
 	/**
 	 * Get the response from the request. All checks have to be done.
 	 * @return the response, can be null
