@@ -179,6 +179,7 @@ public class TicketsController extends Controller implements RequestController {
 
 	public void search(String search) {
 		prepareRequest();
+		page = 1;
 
 		int status = statusFilter.getSelectionModel().getSelectedItem().getStatus();
 		if(status == -1)
