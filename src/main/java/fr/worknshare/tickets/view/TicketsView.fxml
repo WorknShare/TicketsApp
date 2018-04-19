@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
 <?import com.jfoenix.controls.JFXSpinner?>
 <?import com.jfoenix.controls.JFXTextField?>
 <?import com.jfoenix.controls.JFXTreeTableView?>
@@ -16,6 +17,11 @@
          <children>
              <Label styleClass="h1" stylesheets="@application.css" text="Tickets" />
             <Pane HBox.hgrow="ALWAYS" />
+            <JFXComboBox fx:id="statusFilter" focusColor="#007bff" onAction="#statusFilterChanged" promptText="Filtre" unFocusColor="#4d4d4d66">
+               <HBox.margin>
+                  <Insets right="5.0" />
+               </HBox.margin>
+            </JFXComboBox>
             <JFXTextField fx:id="searchbar" focusColor="#007bff" promptText="Recherche" unFocusColor="#4d4d4d66">
                <HBox.margin>
                   <Insets right="5.0" />
@@ -37,7 +43,7 @@
                    <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
                 </opaqueInsets>
              </JFXButton>
-             <Label fx:id="paginationLabel" prefHeight="40.0" text="Page 1/5" textAlignment="CENTER" />
+             <Label fx:id="paginationLabel" prefHeight="40.0" text="Page 1/1" textAlignment="CENTER" />
              <JFXButton fx:id="nextButton" layoutX="455.0" layoutY="10.0" onAction="#nextClicked" prefHeight="40.0" styleClass="next-button" stylesheets="@application.css" text="&gt;" textAlignment="CENTER">
                 <opaqueInsets>
                    <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />

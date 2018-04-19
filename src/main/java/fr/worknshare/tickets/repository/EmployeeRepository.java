@@ -67,7 +67,7 @@ public final class EmployeeRepository extends Repository<Employee> {
 	}
 
 	public void getTechnicians(PaginatedRequestCallback<Employee> callback, FailCallback failCallback) {
-		request(null, null, new JsonCallback() {
+		request(null, null, null, getUrl() + "/tech", new JsonCallback() {
 
 			@Override
 			public void run() {
@@ -89,7 +89,7 @@ public final class EmployeeRepository extends Repository<Employee> {
 				}
 			}
 
-		}, failCallback, getUrl() + "/tech");
+		}, failCallback);
 	}
 
 }
