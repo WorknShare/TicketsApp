@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXSpinner?>
+<?import com.jfoenix.controls.JFXTreeTableView?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox styleClass="opaque" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.worknshare.tickets.controller.TicketsController">
+	<children>
+      <HBox alignment="CENTER_LEFT">
+         <children>
+             <Label styleClass="h1" stylesheets="@application.css" text="Equipements" />
+            <Pane HBox.hgrow="ALWAYS" />
+         </children>
+      </HBox>
+       <JFXTreeTableView fx:id="table" minHeight="500.0" minWidth="800.0" prefHeight="500.0" prefWidth="800.0" showRoot="false" stylesheets="@application.css" VBox.vgrow="ALWAYS" />
+       <HBox alignment="TOP_RIGHT" prefHeight="40.0" prefWidth="200.0">
+          <children>
+            <JFXSpinner fx:id="loader">
+               <HBox.margin>
+                  <Insets bottom="7.0" left="-12.0" right="7.0" top="7.0" />
+               </HBox.margin>
+            </JFXSpinner>
+            <Pane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+             <JFXButton fx:id="previousButton" onAction="#previousClicked" prefHeight="40.0" styleClass="previous-button" stylesheets="@application.css" text="&lt;" textAlignment="CENTER">
+                <opaqueInsets>
+                   <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+                </opaqueInsets>
+             </JFXButton>
+             <Label fx:id="paginationLabel" prefHeight="40.0" text="Page 1/1" textAlignment="CENTER" />
+             <JFXButton fx:id="nextButton" layoutX="455.0" layoutY="10.0" onAction="#nextClicked" prefHeight="40.0" styleClass="next-button" stylesheets="@application.css" text="&gt;" textAlignment="CENTER">
+                <opaqueInsets>
+                   <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+                </opaqueInsets>
+             </JFXButton>
+          </children>
+       </HBox>
+    </children>
+</VBox>

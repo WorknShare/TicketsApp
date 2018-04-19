@@ -14,6 +14,7 @@ import com.jfoenix.controls.JFXSnackbar;
 import fr.worknshare.tickets.repository.EmployeeRepository;
 import fr.worknshare.tickets.repository.EquipmentRepository;
 import fr.worknshare.tickets.repository.EquipmentTypeRepository;
+import fr.worknshare.tickets.repository.SiteRepository;
 import fr.worknshare.tickets.repository.TicketRepository;
 import javafx.fxml.FXML;
 import javafx.scene.layout.FlowPane;
@@ -32,7 +33,9 @@ public class MainController extends Controller {
 	@FXML private StackPane pane;
 
 	@FXML private JFXButton menuTickets;
+	@FXML private JFXButton menuEquipments;
 	@FXML private VBox tickets;
+	@FXML private VBox equipments;
 
 	@FXML private FlowPane login;
 
@@ -40,6 +43,7 @@ public class MainController extends Controller {
 	@FXML private TicketsController ticketsController;
 	@FXML private TicketCreateController ticketCreateController;
 	@FXML private TicketShowController ticketShowController;
+	@FXML private EquipmentController equipmentController;
 
 	private HttpClient client = HttpClientBuilder.create().build();
 	private HttpContext context = new BasicHttpContext();
@@ -48,10 +52,12 @@ public class MainController extends Controller {
 	private EquipmentRepository equipmentRepository;
 	private EquipmentTypeRepository equipmentTypeRepository;
 	private TicketRepository ticketRepository;
+	private SiteRepository siteRepository;
 
 	private void initRepositories() {
+		siteRepository = new SiteRepository(client, context);
 		employeeRepository = new EmployeeRepository(client, context);
-		equipmentRepository = new EquipmentRepository(client, context);
+		equipmentRepository = new EquipmentRepository(client, context, siteRepository);
 		equipmentTypeRepository = equipmentRepository.getEquipmentTypeRepository();
 		ticketRepository = new TicketRepository(client, context, employeeRepository, equipmentRepository);
 
@@ -60,6 +66,7 @@ public class MainController extends Controller {
 		ticketCreateController.setTicketRepository(ticketRepository);
 		ticketShowController.setTicketRepository(ticketRepository);
 		ticketShowController.setEmployeeRepository(employeeRepository);
+		equipmentController.setEquipmentRepository(equipmentRepository);
 	}
 
 	@FXML
@@ -119,7 +126,14 @@ public class MainController extends Controller {
 		ticketsController.setPage(1);
 		ticketsController.refresh();
 	}
-
+	
+	@FXML
+	public void onMenuEquipmentsClicked() {
+		equipments.toFront();
+		equipmentController.setPage(1);
+		equipmentController.refresh();
+	}
+	
 	public HttpClient getHttpClient() {
 		return client;
 	}

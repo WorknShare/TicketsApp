@@ -8,22 +8,31 @@ import com.google.gson.JsonObject;
 import javafx.beans.property.SimpleStringProperty;
 
 import fr.worknshare.tickets.model.Equipment;
+import fr.worknshare.tickets.model.Ticket;
+import fr.worknshare.tickets.networking.RequestCallback;
 
-public final class EquipmentRepository extends Repository<Equipment> {
+public final class EquipmentRepository extends Repository<Equipment>{
 
 	private EquipmentTypeRepository equipmentTypeRepository;
 	private SiteRepository siteRepository;
-
+	
 	public EquipmentRepository(HttpClient client, HttpContext context) {
 		super(client, context);
-		siteRepository = new SiteRepository();
 		equipmentTypeRepository = new EquipmentTypeRepository(client, context, this);
+		siteRepository = new SiteRepository(client, context);
 	}
 
-	public EquipmentRepository(HttpClient client, HttpContext context, EquipmentTypeRepository equipmentTypeRepository) {
+	
+	public EquipmentRepository(HttpClient client, HttpContext context, SiteRepository siteRepository) {
+		super(client, context);
+		equipmentTypeRepository = new EquipmentTypeRepository(client, context, this);
+		this.siteRepository = siteRepository;
+	}
+
+	public EquipmentRepository(HttpClient client, HttpContext context, EquipmentTypeRepository equipmentTypeRepository, SiteRepository siteRepository) {
 		super(client, context);
 		this.equipmentTypeRepository = equipmentTypeRepository;
-		siteRepository = new SiteRepository();
+		this.siteRepository = siteRepository;
 	}
 
 	@Override

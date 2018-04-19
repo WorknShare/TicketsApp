@@ -13,6 +13,7 @@ import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 
 import fr.worknshare.tickets.model.Equipment;
 import fr.worknshare.tickets.model.Ticket;
+import fr.worknshare.tickets.repository.EmployeeRepository;
 import fr.worknshare.tickets.repository.EquipmentRepository;
 import fr.worknshare.tickets.repository.FailCallback;
 import fr.worknshare.tickets.repository.PaginatedRequestCallback;
@@ -30,9 +31,9 @@ import javafx.scene.control.TreeTableColumn;
 public class EquipmentController extends Controller implements RequestController{
 	
 	private EquipmentRepository equipmentRepository;
-	private ObservableList<Equipment> ticketList;	
+	private ObservableList<Equipment> EquipmentList;	
 
-	@FXML private JFXTreeTableView<Equipment> table;
+	@FXML private JFXTreeTableView<Equipment> tableEquipment;
 	@FXML private Label paginationLabel;
 	@FXML private JFXButton nextButton;
 	@FXML private JFXButton previousButton;
@@ -41,6 +42,7 @@ public class EquipmentController extends Controller implements RequestController
 	private int page;
 	private HttpClient httpClient;
 	private HttpContext httpContext;
+	
 	
 	@Override
 	public void setHttpClient(HttpClient client) {
@@ -56,6 +58,14 @@ public class EquipmentController extends Controller implements RequestController
 		
 	}
 	
+	public void setEquipmentRepository(EquipmentRepository equipmentRepository) {
+		this.equipmentRepository = equipmentRepository;
+	}
+	
+	public EquipmentRepository getEquipmentRepository() {
+		return this.equipmentRepository;
+	}
+	
 	private void initNameColumn() {
 		JFXTreeTableColumn<Equipment, String> serialColumn = new JFXTreeTableColumn<Equipment, String>("Equipement");
 		serialColumn.setCellValueFactory((TreeTableColumn.CellDataFeatures<Equipment, String> param) -> {
@@ -67,7 +77,7 @@ public class EquipmentController extends Controller implements RequestController
 		});
 		serialColumn.setSortable(false);
 		serialColumn.setContextMenu(null);
-		table.getColumns().add(serialColumn);
+		tableEquipment.getColumns().add(serialColumn);
 	}
 	
 	private void initTypeColumn() {
@@ -81,7 +91,7 @@ public class EquipmentController extends Controller implements RequestController
 		});
 		typeColumn.setSortable(false);
 		typeColumn.setContextMenu(null);
-		table.getColumns().add(typeColumn);
+		tableEquipment.getColumns().add(typeColumn);
 	}
 	
 	private void initSiteColumn() {
@@ -95,14 +105,14 @@ public class EquipmentController extends Controller implements RequestController
 		});
 		siteColumn.setSortable(false);
 		siteColumn.setContextMenu(null);
-		table.getColumns().add(siteColumn);
+		tableEquipment.getColumns().add(siteColumn);
 	}
 	
 	private void initColumns() {
 
-		final TreeItem<Equipment> root = new RecursiveTreeItem<Equipment>(ticketList, RecursiveTreeObject::getChildren);
-		table.setRoot(root);
-		table.setShowRoot(false);
+		final TreeItem<Equipment> root = new RecursiveTreeItem<Equipment>(EquipmentList, RecursiveTreeObject::getChildren);
+		tableEquipment.setRoot(root);
+		tableEquipment.setShowRoot(false);
 
 		initNameColumn();
 		initTypeColumn();
@@ -112,8 +122,7 @@ public class EquipmentController extends Controller implements RequestController
 	@FXML
 	private void initialize() {
 
-		equipmentRepository = new EquipmentRepository();
-		ticketList = FXCollections.observableArrayList();
+		EquipmentList = FXCollections.observableArrayList();
 		page = 1;
 		initColumns();
 
@@ -132,8 +141,12 @@ public class EquipmentController extends Controller implements RequestController
 		refresh();
 	}
 	
+	public void setPage(int page) {
+		this.page = page;
+	}
+	
 	public void refresh() {
-		table.setDisable(true);
+		tableEquipment.setDisable(true);
 		previousButton.setDisable(true);
 		nextButton.setDisable(true);
 		paginationLabel.getStyleClass().add("text-muted");
@@ -146,15 +159,15 @@ public class EquipmentController extends Controller implements RequestController
 				PaginatedResponse<Equipment> response = getPaginatedResponse();
 				Paginator paginator = response.getPaginator();
 
-				ticketList.clear(); //Empty the list
-				ticketList.addAll(response.getItems());
+				EquipmentList.clear(); //Empty the list
+				EquipmentList.addAll(response.getItems());
 
 				paginationLabel.setText("Page " + paginator.getCurrentPage() + "/" + paginator.getMaxPage());
 				paginationLabel.getStyleClass().remove("text-muted");
 				previousButton.setDisable(paginator.getCurrentPage() == 1);
 				nextButton.setDisable(paginator.getCurrentPage() == paginator.getMaxPage());
 				
-				table.setDisable(false);
+				tableEquipment.setDisable(false);
 				loader.setVisible(false);
 			}
 		}, new FailCallback() {
@@ -163,10 +176,10 @@ public class EquipmentController extends Controller implements RequestController
 			public void run() {
 				getSnackbar().enqueue(new SnackbarEvent(getFullMessage(), "error"));
 				paginationLabel.setText("Page 1/1");
-				table.setDisable(false);
+				tableEquipment.setDisable(false);
 				previousButton.setDisable(true);
 				nextButton.setDisable(true);
-				table.setDisable(false);
+				tableEquipment.setDisable(false);
 				loader.setVisible(false);
 			}
 

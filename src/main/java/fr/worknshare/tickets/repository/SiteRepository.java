@@ -1,5 +1,8 @@
 package fr.worknshare.tickets.repository;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.protocol.HttpContext;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -11,6 +14,11 @@ import fr.worknshare.tickets.view.Paginator;
 
 public class SiteRepository extends Repository<Site>{
 
+	
+	public SiteRepository(HttpClient client, HttpContext context) {
+		super(client, context);
+	}
+	
 	@Override
 	public String getResourceName() {
 		return "equipmenttype";
