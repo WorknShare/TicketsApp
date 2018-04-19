@@ -50,7 +50,6 @@
             	<children>
             		<fx:include fx:id="ticketShow" source="ShowTicketView.fxml" />
             		<fx:include fx:id="ticketCreate" source="CreateTicketView.fxml" />
-            		<fx:include fx:id="equipments" source="EquipmentView.fxml" />
             		<fx:include fx:id="tickets" source="TicketsView.fxml" />
             	</children>
             </StackPane>
