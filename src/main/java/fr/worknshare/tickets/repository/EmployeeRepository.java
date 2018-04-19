@@ -17,7 +17,7 @@ public final class EmployeeRepository extends Repository<Employee> {
 	public EmployeeRepository(HttpClient client, HttpContext context) {
 		super(client, context);
 	}
-	
+
 	@Override
 	public String getResourceName() {
 		return "employee";
@@ -27,7 +27,10 @@ public final class EmployeeRepository extends Repository<Employee> {
 	public Employee parseObject(JsonObject object) {
 		JsonElement element = object.get("id_employee");
 		if(element != null && element.isJsonPrimitive()) {
-			Employee employee = new Employee(element.getAsInt());
+
+			Employee employee = getFromCache(element.getAsInt());
+			if(employee == null)			
+				employee = new Employee(element.getAsInt());
 
 			//Name
 			element = object.get("name");
@@ -57,11 +60,12 @@ public final class EmployeeRepository extends Repository<Employee> {
 			element = object.get("api_token");
 			if(element != null && element.isJsonPrimitive()) employee.setToken(element.getAsString());
 
+			registerModel(employee);
 			return employee;
 		}
 		return null;
 	}
-	
+
 	public void getTechnicians(PaginatedRequestCallback<Employee> callback, FailCallback failCallback) {
 		request(null, null, new JsonCallback() {
 
@@ -72,11 +76,11 @@ public final class EmployeeRepository extends Repository<Employee> {
 				JsonObject data = getObject();
 				JsonElement elem = data.get("items");
 				if(elem != null && elem.isJsonArray()) {
-						list = parseArray(elem.getAsJsonArray());
-						response = new PaginatedResponse<Employee>(new Paginator(1, 1, 10), list);
-						callback.setResponse(getResponse());
-						callback.setPaginatedResponse(response);
-						callback.run();
+					list = parseArray(elem.getAsJsonArray());
+					response = new PaginatedResponse<Employee>(new Paginator(1, 1, 10), list);
+					callback.setResponse(getResponse());
+					callback.setPaginatedResponse(response);
+					callback.run();
 				} else {
 					failCallback.setResponse(getResponse());
 					failCallback.setMessage("Réponse malformée");
@@ -84,7 +88,7 @@ public final class EmployeeRepository extends Repository<Employee> {
 					Logger.getGlobal().warning("Malformed where response (missing expected \"items\"):\n\t" + getResponse().getRaw());
 				}
 			}
-			
+
 		}, failCallback, getUrl() + "/tech");
 	}
 

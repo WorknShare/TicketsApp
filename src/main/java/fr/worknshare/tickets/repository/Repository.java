@@ -2,6 +2,7 @@ package fr.worknshare.tickets.repository;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.logging.Logger;
 
 import org.apache.http.client.HttpClient;
@@ -30,11 +31,14 @@ public abstract class Repository<T extends Model<T>> {
 	private HttpClient httpClient;
 	private HttpContext httpContext;
 	private SimpleDateFormat dateFormat;
+	
+	private Hashtable<Integer, T> models; //Hashtable is synchronized so thread safe
 
 	public Repository(HttpClient client, HttpContext context) {
 		this();
 		this.httpClient 	= client;
 		this.httpContext 	= context;
+		this.models			= new Hashtable<>();
 	}
 	
 	public Repository() {
@@ -154,7 +158,6 @@ public abstract class Repository<T extends Model<T>> {
 			@Override
 			public void run() {
 				RestResponse response = getResponse();
-				Logger.getGlobal().info(response.getRaw()); //TODO debug
 				if(response != null && response.getStatus() == 200) {
 					JsonObject payload = response.getJsonObject();
 					JsonElement data = payload.get("data");
@@ -301,6 +304,30 @@ public abstract class Repository<T extends Model<T>> {
 	
 	public final SimpleDateFormat getDateFormatter() {
 		return dateFormat;
+	}
+	
+	/**
+	 * Store a loaded model into the cache.
+	 * @param model
+	 */
+	protected void registerModel(T model) {
+		models.put(new Integer(model.getId().get()), model);
+	}
+	
+	/**
+	 * Get a model from the cache.
+	 * @param id - the id
+	 * @return the model stored in cache,or null if not found
+	 */
+	public T getFromCache(Integer id) {
+		return models.get(id);
+	}
+	
+	/**
+	 * Clear all models stored in cache. This does not guarantee they are freed from memory.
+	 */
+	public void clearCache() {
+		models.clear();
 	}
 
 }

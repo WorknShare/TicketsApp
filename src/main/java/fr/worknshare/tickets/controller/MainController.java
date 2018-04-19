@@ -81,6 +81,12 @@ public class MainController extends Controller {
 			ticketShowController.updateAuthorizations();
 			ticketShowController.updateEmployees();
 		});
+		loginController.setOnLogout(() -> {
+			employeeRepository.clearCache();
+			equipmentRepository.clearCache();
+			equipmentTypeRepository.clearCache();
+			ticketRepository.clearCache();
+		});
 		
 		ticketsController.setSnackbar(getSnackbar());
 		ticketsController.setHttpClient(client);
@@ -93,9 +99,7 @@ public class MainController extends Controller {
 			ticketsController.setPage(1);
 			ticketsController.refresh();
 		});
-		
-		ticketCreateController.setSelectedEquipment(new Equipment(1)); //TODO equipment select test
-		
+				
 		ticketShowController.setBackPanel(tickets);
 		ticketShowController.setSnackbar(getSnackbar());
 	}

@@ -49,6 +49,7 @@ public class AuthController extends Controller implements RequestController {
 	@FXML private FlowPane loginPane;
 
 	private Runnable loginCallback;
+	private Runnable logoutCallback;
 	
 	private HttpClient httpClient;
 	private HttpContext httpContext;
@@ -151,6 +152,7 @@ public class AuthController extends Controller implements RequestController {
 					if(response.getStatus() == 200) {
 						employee = null;
 						showLoginPane();
+						if(logoutCallback != null) logoutCallback.run();
 					} else if(response.getStatus() != -1)				
 						Logger.getGlobal().log(Level.WARNING, "Logout request failed.\n\tStatus code " + response.getStatus() + "\n\tMessage: " + response.getJsonObject().get("message").getAsString());
 					else {
@@ -257,6 +259,14 @@ public class AuthController extends Controller implements RequestController {
 	 */
 	public void setOnLogin(Runnable runnable) {
 		loginCallback = runnable;
+	}
+	
+	/**
+	 * Set the behavior when the user successfully logs out
+	 * @param runnable
+	 */
+	public void setOnLogout(Runnable runnable) {
+		logoutCallback = runnable;
 	}
 	
 	/**

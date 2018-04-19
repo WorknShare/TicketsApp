@@ -32,7 +32,10 @@ public final class EquipmentRepository extends Repository<Equipment> {
 
 		JsonElement element = object.get("id_equipment");
 		if(element != null && element.isJsonPrimitive()) {
-			Equipment equipment = new Equipment(element.getAsInt());
+			
+			Equipment equipment = getFromCache(element.getAsInt());
+			if(equipment == null)			
+				equipment = new Equipment(element.getAsInt());
 
 			//Serial number
 			element = object.get("serial_number");
@@ -46,6 +49,7 @@ public final class EquipmentRepository extends Repository<Equipment> {
 			element = object.get("type");
 			if(element != null && element.isJsonObject()) equipment.setEquipmentType(equipmentTypeRepository.parseObject(element.getAsJsonObject()));
 
+			registerModel(equipment);
 			return equipment;
 		}
 		return null;
