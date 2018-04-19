@@ -60,7 +60,18 @@ public abstract class Repository<T extends Model<T>> {
 	 * @param failCallback - the callback to execute when the request failed
 	 */
 	public final void paginate(int page, PaginatedRequestCallback<T> callback, FailCallback failCallback) {
-		request("page", page, new JsonCallback() {
+		paginate(page, null, callback, failCallback);
+	}
+
+	/**
+	 * Get the list of records for the given page.
+	 * @param page - the page number, must be positive
+	 * @param filter - nullable object to use as filter
+	 * @param callback - the callback to execute when the request is done
+	 * @param failCallback - the callback to execute when the request failed
+	 */
+	public final void paginate(int page, Object filter, PaginatedRequestCallback<T> callback, FailCallback failCallback) {
+		request("page", page, filter, new JsonCallback() {
 
 			@Override
 			public void run() {
@@ -101,7 +112,18 @@ public abstract class Repository<T extends Model<T>> {
 	 * @param failCallback - the callback to execute if the request fails
 	 */
 	public final void where(String search, PaginatedRequestCallback<T> callback, FailCallback failCallback) {
-		request("search", search, new JsonCallback() {
+		where(search, null, callback, failCallback);
+	}
+
+	/**
+	 * Request the list of records corresponding to the "search" pattern.
+	 * @param search - the search criteria
+	 * @param filter - nullable object to use as filter
+	 * @param callback - the callback to execute when the request is done
+	 * @param failCallback - the callback to execute if the request fails
+	 */
+	public final void where(String search, Object filter, PaginatedRequestCallback<T> callback, FailCallback failCallback) {
+		request("search", search, filter, new JsonCallback() {
 
 			@Override
 			public void run() {
@@ -130,11 +152,12 @@ public abstract class Repository<T extends Model<T>> {
 	 * Executes a simple array request using the GET method with a single parameter and returns the raw result (data member).
 	 * @param paramName - the name of the parameter
 	 * @param paramValue - the value of the parameter
+	 * @param filter - nullable object to use as filter 
 	 * @param callback - the callback to execute when the request is done
 	 * @param failCallback - the callback to execute if the request fails
 	 */
-	protected final void request(String paramName, Object paramValue, JsonCallback callback, FailCallback failCallback) {
-		request(paramName, paramValue, callback, failCallback, getUrl());
+	protected final void request(String paramName, Object paramValue, Object filter, JsonCallback callback, FailCallback failCallback) {
+		request(paramName, paramValue, filter, getUrl(), callback, failCallback);
 	}
 
 	/**
@@ -143,15 +166,30 @@ public abstract class Repository<T extends Model<T>> {
 	 * @param paramValue - the value of the parameter
 	 * @param callback - the callback to execute when the request is done
 	 * @param failCallback - the callback to execute if the request fails
-	 * @param url - the request url
 	 */
-	protected final void request(String paramName, Object paramValue, JsonCallback callback, FailCallback failCallback, String url) {
+	protected final void request(String paramName, Object paramValue, JsonCallback callback, FailCallback failCallback) {
+		request(paramName, paramValue, null, getUrl(), callback, failCallback);
+	}
+
+	/**
+	 * Executes a simple array request using the GET method with a single parameter and returns the raw result (data member).
+	 * @param paramName - the name of the parameter
+	 * @param paramValue - the value of the parameter
+	 * @param url - the request url
+	 * @param filter - nullable object to use as filter
+	 * @param callback - the callback to execute when the request is done
+	 * @param failCallback - the callback to execute if the request fails
+	 */
+	protected final void request(String paramName, Object paramValue, Object filter, String url, JsonCallback callback, FailCallback failCallback) {
 		RestRequest request = new RestRequest(httpClient, url)
 				.setUrlParam(true)
 				.context(httpContext);
 
 		if(paramName != null & paramValue != null)
 			request.param(paramName, paramValue);
+
+		if(filter != null)
+			request.param("filter", filter);
 
 		request.asyncExecute(HttpMethod.GET, new RequestCallback() {
 

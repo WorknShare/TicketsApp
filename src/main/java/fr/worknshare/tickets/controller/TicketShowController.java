@@ -18,21 +18,14 @@ import fr.worknshare.tickets.repository.EmployeeRepository;
 import fr.worknshare.tickets.repository.FailCallback;
 import fr.worknshare.tickets.repository.PaginatedRequestCallback;
 import fr.worknshare.tickets.repository.TicketRepository;
+import fr.worknshare.tickets.view.StatusComboBoxMaker;
 import fr.worknshare.tickets.view.StatusItem;
-import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 
 /**
  * Controller used for ticket creation
@@ -64,70 +57,9 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 
 	private Pane backPanel;
 
-	private void initStatusBox() {
-
-		ObservableList<StatusItem> items = FXCollections.observableArrayList();
-		items.addAll(new StatusItem(0, "En attente"), 
-				new StatusItem(1, "En cours"),
-				new StatusItem(2, "Résolu"),
-				new StatusItem(3, "Non résolu"),
-				new StatusItem(4, "Invalide"));
-		statusBox.setItems(items);
-
-		statusBox.buttonCellProperty().bind(Bindings.createObjectBinding(() -> {
-
-			StackPane arrowButton = (StackPane) statusBox.lookup(".arrow-button");
-
-			return new ListCell<StatusItem>() {
-
-				@Override
-				protected void updateItem(StatusItem item, boolean empty) {
-					super.updateItem(item, empty);
-
-					if (empty || item == null) {
-						setBackground(Background.EMPTY);
-						setText("");
-					} else {
-
-						setText(item.getName());
-						switch(item.getStatus()) {
-						case 0:
-							setTextFill(Color.WHITE);
-							setBackground(new Background(new BackgroundFill(new Color(0.86, 0.207, 0.27, 1.0), CornerRadii.EMPTY, Insets.EMPTY)));
-							break;
-						case 1:
-							setTextFill(Color.WHITE);
-							setBackground(new Background(new BackgroundFill(new Color(1.0, 0.756, 0.027, 1.0), CornerRadii.EMPTY, Insets.EMPTY)));
-							break;
-						case 2:
-							setTextFill(Color.WHITE);
-							setBackground(new Background(new BackgroundFill(new Color(0.157, 0.655, 0.27, 1.0), CornerRadii.EMPTY, Insets.EMPTY)));
-							break;
-						case 3:
-							setTextFill(Color.WHITE);
-							setBackground(new Background(new BackgroundFill(new Color(0.09, 0.635, 0.721, 1.0), CornerRadii.EMPTY, Insets.EMPTY)));
-							break;
-						case 4:
-							setTextFill(Color.BLACK);
-							setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
-							break;
-						default:
-							setTextFill(Color.BLACK);
-							setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
-						}
-					}
-
-					if(arrowButton != null)
-						arrowButton.setBackground(getBackground());
-				}
-
-			};
-		}, statusBox.valueProperty()));
-	}
-
 	@FXML
 	private void initialize() {
-		initStatusBox();
+		StatusComboBoxMaker.make(statusBox);
 		noneEmployee = new Employee(0);
 		noneEmployee.setSurname("Aucun");
 		noneEmployee.setName("");

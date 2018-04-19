@@ -74,7 +74,7 @@ public class MainController extends Controller {
 
 		loginController.setHttpClient(client);
 		loginController.setHttpContext(context);
-		//loginController.attempt("admin@worknshare.fr", "password"); //TODO disable auto auth
+		loginController.attempt("admin@worknshare.fr", "password"); //TODO disable auto auth
 
 		loginController.setSnackbar(getSnackbar());
 		loginController.setOnLogin(() -> {
@@ -101,6 +101,7 @@ public class MainController extends Controller {
 		ticketCreateController.setTicketCreatedCallback(() -> {
 			tickets.toFront();
 			ticketsController.setPage(1);
+			ticketsController.resetFilter();
 			ticketsController.refresh();
 		});
 
@@ -118,6 +119,7 @@ public class MainController extends Controller {
 		tickets.toFront();
 		ticketsController.setPage(1);
 		ticketsController.refresh();
+		menuTickets.getStyleClass().add("active");
 	}
 
 	public HttpClient getHttpClient() {
