@@ -28,7 +28,7 @@ public final class TicketRepository extends Repository<Ticket> implements Creato
 		employeeRepository = new EmployeeRepository(client, context);
 		equipmentRepository = new EquipmentRepository(client, context);
 	}
-	
+
 	public TicketRepository(HttpClient client, HttpContext context, EmployeeRepository employeeRepository, EquipmentRepository equipmentRepository) {
 		super(client, context);
 		this.employeeRepository = employeeRepository;
@@ -64,25 +64,21 @@ public final class TicketRepository extends Repository<Ticket> implements Creato
 			element = object.get("employee_source");
 			if(element != null && element.isJsonObject()) { //Employee object
 				Employee employee = employeeRepository.parseObject(element.getAsJsonObject());
-				if(employee != null) {
+				if(employee != null)
 					ticket.setEmployeeSource(employee);
-					ticket.setIdEmployeeSource(employee.getId().get());
-				}
 			}
 
 			//Employee assigned
 			element = object.get("id_employee_assigned");
 			if(element != null && element.isJsonPrimitive()) { //Only ID
-				ticket.setIdEmployeeSource(element.getAsInt());
+				ticket.setIdEmployeeAssigned(element.getAsInt());
 			}
 
 			element = object.get("employee_assigned");
 			if(element != null && element.isJsonObject()) { //Employee object
 				Employee employee = employeeRepository.parseObject(element.getAsJsonObject());
-				if(employee != null) {
-					ticket.setEmployeeSource(employee);
-					ticket.setIdEmployeeSource(employee.getId().get());
-				}
+				if(employee != null)
+					ticket.setEmployeeAssigned(employee);
 			}
 
 			//Equipment
@@ -133,7 +129,7 @@ public final class TicketRepository extends Repository<Ticket> implements Creato
 				.context(getHttpContext())
 				.param("description", resource.getDescription().get())
 				.param("id_equipment", resource.getIdEquipment().get());
-		
+
 		request.asyncExecute(HttpMethod.POST, callback);
 	}
 
@@ -145,7 +141,19 @@ public final class TicketRepository extends Repository<Ticket> implements Creato
 		RestRequest request = new RestRequest(getHttpClient(), getUrl(ticket.getId().get()))
 				.context(getHttpContext())
 				.param("status", status);
-		
+
+		request.asyncExecute(HttpMethod.PUT, callback);
+	}
+
+	/**
+	 * Update the assigned employee for the given ticket on the remote server
+	 * @param employee
+	 */
+	public void updateEmployeeAssigned(Ticket ticket, Employee employee, RequestCallback callback) {
+		RestRequest request = new RestRequest(getHttpClient(), getUrl(ticket.getId().get()) + "/affect")
+				.context(getHttpContext())
+				.param("employee", employee.getId().get());
+
 		request.asyncExecute(HttpMethod.PUT, callback);
 	}
 

@@ -183,9 +183,8 @@ public class TicketsController extends Controller implements RequestController {
 	private void initEmployeeColumn() {
 		JFXTreeTableColumn<Ticket, String> employeeColumn = new JFXTreeTableColumn<Ticket, String>("Employé affecté");
 		employeeColumn.setCellValueFactory((TreeTableColumn.CellDataFeatures<Ticket, String> param) -> {
-			Employee employee = param.getValue().getValue().getEmployeeAssigned();
-			if (employeeColumn.validateValue(param) && employee != null) {
-				return employee.getFullName();
+			if (employeeColumn.validateValue(param)) {
+				return param.getValue().getValue().getEmployeeAssignedName();
 			} else {
 				return employeeColumn.getComputedValue(param);
 			}
@@ -295,7 +294,7 @@ public class TicketsController extends Controller implements RequestController {
 			}
 		};
 	}
-	
+
 	private void initDoubleClickListener() {
 		table.setRowFactory( tv -> {
 			TreeTableRow<Ticket> row = new TreeTableRow<Ticket>();
@@ -389,7 +388,7 @@ public class TicketsController extends Controller implements RequestController {
 	public void setTicketRepository(TicketRepository ticketRepository) {
 		this.ticketRepository = ticketRepository;
 	}
-	
+
 	public TicketRepository getTicketRepository() {
 		return ticketRepository;
 	}

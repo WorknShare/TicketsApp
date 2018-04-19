@@ -17,6 +17,6 @@ public interface CreatorRepository<T> {
 	 * @param resource - the object to send on the server to be saved
 	 * @param callback - the callback to execute when the request is done
 	 */
-	public void create(T resource, RequestCallback callback);
+	void create(T resource, RequestCallback callback);
 	
 }
