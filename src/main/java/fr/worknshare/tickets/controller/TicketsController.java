@@ -60,6 +60,7 @@ public class TicketsController extends Controller implements RequestController {
 				table.setDisable(false);
 				loader.setVisible(false);
 				searchbar.setDisable(false);
+				statusFilter.setDisable(false);
 			}
 
 		};
@@ -83,6 +84,7 @@ public class TicketsController extends Controller implements RequestController {
 				table.setDisable(false);
 				loader.setVisible(false);
 				searchbar.setDisable(false);
+				statusFilter.setDisable(false);
 
 			}
 		};
@@ -164,6 +166,7 @@ public class TicketsController extends Controller implements RequestController {
 		paginationLabel.getStyleClass().add("text-muted");
 		loader.setVisible(true);
 		searchbar.setDisable(true);
+		statusFilter.setDisable(true);
 		ticketList.clear();
 	}
 

@@ -24,6 +24,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
@@ -60,6 +61,24 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 	@FXML
 	private void initialize() {
 		StatusComboBoxMaker.make(statusBox);
+
+		employeeAssigned.setCellFactory((lv) -> {
+			return new ListCell<Employee>() {
+				@Override
+				protected void updateItem(Employee item, boolean empty) {
+					super.updateItem(item, empty);
+
+					if (empty || item == null) {
+						setText(null);
+						setGraphic(null);
+					} else {
+						setText(item.toString());
+						setGraphic(null);
+					}
+				}
+			};
+		});
+
 		noneEmployee = new Employee(0);
 		noneEmployee.setSurname("Aucun");
 		noneEmployee.setName("");
@@ -76,6 +95,7 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 	@FXML
 	private void onStatusChanged() {
 		if(currentStatus != -1) {
+			statusBox.setDisable(true);
 			int status = statusBox.getSelectionModel().getSelectedItem().getStatus();
 			if(currentStatus != status) {
 				ticketRepository.updateStatus(ticket, status, new RequestCallback() {
@@ -86,6 +106,7 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 						if(response.getStatus() == 204) {
 							ticket.setStatus(status);
 							currentStatus = ticket.getStatus().get();
+							statusBox.setDisable(false);
 							getSnackbar().enqueue(new SnackbarEvent("Le statut du ticket a été modifié avec succès.", "success"));
 							return;
 						} else if(response.getStatus() == 403) {
@@ -113,6 +134,7 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 						currentStatus = -1;
 						statusBox.getSelectionModel().select(ticket.getStatus().get());
 						currentStatus = ticket.getStatus().get();
+						statusBox.setDisable(false);
 					}
 				});
 			}
@@ -122,6 +144,7 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 	@FXML
 	private void onEmployeeAssignedChanged() {
 		if(currentAssignedEmployee != null) {
+			employeeAssigned.setDisable(true);
 			Employee employee = employeeAssigned.getSelectionModel().getSelectedItem();
 			if(currentAssignedEmployee != employee) {
 				ticketRepository.updateEmployeeAssigned(ticket, employee, new RequestCallback() {
@@ -132,6 +155,7 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 						if(response.getStatus() == 204) {
 							ticket.setEmployeeAssigned(employee == noneEmployee ? null : employee);
 							currentAssignedEmployee = ticket.getEmployeeAssigned();
+							employeeAssigned.setDisable(false);
 							getSnackbar().enqueue(new SnackbarEvent("Le technicien a été assigné à ce ticket avec succès.", "success"));
 							return;
 						} else if(response.getStatus() == 403) {
@@ -160,6 +184,7 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 						currentAssignedEmployee = null;
 						employeeAssigned.getSelectionModel().select(previousAssignedEmployee);
 						currentAssignedEmployee = previousAssignedEmployee;
+						employeeAssigned.setDisable(false);
 					}
 				});
 			}

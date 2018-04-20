@@ -27,7 +27,24 @@ public abstract class StatusComboBoxMaker {
 	public static final void make(JFXComboBox<StatusItem> box) {
 		make(box, false);
 	}
-	
+
+	public static ListCell<StatusItem> createCell() {
+		return new ListCell<StatusItem>() {
+			@Override
+			protected void updateItem(StatusItem item, boolean empty) {
+				super.updateItem(item, empty);
+
+				if (empty || item == null) {
+	                setText(null);
+	                setGraphic(null);
+	            } else {
+	                setText(item.getName());
+	                setGraphic(null);
+	            }
+			}        
+		};
+	}
+
 	/**
 	 * Setup a combo box to be a status combo box. Adds the items and sets the coloring.
 	 * @param box - the combo box to prepare
@@ -43,6 +60,8 @@ public abstract class StatusComboBoxMaker {
 				new StatusItem(3, "Non résolu"),
 				new StatusItem(4, "Invalide"));
 		box.setItems(items);
+
+		box.setCellFactory(lv -> createCell());
 
 		box.buttonCellProperty().bind(Bindings.createObjectBinding(() -> {
 
@@ -94,5 +113,5 @@ public abstract class StatusComboBoxMaker {
 			};
 		}, box.valueProperty()));
 	}
-	
+
 }

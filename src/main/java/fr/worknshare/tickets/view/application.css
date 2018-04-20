@@ -30,7 +30,7 @@
     -fx-opacity: 1.0;
 }
 
-.combo-box:disabled .arrow, .combo-box:disabled .arrow-button {
+.combo-box:disabled .arrow {
     -fx-background-color: transparent;
 }
 
@@ -119,4 +119,8 @@
 
 .opaque {
 	-fx-background-color: #f4f4f4;
+}
+
+.combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell {
+    -fx-padding: 7 0 6 21;
 }

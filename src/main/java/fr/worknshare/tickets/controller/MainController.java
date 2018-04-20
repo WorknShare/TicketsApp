@@ -78,9 +78,11 @@ public class MainController extends Controller {
 
 		loginController.setSnackbar(getSnackbar());
 		loginController.setOnLogin(() -> {
-			ticketsController.refresh();
 			ticketShowController.updateAuthorizations();
 			ticketShowController.updateEmployees();
+			ticketsController.setPage(1);
+			ticketsController.resetFilter();
+			ticketsController.refresh();
 		});
 		loginController.setOnLogout(() -> {
 			employeeRepository.clearCache();
