@@ -22,14 +22,18 @@ import org.xml.sax.SAXException;
 public final class Config {
 
 	private static Config instance;
-	
+
 	private Hashtable<String, String> values;
-	
+
 	private Config() {
+		load();
+	}
+
+	private void load() {
 		Logger.getGlobal().info("Loading config");
-		
+
 		values = new Hashtable<>();
-		
+
 		ClassLoader classLoader = TicketsApplication.class.getClassLoader();
 
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -46,12 +50,12 @@ public final class Config {
 		} catch (ParserConfigurationException | SAXException | IOException e) {
 			Logger.getGlobal().log(Level.SEVERE, "Couldn't load config", e);
 		}
-		
+
 		Logger.getGlobal().info("Loaded config.");
 		Logger.getGlobal().info("Current environment: " + get("Environment"));
 		Logger.getGlobal().info("Remote host: " + get("Host"));
 	}
-	
+
 	/**
 	 * Get a value from the config
 	 * @param key
@@ -60,7 +64,7 @@ public final class Config {
 	public String get(String key) {
 		return values.get(key);
 	}
-	
+
 	public static final Config getInstance() {
 		if(instance == null) 
 			instance = new Config();

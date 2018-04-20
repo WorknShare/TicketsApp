@@ -32,17 +32,17 @@ public abstract class Repository<T extends Model<T>> {
 	private HttpContext httpContext;
 	private SimpleDateFormat dateFormat;
 
-	private Hashtable<Integer, T> models; //Hashtable is synchronized so thread safe
+	private Hashtable<Integer, T> models; //Hashtable is synchronized thus thread safe
 
 	public Repository(HttpClient client, HttpContext context) {
 		this();
-		this.httpClient 	= client;
-		this.httpContext 	= context;
-		this.models			= new Hashtable<>();
+		this.httpClient  = client;
+		this.httpContext = context;
 	}
 
 	public Repository() {
-		dateFormat = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
+		dateFormat  = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
+		this.models = new Hashtable<>();
 	}
 
 	/**
@@ -88,18 +88,11 @@ public abstract class Repository<T extends Model<T>> {
 						callback.setResponse(getResponse());
 						callback.setPaginatedResponse(response);
 						callback.run();
-					} else {
-						failCallback.setResponse(getResponse());
-						failCallback.setMessage("Réponse malformée");
-						failCallback.run();
-						Logger.getGlobal().warning("Malformed paginate response (missing expected \"items\"):\n\t" + getResponse().getRaw());
-					}
-				} else {
-					failCallback.setResponse(getResponse());
-					failCallback.setMessage("Réponse malformée");
-					failCallback.run();
-					Logger.getGlobal().warning("Malformed paginate response (missing expected \"paginator\"):\n\t" + getResponse().getRaw());
-				}
+					} else
+						handleMalformedResponse(getResponse(), failCallback, "items");
+
+				} else 
+					handleMalformedResponse(getResponse(), failCallback, "paginator");
 			}
 
 		}, failCallback);
@@ -137,12 +130,9 @@ public abstract class Repository<T extends Model<T>> {
 					callback.setResponse(getResponse());
 					callback.setPaginatedResponse(response);
 					callback.run();
-				} else {
-					failCallback.setResponse(getResponse());
-					failCallback.setMessage("Réponse malformée");
-					failCallback.run();
-					Logger.getGlobal().warning("Malformed where response (missing expected \"items\"):\n\t" + getResponse().getRaw());
-				}
+				} else
+					handleMalformedResponse(getResponse(), failCallback, "items");
+
 			}
 
 		}, failCallback);
@@ -203,12 +193,9 @@ public abstract class Repository<T extends Model<T>> {
 						callback.setResponse(response);
 						callback.setObject(data.getAsJsonObject());
 						callback.run();
-					} else {
-						failCallback.setResponse(getResponse());
-						failCallback.setMessage("Réponse malformée");
-						failCallback.run();
-						Logger.getGlobal().warning("Malformed paginate response (missing expected \"data\"):\n\t" + getResponse().getRaw());
-					}
+					} else
+						handleMalformedResponse(getResponse(), failCallback, "data");
+
 				} else {
 					failCallback.setResponse(response);
 					failCallback.run();
@@ -245,12 +232,9 @@ public abstract class Repository<T extends Model<T>> {
 						callback.setResponse(response);
 						callback.setObject(parseObject(data.getAsJsonObject()));
 						callback.run();
-					} else {
-						failCallback.setResponse(getResponse());
-						failCallback.setMessage("Réponse malformée");
-						failCallback.run();
-						Logger.getGlobal().warning("Malformed paginate response (missing expected \"data\"):\n\t" + getResponse().getRaw());
-					}
+					} else
+						handleMalformedResponse(getResponse(), failCallback, "data");
+					
 				} else {
 					failCallback.setResponse(response);
 					failCallback.run();
@@ -259,6 +243,13 @@ public abstract class Repository<T extends Model<T>> {
 			}
 
 		});
+	}
+
+	private void handleMalformedResponse(RestResponse response, FailCallback failCallback, String expected) {
+		failCallback.setResponse(response);
+		failCallback.setMessage("Réponse malformée");
+		failCallback.run();
+		Logger.getGlobal().warning("Malformed paginate response (missing expected \"" + expected + "\"):\n\t" + response.getRaw());
 	}
 
 	/**

@@ -5,7 +5,6 @@ import javafx.beans.property.SimpleStringProperty;
 
 public final class Employee extends Model<Employee> {
 
-	private String token;
 	private SimpleStringProperty name;
 	private SimpleStringProperty surname;
 	private SimpleStringProperty email;
@@ -73,14 +72,6 @@ public final class Employee extends Model<Employee> {
 
 	public final void setRole(int role) {
 		this.role.set(role);
-	}
-
-	public final String getToken() {
-		return token;
-	}
-
-	public final void setToken(String token) {
-		this.token = token;
 	}
 
 	public final SimpleStringProperty getFullName() {

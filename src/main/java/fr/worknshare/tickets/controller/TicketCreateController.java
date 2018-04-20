@@ -79,9 +79,8 @@ public class TicketCreateController extends Controller implements Backable {
 				}
 			});
 
-		} else {
+		} else
 			getSnackbar().enqueue(new SnackbarEvent("Le champ description est obligatoire", "error"));
-		}
 	}
 
 	private void handleSubmitResponse(RestResponse response, Ticket ticket) {
@@ -101,11 +100,14 @@ public class TicketCreateController extends Controller implements Backable {
 			handleSubmitErrors(object.get("errors").getAsJsonObject());
 		} else {
 			element = object.get("error");
-			if(element != null && element.isJsonPrimitive()) 
+			if(element != null && element.isJsonPrimitive()) {
 				getSnackbar().enqueue(new SnackbarEvent(response.getStatus() + " : " + element.getAsString(), "error"));
-			else
+				Logger.getGlobal().log(Level.SEVERE, "Ticket submit request failed.\n\tStatus code " + response.getStatus() + "\n\tMessage: " + element.getAsString());
+			} else {
 				getSnackbar().enqueue(new SnackbarEvent("Erreur " + response.getStatus(), "error"));
-			Logger.getGlobal().log(Level.SEVERE, "Ticket submit request failed.\n\tStatus code " + response.getStatus() + "\n\tMessage: " + element.getAsString());
+				Logger.getGlobal().log(Level.SEVERE, "Ticket submit request failed.\n\tStatus code " + response.getStatus());
+			}
+			
 		}		
 
 		description.setDisable(false);

@@ -62,23 +62,14 @@ public class MainController extends Controller {
 		ticketShowController.setEmployeeRepository(employeeRepository);
 	}
 
-	@FXML
-	private void initialize() {
-
-		setSnackbar(new JFXSnackbar(pane));
-
-		CookieStore cookieStore = new BasicCookieStore();		
-		context.setAttribute(HttpClientContext.COOKIE_STORE, cookieStore);
-
-		initRepositories();
-
+	private void initLoginController() {
 		loginController.setHttpClient(client);
 		loginController.setHttpContext(context);
 		loginController.attempt("admin@worknshare.fr", "password"); //TODO disable auto auth
 
 		loginController.setSnackbar(getSnackbar());
 		loginController.setOnLogin(() -> {
-			ticketShowController.updateAuthorizations();
+			ticketShowController.updateAuthorizations(loginController.getEmployee().getRole().get());
 			ticketShowController.updateEmployees();
 			ticketsController.setPage(1);
 			ticketsController.resetFilter();
@@ -89,14 +80,14 @@ public class MainController extends Controller {
 			equipmentRepository.clearCache();
 			equipmentTypeRepository.clearCache();
 			ticketRepository.clearCache();
-			
+
 			tickets.toFront();
 			login.toFront();
 		});
+	}
 
+	private void initTicketControllers() {
 		ticketsController.setSnackbar(getSnackbar());
-		ticketsController.setHttpClient(client);
-		ticketsController.setHttpContext(context);
 		ticketsController.setTicketShowController(ticketShowController);
 
 		ticketCreateController.setSnackbar(getSnackbar());
@@ -109,6 +100,19 @@ public class MainController extends Controller {
 
 		ticketShowController.setBackPanel(tickets);
 		ticketShowController.setSnackbar(getSnackbar());
+	}
+
+	@FXML
+	private void initialize() {
+
+		setSnackbar(new JFXSnackbar(pane));
+
+		CookieStore cookieStore = new BasicCookieStore();		
+		context.setAttribute(HttpClientContext.COOKIE_STORE, cookieStore);
+
+		initRepositories();
+		initLoginController();		
+		initTicketControllers();
 	}
 
 	@FXML
@@ -129,7 +133,7 @@ public class MainController extends Controller {
 		return client;
 	}
 
-	public HttpContext getContext() {
+	public HttpContext getHttpContext() {
 		return context;
 	}
 }

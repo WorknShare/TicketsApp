@@ -1,12 +1,5 @@
 package fr.worknshare.tickets;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -46,9 +39,7 @@ public class TicketsApplication extends Application {
 			primaryStage.setMinHeight(635);
 			primaryStage.setMinWidth(1050);
 
-			primaryStage.getIcons().add(new Image(getClass().getResource("view/logo16.png").toExternalForm()));
-			primaryStage.getIcons().add(new Image(getClass().getResource("view/logo32.png").toExternalForm()));
-			primaryStage.getIcons().add(new Image(getClass().getResource("view/logo64.png").toExternalForm()));
+			setupIcons(primaryStage);
 
 			primaryStage.setScene(scene);
 			primaryStage.show();
@@ -59,6 +50,12 @@ public class TicketsApplication extends Application {
 
 	}
 
+	private void setupIcons(Stage primaryStage) {
+		primaryStage.getIcons().add(new Image(getClass().getResource("view/logo16.png").toExternalForm()));
+		primaryStage.getIcons().add(new Image(getClass().getResource("view/logo32.png").toExternalForm()));
+		primaryStage.getIcons().add(new Image(getClass().getResource("view/logo64.png").toExternalForm()));
+	}
+	
 	private static void setup() {
 		setupLogging();
 		setupErrorHandling();
@@ -70,38 +67,8 @@ public class TicketsApplication extends Application {
 	}
 
 	private static void setupLogging() {
-		DateFormat df = new SimpleDateFormat("[HH:mm:ss.SSS]");
 		Logger logger = Logger.getGlobal();
-
-		Formatter formatter = new Formatter() {
-
-			public String format(LogRecord record) {
-				StringBuilder builder = new StringBuilder(128);
-
-				//Date and level
-				builder.append(df.format(new Date(record.getMillis())));
-				builder.append("[").append(record.getLevel()).append("] ");
-
-				//If level is not info, add context
-				if(!record.getLevel().equals(Level.INFO))
-					builder.append("("+ record.getSourceClassName() + "." + record.getSourceMethodName() +") ");
-				
-				//Message
-				builder.append(formatMessage(record));
-				builder.append("\n");
-
-				//Print stacktrace if an error occurred
-				if(record.getThrown() != null) {
-					StringWriter errors = new StringWriter();
-					record.getThrown().printStackTrace(new PrintWriter(errors));
-					builder.append(errors.toString());
-
-					//Optional error dialog
-				}
-				return builder.toString();
-			}
-
-		};
+		LogFormatter formatter = new LogFormatter();
 
 		//Print INFO logs to System.out
 		StreamHandler handlerInfo = new StreamHandler(System.out, formatter) {
@@ -109,7 +76,7 @@ public class TicketsApplication extends Application {
 			@Override
 			public synchronized void publish(final LogRecord record) {
 				super.publish(record);
-				flush();
+				flush(); //Flush needed to print the message even if the buffer is not full
 			}
 
 		};
@@ -117,26 +84,7 @@ public class TicketsApplication extends Application {
 		handlerInfo.setLevel(Level.INFO);
 
 		//Print other logs to System.err and report them to Rollbar
-		ConsoleHandler handler = new ConsoleHandler() {
-
-			@Override
-			public synchronized void publish(final LogRecord record) {
-				super.publish(record);
-
-				if(rollbar != null)
-					switch(record.getLevel().getName()) {
-					case "SEVERE":
-						rollbar.error(record.getThrown());
-						break;
-					case "WARNING":
-						rollbar.warning(record.getThrown());
-						break;
-					}
-				flush();
-			}
-
-		};
-		handler.setFilter((LogRecord record) -> { return !record.getLevel().equals(Level.INFO); }); //All but INFO logs
+		RollbarConsoleHandler handler = new RollbarConsoleHandler(rollbar);
 		handler.setFormatter(formatter);
 
 		logger.setUseParentHandlers(false);

@@ -44,7 +44,7 @@ public abstract class FailCallback extends RestCallback {
 	}
 
 	/**
-	 * Get a message displayable to the user
+	 * Get a message that can be directly displayed to the user using the snackbar for example.
 	 * @return a built message for the user
 	 */
 	public String getFullMessage() {

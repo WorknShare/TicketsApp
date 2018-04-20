@@ -10,7 +10,9 @@ interface Authorizable {
 	/**
 	 * Update the components based on the current user's role.<br>
 	 * The role can be get using "AuthController.getEmployee().getRole().get()"
+	 * 
+	 * @param role - the role (from 0 to 4) of the current user
 	 */
-	void updateAuthorizations();
+	void updateAuthorizations(int role);
 
 }

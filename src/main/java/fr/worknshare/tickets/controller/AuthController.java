@@ -37,7 +37,7 @@ import javafx.util.Duration;
 public class AuthController extends Controller implements RequestController {
 
 	private EmployeeRepository employeeRepository;
-	private static Employee employee;
+	private Employee employee;
 
 	@FXML private JFXButton submit;
 	@FXML private JFXTextField emailField;
@@ -87,37 +87,13 @@ public class AuthController extends Controller implements RequestController {
 			public void run() {
 				RestResponse response = getResponse();
 				if(response != null) {
-					if(response.getStatus() == 200) {
-						JsonObject payload = response.getJsonObject();
-						JsonElement data = payload.get("data");
-						if(data != null && data.isJsonObject()) {
-							employee = employeeRepository.parseObject(data.getAsJsonObject());
-							hideLoginPane();
-							if(loginCallback != null) loginCallback.run();
+					if(response.getStatus() == 200)
+						handleAttemptSuccessResponse(response);
+					else
+						handleAttemptFailedResponse(response);
 
-							return;
-						} else {
-							//Malformed response
-							getSnackbar().enqueue(new SnackbarEvent("Erreur : Réponse malformée", "error"));
-							Logger.getGlobal().log(Level.INFO, "Login response malformed:\n" + response.getRaw());
-						}
-					} else {
-
-						if(response.getStatus() == 422) //Invalid credentials
-							handleResponse(response.getJsonObject().get("errors").getAsJsonObject());
-						else if(response.getStatus() == 423 || response.getStatus() == 403)
-							getSnackbar().enqueue(new SnackbarEvent(response.getJsonObject().get("errors").getAsJsonObject().get("email").getAsString(), "error"));
-						else if(response.getStatus() != -1)				
-							Logger.getGlobal().log(Level.WARNING, "Login request failed.\n\tStatus code " + response.getStatus() + "\n\tMessage: " + response.getJsonObject().get("error").getAsString());
-						else {
-							Logger.getGlobal().log(Level.WARNING, "Login request failed. Remote host unreachable.");
-							getSnackbar().enqueue(new SnackbarEvent("Impossible de joindre le serveur distant.", "error"));
-						}
-
-					}
-				} else {
+				} else
 					Logger.getGlobal().log(Level.WARNING, "Login request failed. Internal error.");
-				}
 
 				emailField.setDisable(false);
 				passwordField.setDisable(false);
@@ -125,6 +101,43 @@ public class AuthController extends Controller implements RequestController {
 			}
 
 		});
+	}
+	
+	private void handleAttemptSuccessResponse(RestResponse response) {
+		JsonObject payload = response.getJsonObject();
+		JsonElement data = payload.get("data");
+		if(data != null && data.isJsonObject()) {
+			employee = employeeRepository.parseObject(data.getAsJsonObject());
+			hideLoginPane();
+			if(loginCallback != null) loginCallback.run();
+
+			return;
+		} else {
+			//Malformed response
+			getSnackbar().enqueue(new SnackbarEvent("Erreur : Réponse malformée", "error"));
+			Logger.getGlobal().log(Level.INFO, "Login response malformed:\n" + response.getRaw());
+		}
+	}
+	
+	private void handleAttemptFailedResponse(RestResponse response) {
+		
+		if(response.getStatus() == 422) //Invalid credentials
+			handleResponse(response.getJsonObject().get("errors").getAsJsonObject());
+		else if(response.getStatus() == 423 || response.getStatus() == 403)
+			getSnackbar().enqueue(new SnackbarEvent(response.getJsonObject().get("errors").getAsJsonObject().get("email").getAsString(), "error"));
+		else if(response.getStatus() != -1) {
+			JsonElement element = response.getJsonObject().get("error");
+			if(element != null && element.isJsonPrimitive()) {
+				getSnackbar().enqueue(new SnackbarEvent(response.getStatus() + " : " + element.getAsString(), "error"));
+				Logger.getGlobal().log(Level.SEVERE, "Login request failed.\n\tStatus code " + response.getStatus() + "\n\tMessage: " + element.getAsString());
+			} else {
+				getSnackbar().enqueue(new SnackbarEvent("Erreur " + response.getStatus(), "error"));
+				Logger.getGlobal().log(Level.SEVERE, "Login request failed.\n\tStatus code " + response.getStatus());
+			}
+		} else {
+			Logger.getGlobal().log(Level.WARNING, "Login request failed. Remote host unreachable.");
+			getSnackbar().enqueue(new SnackbarEvent("Impossible de joindre le serveur distant.", "error"));
+		}
 	}
 
 	/**
@@ -152,13 +165,20 @@ public class AuthController extends Controller implements RequestController {
 					if(response.getStatus() == 200) {
 						employee = null;
 						showLoginPane();
-					} else if(response.getStatus() != -1)				
-						Logger.getGlobal().log(Level.WARNING, "Logout request failed.\n\tStatus code " + response.getStatus() + "\n\tMessage: " + response.getJsonObject().get("message").getAsString());
-					else {
+					} else if(response.getStatus() != -1) {
+						JsonElement element = response.getJsonObject().get("error");
+						if(element != null && element.isJsonPrimitive()) {
+							getSnackbar().enqueue(new SnackbarEvent("La requête de déconnexion a échoué.\n" + response.getStatus() + " : " + element.getAsString(), "error"));
+							Logger.getGlobal().log(Level.SEVERE, "Logout request failed.\n\tStatus code " + response.getStatus() + "\n\tMessage: " + element.getAsString());
+						} else {
+							getSnackbar().enqueue(new SnackbarEvent("La requête de déconnexion a échoué.\nErreur " + response.getStatus(), "error"));
+							Logger.getGlobal().log(Level.SEVERE, "Logout request failed.\n\tStatus code " + response.getStatus());
+						}
+					} else {
 						Logger.getGlobal().log(Level.WARNING, "Logout request failed. Remote host unreachable.");
 					}
 				} else
-					Logger.getGlobal().log(Level.WARNING, "Logout request failed. Internal error.");
+					Logger.getGlobal().log(Level.SEVERE, "Logout request failed. Internal error.");
 
 				if(button != null) button.setDisable(false);
 			}
@@ -252,7 +272,7 @@ public class AuthController extends Controller implements RequestController {
 		return host + "/api/";
 	}
 
-	public static Employee getEmployee() {
+	public Employee getEmployee() {
 		return employee;
 	}
 
