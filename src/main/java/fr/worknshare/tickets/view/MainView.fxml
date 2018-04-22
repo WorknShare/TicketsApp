@@ -11,7 +11,6 @@
 
 <StackPane fx:id="pane" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.worknshare.tickets.controller.MainController">
 	<children>
-		<fx:include fx:id="login" source="LoginView.fxml" />
 		<BorderPane prefWidth="1030.0" styleClass="root" stylesheets="@application.css">
 			<left>
 				<VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" styleClass="sidebar" stylesheets="@application.css" BorderPane.alignment="CENTER">
@@ -30,7 +29,7 @@
 								<String fx:value="active" />
 							</styleClass>
 						</JFXButton>
-						<JFXButton fx:id="menuEquipments" layoutX="10.0" layoutY="10.0" onAction="#onMenuEquipmentsClicked" styleClass="menu-item" stylesheets="@application.css" text="Matériel" />
+						<JFXButton layoutX="10.0" layoutY="10.0" styleClass="menu-item" stylesheets="@application.css" text="Matériel" />
 						<JFXButton fx:id="logout" onAction="#logoutClicked" style="-fx-background-color: #007bff;" text="Se déconnecter" textAlignment="CENTER" textFill="WHITE">
 							<VBox.margin>
 								<Insets top="15.0" />
@@ -55,5 +54,6 @@
             </StackPane>
          </center>
 		</BorderPane>
+		<fx:include fx:id="login" source="LoginView.fxml" />
 	</children>
 </StackPane>
