@@ -16,6 +16,7 @@ import com.jfoenix.controls.JFXSnackbar;
 import fr.worknshare.tickets.repository.EmployeeRepository;
 import fr.worknshare.tickets.repository.EquipmentRepository;
 import fr.worknshare.tickets.repository.EquipmentTypeRepository;
+import fr.worknshare.tickets.repository.SiteRepository;
 import fr.worknshare.tickets.repository.TicketRepository;
 import javafx.fxml.FXML;
 import javafx.scene.layout.FlowPane;
@@ -34,7 +35,9 @@ public class MainController extends Controller {
 	@FXML private StackPane pane;
 
 	@FXML private JFXButton menuTickets;
+	@FXML private JFXButton menuEquipments;
 	@FXML private VBox tickets;
+	@FXML private VBox equipments;
 
 	@FXML private FlowPane login;
 
@@ -42,6 +45,7 @@ public class MainController extends Controller {
 	@FXML private TicketsController ticketsController;
 	@FXML private TicketCreateController ticketCreateController;
 	@FXML private TicketShowController ticketShowController;
+	@FXML private EquipmentController equipmentsController;
 
 	private HttpClient client = HttpClientBuilder.create().build();
 	private HttpContext context = new BasicHttpContext();
@@ -50,10 +54,12 @@ public class MainController extends Controller {
 	private EquipmentRepository equipmentRepository;
 	private EquipmentTypeRepository equipmentTypeRepository;
 	private TicketRepository ticketRepository;
+	private SiteRepository siteRepository;
 
 	private void initRepositories() {
+		siteRepository = new SiteRepository(client, context);
 		employeeRepository = new EmployeeRepository(client, context);
-		equipmentRepository = new EquipmentRepository(client, context);
+		equipmentRepository = new EquipmentRepository(client, context, siteRepository);
 		equipmentTypeRepository = equipmentRepository.getEquipmentTypeRepository();
 		ticketRepository = new TicketRepository(client, context, employeeRepository, equipmentRepository);
 
@@ -62,12 +68,13 @@ public class MainController extends Controller {
 		ticketCreateController.setTicketRepository(ticketRepository);
 		ticketShowController.setTicketRepository(ticketRepository);
 		ticketShowController.setEmployeeRepository(employeeRepository);
+		equipmentsController.setEquipmentRepository(equipmentRepository);
 	}
 
 	private void initLoginController() {
 		loginController.setHttpClient(client);
 		loginController.setHttpContext(context);
-		loginController.attempt("admin@worknshare.fr", "password"); //TODO disable auto auth
+		loginController.attempt("admin@worknshare.fr", "admin"); //TODO disable auto auth
 
 		loginController.setSnackbar(getSnackbar());
 		loginController.setOnLogin(() -> {
@@ -116,6 +123,8 @@ public class MainController extends Controller {
 		initRepositories();
 		initLoginController();		
 		initTicketControllers();
+		
+		equipmentsController.setSnackbar(getSnackbar());
 	}
 
 	@FXML
@@ -130,8 +139,18 @@ public class MainController extends Controller {
 		ticketsController.resetFilter();
 		ticketsController.refresh();
 		menuTickets.getStyleClass().add("active");
+		menuEquipments.getStyleClass().remove("active");
 	}
-
+	
+	@FXML
+	public void onMenuEquipmentsClicked() {
+		equipments.toFront();
+		equipmentsController.setPage(1);
+		equipmentsController.refresh();
+		menuTickets.getStyleClass().remove("active");
+		menuEquipments.getStyleClass().add("active");
+	}
+	
 	public HttpClient getHttpClient() {
 		return client;
 	}

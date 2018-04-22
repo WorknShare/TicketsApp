@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXSpinner?>
+<?import com.jfoenix.controls.JFXTreeTableView?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="591.0" prefWidth="807.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HBox prefHeight="29.0" prefWidth="838.0">
+         <children>
+            <Label graphicTextGap="5.0" styleClass="h1" stylesheets="@application.css" text="Equipements">
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </Label>
+         </children>
+      </HBox>
+      <JFXTreeTableView />
+      <HBox prefHeight="90.0" prefWidth="679.0">
+         <children>
+            <JFXSpinner prefHeight="57.0" prefWidth="57.0" />
+            <Pane prefHeight="0.0" prefWidth="646.0" />
+            <JFXButton prefHeight="127.0" prefWidth="25.0" styleClass="previous-button" stylesheets="@application.css" text="&lt;" textAlignment="CENTER" />
+            <Label prefHeight="85.0" prefWidth="48.0" text="Page 1/1" textAlignment="CENTER" />
+            <JFXButton prefHeight="96.0" prefWidth="25.0" styleClass="next-button" stylesheets="@application.css" text="&gt;" textAlignment="CENTER" />
+         </children>
+      </HBox>
+   </children>
+</VBox>

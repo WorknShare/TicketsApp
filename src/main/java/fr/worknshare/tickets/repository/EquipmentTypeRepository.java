@@ -17,7 +17,6 @@ public final class EquipmentTypeRepository extends Repository<EquipmentType> {
 
 	public EquipmentTypeRepository(HttpClient client, HttpContext context) {
 		super(client, context);
-		equipmentRepository = new EquipmentRepository(client, context, this);
 	}
 
 	public EquipmentTypeRepository(HttpClient client, HttpContext context, EquipmentRepository equipmentRepository) {
