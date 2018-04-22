@@ -1,5 +1,7 @@
 package fr.worknshare.tickets.controller;
 
+import java.util.logging.Logger;
+
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.protocol.HttpClientContext;
@@ -76,6 +78,7 @@ public class MainController extends Controller {
 			ticketsController.refresh();
 		});
 		loginController.setOnLogout(() -> {
+			Logger.getGlobal().info("Clearing cache...");
 			employeeRepository.clearCache();
 			equipmentRepository.clearCache();
 			equipmentTypeRepository.clearCache();
