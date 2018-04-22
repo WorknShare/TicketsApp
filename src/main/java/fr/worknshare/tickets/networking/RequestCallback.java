@@ -16,7 +16,7 @@ public abstract class RequestCallback implements Runnable {
 
 	/**
 	 * Get the response from the request. All checks have to be done.
-	 * @return the response, can be null
+	 * @return the response, cannot be null
 	 */
 	public RestResponse getResponse() {
 		return response;

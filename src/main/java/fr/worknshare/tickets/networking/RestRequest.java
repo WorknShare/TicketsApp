@@ -22,7 +22,6 @@ import org.apache.http.protocol.HttpContext;
 
 import com.google.gson.Gson;
 
-import fr.worknshare.tickets.controller.AuthController;
 import javafx.application.Platform;
 
 /**
@@ -41,6 +40,11 @@ public class RestRequest {
 	private HttpClient client;
 	private HttpContext context;
 
+	/**
+	 * Create a new RestRequest instance
+	 * @param client
+	 * @param url
+	 */
 	public RestRequest(HttpClient client, String url) {
 		this.client = client;
 		this.url = url;
@@ -48,6 +52,10 @@ public class RestRequest {
 		this.parameters = new Hashtable<>();
 	}
 
+	/**
+	 * Create a new RestRequest instance without providing an URL. Therefore, it must be given later using the url() method.
+	 * @param client
+	 */
 	public RestRequest(HttpClient client) {
 		this.client = client;
 	}
@@ -130,7 +138,10 @@ public class RestRequest {
 	 * 
 	 * @see RestResponse
 	 * @see HttpMethod
+	 * 
+	 * @deprecated use {@link #asyncExecute()} instead.  
 	 */
+	@Deprecated
 	public RestResponse execute(HttpMethod method) {
 
 		RestResponse result = null;
@@ -146,7 +157,7 @@ public class RestRequest {
 
 		} catch (IOException e) {
 			Logger.getGlobal().log(Level.SEVERE, "Unable to execute Rest " + method.name() + " request", e);
-			result = new RestResponse();
+			result = new RestResponse(); //Create a response with status code -1 and message "Request failed".
 		}
 
 		return result;
@@ -179,7 +190,7 @@ public class RestRequest {
 
 			} catch (IOException e) {
 				Logger.getGlobal().log(Level.SEVERE, "Unable to execute Rest " + method.name() + " request", e);
-				result = new RestResponse();
+				result = new RestResponse(); //Create a response with status code -1 and message "Request failed".
 			}
 
 			callback.setResponse(result);
@@ -202,9 +213,6 @@ public class RestRequest {
 			//Headers
 			request.addHeader("Accept", "application/json");
 			request.addHeader("Content-type", "application/json; charset=UTF-8");
-
-			if(AuthController.getEmployee() != null) //Add token to headers if authenticated
-				request.addHeader("Authorization", "Bearer " + AuthController.getEmployee().getToken());
 
 			//Parameters
 			if(parameters.size() > 0) {

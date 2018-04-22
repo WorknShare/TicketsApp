@@ -56,10 +56,6 @@ public final class EmployeeRepository extends Repository<Employee> {
 			element = object.get("role");
 			if(element != null && element.isJsonPrimitive()) employee.setRole(element.getAsInt());
 
-			//API token
-			element = object.get("api_token");
-			if(element != null && element.isJsonPrimitive()) employee.setToken(element.getAsString());
-
 			registerModel(employee);
 			return employee;
 		}

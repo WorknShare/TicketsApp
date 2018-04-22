@@ -69,39 +69,32 @@ public class MainController extends Controller {
 		equipmentController.setEquipmentRepository(equipmentRepository);
 	}
 
-	@FXML
-	private void initialize() {
-
-		setSnackbar(new JFXSnackbar(pane));
-
-		CookieStore cookieStore = new BasicCookieStore();		
-		context.setAttribute(HttpClientContext.COOKIE_STORE, cookieStore);
-
-		initRepositories();
-
+	private void initLoginController() {
 		loginController.setHttpClient(client);
 		loginController.setHttpContext(context);
 		loginController.attempt("admin@worknshare.fr", "password"); //TODO disable auto auth
 
 		loginController.setSnackbar(getSnackbar());
 		loginController.setOnLogin(() -> {
-			ticketsController.refresh();
-			ticketShowController.updateAuthorizations();
+			ticketShowController.updateAuthorizations(loginController.getEmployee().getRole().get());
 			ticketShowController.updateEmployees();
+			ticketsController.setPage(1);
+			ticketsController.resetFilter();
+			ticketsController.refresh();
 		});
 		loginController.setOnLogout(() -> {
 			employeeRepository.clearCache();
 			equipmentRepository.clearCache();
 			equipmentTypeRepository.clearCache();
 			ticketRepository.clearCache();
-			
+
 			tickets.toFront();
 			login.toFront();
 		});
+	}
 
+	private void initTicketControllers() {
 		ticketsController.setSnackbar(getSnackbar());
-		ticketsController.setHttpClient(client);
-		ticketsController.setHttpContext(context);
 		ticketsController.setTicketShowController(ticketShowController);
 
 		ticketCreateController.setSnackbar(getSnackbar());
@@ -117,6 +110,19 @@ public class MainController extends Controller {
 	}
 
 	@FXML
+	private void initialize() {
+
+		setSnackbar(new JFXSnackbar(pane));
+
+		CookieStore cookieStore = new BasicCookieStore();		
+		context.setAttribute(HttpClientContext.COOKIE_STORE, cookieStore);
+
+		initRepositories();
+		initLoginController();		
+		initTicketControllers();
+	}
+
+	@FXML
 	public void logoutClicked() {
 		loginController.logout(logout);
 	}
@@ -125,6 +131,7 @@ public class MainController extends Controller {
 	public void onMenuTicketsClicked() {
 		tickets.toFront();
 		ticketsController.setPage(1);
+		ticketsController.resetFilter();
 		ticketsController.refresh();
 		menuTickets.getStyleClass().add("active");
 	}
@@ -140,7 +147,7 @@ public class MainController extends Controller {
 		return client;
 	}
 
-	public HttpContext getContext() {
+	public HttpContext getHttpContext() {
 		return context;
 	}
 }

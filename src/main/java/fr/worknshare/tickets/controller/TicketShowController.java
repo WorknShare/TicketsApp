@@ -24,6 +24,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
@@ -57,9 +58,30 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 
 	private Pane backPanel;
 
+	private void initEmployeeAssignedCellFactory() {
+		employeeAssigned.setCellFactory((lv) -> {
+			return new ListCell<Employee>() {
+				@Override
+				protected void updateItem(Employee item, boolean empty) {
+					super.updateItem(item, empty);
+
+					if (empty || item == null) {
+						setText(null);
+						setGraphic(null);
+					} else {
+						setText(item.toString());
+						setGraphic(null);
+					}
+				}
+			};
+		});
+	}
+	
 	@FXML
 	private void initialize() {
 		StatusComboBoxMaker.make(statusBox);
+		
+		initEmployeeAssignedCellFactory();
 		noneEmployee = new Employee(0);
 		noneEmployee.setSurname("Aucun");
 		noneEmployee.setName("");
@@ -76,96 +98,108 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 	@FXML
 	private void onStatusChanged() {
 		if(currentStatus != -1) {
+			statusBox.setDisable(true);
 			int status = statusBox.getSelectionModel().getSelectedItem().getStatus();
 			if(currentStatus != status) {
 				ticketRepository.updateStatus(ticket, status, new RequestCallback() {
 
 					@Override
 					public void run() {
-						RestResponse response = getResponse();
-						if(response.getStatus() == 204) {
-							ticket.setStatus(status);
-							currentStatus = ticket.getStatus().get();
-							getSnackbar().enqueue(new SnackbarEvent("Le statut du ticket a été modifié avec succès.", "success"));
-							return;
-						} else if(response.getStatus() == 403) {
-							getSnackbar().enqueue(new SnackbarEvent("Vous n'êtes pas autorisé à faire cela.", "error"));
-							Logger.getGlobal().log(Level.WARNING, "Ticket status update request returned 403 status code.");
-						} else {
-							JsonObject object = response.getJsonObject();
-							if(object.has("errors")) {
-								JsonObject errors = object.get("errors").getAsJsonObject();
-								if(errors.has("status"))
-									getSnackbar().enqueue(new SnackbarEvent(errors.get("status").getAsString(), "error"));
-							} else {
-								JsonElement element = object.get("error");
-								if(element != null && element.isJsonPrimitive()) {
-									getSnackbar().enqueue(new SnackbarEvent(response.getStatus() + " : " + element.getAsString(), "error"));
-									Logger.getGlobal().log(Level.SEVERE, "Ticket status update request failed.\n\tStatus code " + response.getStatus() + "\n\tMessage: " + element.getAsString());
-								} else {
-									getSnackbar().enqueue(new SnackbarEvent("Erreur " + response.getStatus(), "error"));
-									Logger.getGlobal().log(Level.SEVERE, "Ticket status update request failed.\n\tStatus code " + response.getStatus());
-								}
-							}
-						}
-
-						//Restore status to previous one
-						currentStatus = -1;
-						statusBox.getSelectionModel().select(ticket.getStatus().get());
-						currentStatus = ticket.getStatus().get();
+						handleStatusChangedResponse(getResponse(), status);
 					}
 				});
 			}
 		}
 	}
+	
+	private void handleStatusChangedResponse(RestResponse response, int status) {
+		if(response.getStatus() == 204) {
+			ticket.setStatus(status);
+			currentStatus = ticket.getStatus().get();
+			statusBox.setDisable(false);
+			getSnackbar().enqueue(new SnackbarEvent("Le statut du ticket a été modifié avec succès.", "success"));
+			return;
+		} else if(response.getStatus() == 403) {
+			getSnackbar().enqueue(new SnackbarEvent("Vous n'êtes pas autorisé à faire cela.", "error"));
+			Logger.getGlobal().log(Level.WARNING, "Ticket status update request returned 403 status code.");
+		} else {
+			JsonObject object = response.getJsonObject();
+			if(object.has("errors")) {
+				JsonObject errors = object.get("errors").getAsJsonObject();
+				if(errors.has("status"))
+					getSnackbar().enqueue(new SnackbarEvent(errors.get("status").getAsString(), "error"));
+			} else {
+				JsonElement element = object.get("error");
+				if(element != null && element.isJsonPrimitive()) {
+					getSnackbar().enqueue(new SnackbarEvent(response.getStatus() + " : " + element.getAsString(), "error"));
+					Logger.getGlobal().log(Level.SEVERE, "Ticket status update request failed.\n\tStatus code " + response.getStatus() + "\n\tMessage: " + element.getAsString());
+				} else {
+					getSnackbar().enqueue(new SnackbarEvent("Erreur " + response.getStatus(), "error"));
+					Logger.getGlobal().log(Level.SEVERE, "Ticket status update request failed.\n\tStatus code " + response.getStatus());
+				}
+			}
+		}
+
+		//Restore status to previous one
+		currentStatus = -1;
+		statusBox.getSelectionModel().select(ticket.getStatus().get());
+		currentStatus = ticket.getStatus().get();
+		statusBox.setDisable(false);
+	}
 
 	@FXML
 	private void onEmployeeAssignedChanged() {
 		if(currentAssignedEmployee != null) {
+			employeeAssigned.setDisable(true);
 			Employee employee = employeeAssigned.getSelectionModel().getSelectedItem();
 			if(currentAssignedEmployee != employee) {
 				ticketRepository.updateEmployeeAssigned(ticket, employee, new RequestCallback() {
 
 					@Override
 					public void run() {
-						RestResponse response = getResponse();
-						if(response.getStatus() == 204) {
-							ticket.setEmployeeAssigned(employee == noneEmployee ? null : employee);
-							currentAssignedEmployee = ticket.getEmployeeAssigned();
-							getSnackbar().enqueue(new SnackbarEvent("Le technicien a été assigné à ce ticket avec succès.", "success"));
-							return;
-						} else if(response.getStatus() == 403) {
-							getSnackbar().enqueue(new SnackbarEvent("Vous n'êtes pas autorisé à faire cela.", "error"));
-							Logger.getGlobal().log(Level.WARNING, "Ticket assign request returned 403 status code.");
-						} else {
-							JsonObject object = response.getJsonObject();
-							if(object.has("errors")) {
-								JsonObject errors = object.get("errors").getAsJsonObject();
-								if(errors.has("employee"))
-									getSnackbar().enqueue(new SnackbarEvent(errors.get("employee").getAsString(), "error"));
-							} else {
-								JsonElement element = object.get("error");
-								if(element != null && element.isJsonPrimitive()) {
-									getSnackbar().enqueue(new SnackbarEvent(response.getStatus() + " : " + element.getAsString(), "error"));
-									Logger.getGlobal().log(Level.SEVERE, "Ticket assign request failed.\n\tStatus code " + response.getStatus() + "\n\tMessage: " + element.getAsString());
-								} else {
-									getSnackbar().enqueue(new SnackbarEvent("Erreur " + response.getStatus(), "error"));
-									Logger.getGlobal().log(Level.SEVERE, "Ticket assign request failed.\n\tStatus code " + response.getStatus());
-								}
-							}
-						}
-
-						//Restore employee to previous one
-						Employee previousAssignedEmployee = ticket.getEmployeeAssigned() == null ? noneEmployee : ticket.getEmployeeAssigned();
-						currentAssignedEmployee = null;
-						employeeAssigned.getSelectionModel().select(previousAssignedEmployee);
-						currentAssignedEmployee = previousAssignedEmployee;
+						handleEmployeeAssignedChangedResponse(getResponse(), employee);						
 					}
 				});
 			}
 		}
 	}
 
+	private void handleEmployeeAssignedChangedResponse(RestResponse response, Employee employee) {
+		if(response.getStatus() == 204) {
+			ticket.setEmployeeAssigned(employee == noneEmployee ? null : employee);
+			currentAssignedEmployee = ticket.getEmployeeAssigned();
+			employeeAssigned.setDisable(false);
+			getSnackbar().enqueue(new SnackbarEvent("Le technicien a été assigné à ce ticket avec succès.", "success"));
+			return;
+		} else if(response.getStatus() == 403) {
+			getSnackbar().enqueue(new SnackbarEvent("Vous n'êtes pas autorisé à faire cela.", "error"));
+			Logger.getGlobal().log(Level.WARNING, "Ticket assign request returned 403 status code.");
+		} else {
+			JsonObject object = response.getJsonObject();
+			if(object.has("errors")) {
+				JsonObject errors = object.get("errors").getAsJsonObject();
+				if(errors.has("employee"))
+					getSnackbar().enqueue(new SnackbarEvent(errors.get("employee").getAsString(), "error"));
+			} else {
+				JsonElement element = object.get("error");
+				if(element != null && element.isJsonPrimitive()) {
+					getSnackbar().enqueue(new SnackbarEvent(response.getStatus() + " : " + element.getAsString(), "error"));
+					Logger.getGlobal().log(Level.SEVERE, "Ticket assign request failed.\n\tStatus code " + response.getStatus() + "\n\tMessage: " + element.getAsString());
+				} else {
+					getSnackbar().enqueue(new SnackbarEvent("Erreur " + response.getStatus(), "error"));
+					Logger.getGlobal().log(Level.SEVERE, "Ticket assign request failed.\n\tStatus code " + response.getStatus());
+				}
+			}
+		}
+
+		//Restore employee to previous one
+		Employee previousAssignedEmployee = ticket.getEmployeeAssigned() == null ? noneEmployee : ticket.getEmployeeAssigned();
+		currentAssignedEmployee = null;
+		employeeAssigned.getSelectionModel().select(previousAssignedEmployee);
+		currentAssignedEmployee = previousAssignedEmployee;
+		employeeAssigned.setDisable(false);
+	}
+	
 	@FXML
 	private void equipmentButtonClicked() {
 		//TODO show equipment panel
@@ -213,8 +247,7 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 	}
 
 	@Override
-	public void updateAuthorizations() {
-		int role = AuthController.getEmployee().getRole().get();
+	public void updateAuthorizations(int role) {
 		statusBox.setDisable(role != 1 && role != 4);
 		employeeAssigned.setDisable(role > 2);
 		currentStatus = -1;

@@ -1,5 +1,10 @@
 package fr.worknshare.tickets.view;
 
+/**
+ * This class is meant to be used as an item in combo box popup list for status comboboxes
+ * @author Jérémy LAMBERT
+ *
+ */
 public final class StatusItem {
 
 	private int status;

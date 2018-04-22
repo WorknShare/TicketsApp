@@ -1,8 +1,5 @@
 package fr.worknshare.tickets.controller;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.protocol.HttpContext;
-
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXSnackbar.SnackbarEvent;
@@ -26,7 +23,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TreeTableRow;
 import javafx.scene.input.KeyCode;
 
-public class TicketsController extends Controller implements RequestController {
+public class TicketsController extends Controller {
 
 	private TicketRepository ticketRepository;
 	private TicketShowController ticketShowController;
@@ -42,8 +39,6 @@ public class TicketsController extends Controller implements RequestController {
 	@FXML private JFXComboBox<StatusItem> statusFilter;
 
 	private int page;
-	private HttpClient httpClient;
-	private HttpContext httpContext;
 	private FailCallback failCallback;
 	private PaginatedRequestCallback<Ticket> callback;
 
@@ -57,9 +52,9 @@ public class TicketsController extends Controller implements RequestController {
 				table.setDisable(false);
 				previousButton.setDisable(true);
 				nextButton.setDisable(true);
-				table.setDisable(false);
 				loader.setVisible(false);
 				searchbar.setDisable(false);
+				statusFilter.setDisable(false);
 			}
 
 		};
@@ -83,6 +78,7 @@ public class TicketsController extends Controller implements RequestController {
 				table.setDisable(false);
 				loader.setVisible(false);
 				searchbar.setDisable(false);
+				statusFilter.setDisable(false);
 
 			}
 		};
@@ -101,6 +97,13 @@ public class TicketsController extends Controller implements RequestController {
 		});
 	}
 
+	private void initSearchSubmitOnEnter() {
+		searchbar.setOnKeyPressed((event) -> {
+			if (event.getCode().equals(KeyCode.ENTER))
+				submitSearch();
+		});
+	}
+
 	@FXML
 	private void initialize() {
 
@@ -111,15 +114,10 @@ public class TicketsController extends Controller implements RequestController {
 		initFailCallback();
 		initCallback();
 
+		initSearchSubmitOnEnter();
+
 		StatusComboBoxMaker.make(statusFilter, true);
 		statusFilter.getSelectionModel().select(0);
-
-		//Submit on enter
-		searchbar.setOnKeyPressed((event) -> {
-			if (event.getCode().equals(KeyCode.ENTER)) {
-				submitSearch();
-			}
-		});
 
 	}
 
@@ -164,6 +162,7 @@ public class TicketsController extends Controller implements RequestController {
 		paginationLabel.getStyleClass().add("text-muted");
 		loader.setVisible(true);
 		searchbar.setDisable(true);
+		statusFilter.setDisable(true);
 		ticketList.clear();
 	}
 
@@ -197,18 +196,6 @@ public class TicketsController extends Controller implements RequestController {
 		statusFilter.setDisable(true);
 		statusFilter.getSelectionModel().select(0);
 		statusFilter.setDisable(false);
-	}
-
-	@Override
-	public void setHttpClient(HttpClient client) {
-		this.httpClient = client;
-		ticketRepository.setHttpClient(httpClient);
-	}
-
-	@Override
-	public void setHttpContext(HttpContext context) {
-		this.httpContext = context;
-		ticketRepository.setHttpContext(httpContext);
 	}
 
 	public void setTicketRepository(TicketRepository ticketRepository) {

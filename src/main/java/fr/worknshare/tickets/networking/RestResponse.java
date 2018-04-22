@@ -58,7 +58,7 @@ public class RestResponse {
 		}
 
 		if(status == 404)
-			Logger.getGlobal().log(Level.WARNING, "Requested URL returned 404", new NotFoundException("Request returned status 404 NOT FOUND"));
+			Logger.getGlobal().log(Level.SEVERE, "Requested URL returned 404", new NotFoundException("Request returned status 404 NOT FOUND"));
 	}
 
 	/**

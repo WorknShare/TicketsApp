@@ -10,7 +10,7 @@ import fr.worknshare.tickets.networking.RequestCallback;
  * 
  * @see Repository
  */
-public interface CreatorRepository<T> {
+interface CreatorRepository<T> {
 
 	/**
 	 * Create a new resource on the server
