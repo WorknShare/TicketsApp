@@ -3,14 +3,10 @@ package fr.worknshare.tickets.repository;
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import fr.worknshare.tickets.model.Equipment;
-import fr.worknshare.tickets.model.EquipmentType;
 import fr.worknshare.tickets.model.Site;
-import fr.worknshare.tickets.view.Paginator;
 
 public class SiteRepository extends Repository<Site>{
 
@@ -21,7 +17,7 @@ public class SiteRepository extends Repository<Site>{
 	
 	@Override
 	public String getResourceName() {
-		return "equipmenttype";
+		return "site";
 	}
 
 	@Override
@@ -29,7 +25,10 @@ public class SiteRepository extends Repository<Site>{
 
 		JsonElement element = object.get("id_site");
 		if(element != null && element.isJsonPrimitive()) {
-			Site site = new Site(element.getAsInt());
+			Site site = getFromCache(element.getAsInt());
+			if(site == null)
+				site = new Site(element.getAsInt());
+			
 
 			//Name
 			element = object.get("name");
@@ -37,8 +36,8 @@ public class SiteRepository extends Repository<Site>{
 			
 			//Address
 			element = object.get("address");
-			if(element != null && element.isJsonPrimitive()) site.setName(element.getAsString());
-
+			if(element != null && element.isJsonPrimitive()) site.setAddress(element.getAsString());
+			registerModel(site);
 			return site;
 		}
 		return null;

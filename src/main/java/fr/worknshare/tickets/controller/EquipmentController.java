@@ -4,21 +4,18 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXSnackbar.SnackbarEvent;
 import com.jfoenix.controls.JFXSpinner;
 import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
-import com.jfoenix.controls.JFXSnackbar.SnackbarEvent;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 
 import fr.worknshare.tickets.model.Equipment;
-import fr.worknshare.tickets.model.Ticket;
-import fr.worknshare.tickets.repository.EmployeeRepository;
 import fr.worknshare.tickets.repository.EquipmentRepository;
 import fr.worknshare.tickets.repository.FailCallback;
 import fr.worknshare.tickets.repository.PaginatedRequestCallback;
 import fr.worknshare.tickets.repository.PaginatedResponse;
-import fr.worknshare.tickets.repository.TicketRepository;
 import fr.worknshare.tickets.view.Paginator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -31,7 +28,7 @@ import javafx.scene.control.TreeTableColumn;
 public class EquipmentController extends Controller implements RequestController{
 	
 	private EquipmentRepository equipmentRepository;
-	private ObservableList<Equipment> EquipmentList;	
+	private ObservableList<Equipment> equipmentList;	
 
 	@FXML private JFXTreeTableView<Equipment> tableEquipment;
 	@FXML private Label paginationLabel;
@@ -110,7 +107,7 @@ public class EquipmentController extends Controller implements RequestController
 	
 	private void initColumns() {
 
-		final TreeItem<Equipment> root = new RecursiveTreeItem<Equipment>(EquipmentList, RecursiveTreeObject::getChildren);
+		final TreeItem<Equipment> root = new RecursiveTreeItem<Equipment>(equipmentList, RecursiveTreeObject::getChildren);
 		tableEquipment.setRoot(root);
 		tableEquipment.setShowRoot(false);
 
@@ -122,7 +119,7 @@ public class EquipmentController extends Controller implements RequestController
 	@FXML
 	private void initialize() {
 
-		EquipmentList = FXCollections.observableArrayList();
+		equipmentList = FXCollections.observableArrayList();
 		page = 1;
 		initColumns();
 
@@ -146,11 +143,13 @@ public class EquipmentController extends Controller implements RequestController
 	}
 	
 	public void refresh() {
+
 		tableEquipment.setDisable(true);
 		previousButton.setDisable(true);
 		nextButton.setDisable(true);
 		paginationLabel.getStyleClass().add("text-muted");
 		loader.setVisible(true);
+		equipmentList.clear(); //Empty the list
 		
 		equipmentRepository.paginate(page, new PaginatedRequestCallback<Equipment>() {
 			
@@ -159,8 +158,8 @@ public class EquipmentController extends Controller implements RequestController
 				PaginatedResponse<Equipment> response = getPaginatedResponse();
 				Paginator paginator = response.getPaginator();
 
-				EquipmentList.clear(); //Empty the list
-				EquipmentList.addAll(response.getItems());
+				
+				equipmentList.addAll(response.getItems());
 
 				paginationLabel.setText("Page " + paginator.getCurrentPage() + "/" + paginator.getMaxPage());
 				paginationLabel.getStyleClass().remove("text-muted");

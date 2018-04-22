@@ -5,11 +5,8 @@ import org.apache.http.protocol.HttpContext;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import javafx.beans.property.SimpleStringProperty;
 
 import fr.worknshare.tickets.model.Equipment;
-import fr.worknshare.tickets.model.Ticket;
-import fr.worknshare.tickets.networking.RequestCallback;
 
 public final class EquipmentRepository extends Repository<Equipment>{
 

@@ -43,7 +43,7 @@ public class MainController extends Controller {
 	@FXML private TicketsController ticketsController;
 	@FXML private TicketCreateController ticketCreateController;
 	@FXML private TicketShowController ticketShowController;
-	@FXML private EquipmentController equipmentController;
+	@FXML private EquipmentController equipmentsController;
 
 	private HttpClient client = HttpClientBuilder.create().build();
 	private HttpContext context = new BasicHttpContext();
@@ -66,13 +66,13 @@ public class MainController extends Controller {
 		ticketCreateController.setTicketRepository(ticketRepository);
 		ticketShowController.setTicketRepository(ticketRepository);
 		ticketShowController.setEmployeeRepository(employeeRepository);
-		equipmentController.setEquipmentRepository(equipmentRepository);
+		equipmentsController.setEquipmentRepository(equipmentRepository);
 	}
 
 	private void initLoginController() {
 		loginController.setHttpClient(client);
 		loginController.setHttpContext(context);
-		loginController.attempt("admin@worknshare.fr", "password"); //TODO disable auto auth
+		loginController.attempt("admin@worknshare.fr", "admin"); //TODO disable auto auth
 
 		loginController.setSnackbar(getSnackbar());
 		loginController.setOnLogin(() -> {
@@ -120,6 +120,8 @@ public class MainController extends Controller {
 		initRepositories();
 		initLoginController();		
 		initTicketControllers();
+		
+		equipmentsController.setSnackbar(getSnackbar());
 	}
 
 	@FXML
@@ -134,13 +136,16 @@ public class MainController extends Controller {
 		ticketsController.resetFilter();
 		ticketsController.refresh();
 		menuTickets.getStyleClass().add("active");
+		menuEquipments.getStyleClass().remove("active");
 	}
 	
 	@FXML
 	public void onMenuEquipmentsClicked() {
 		equipments.toFront();
-		equipmentController.setPage(1);
-		equipmentController.refresh();
+		equipmentsController.setPage(1);
+		equipmentsController.refresh();
+		menuTickets.getStyleClass().remove("active");
+		menuEquipments.getStyleClass().add("active");
 	}
 	
 	public HttpClient getHttpClient() {

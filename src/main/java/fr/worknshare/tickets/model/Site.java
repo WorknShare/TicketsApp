@@ -5,12 +5,13 @@ import javafx.beans.property.SimpleStringProperty;
 public class Site extends Model<Site>{
 
 	private SimpleStringProperty name;
-	private SimpleStringProperty adress;
+	private SimpleStringProperty address;
 	
 	
 	public Site(int id) {
 		super(id);
 		name 	= new SimpleStringProperty();
+		address = new SimpleStringProperty();
 	}
 
 	public final SimpleStringProperty getName() {
@@ -26,7 +27,7 @@ public class Site extends Model<Site>{
 		return name;
 	}
 
-	public final void setAdress(String adress) {
-		this.adress.set(adress);
+	public final void setAddress(String address) {
+		this.address.set(address);
 	}
 }
