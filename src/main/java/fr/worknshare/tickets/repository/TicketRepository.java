@@ -161,4 +161,20 @@ public final class TicketRepository extends Repository<Ticket> implements Creato
 		request.asyncExecute(HttpMethod.PUT, callback);
 	}
 
+	public final EmployeeRepository getEmployeeRepository() {
+		return employeeRepository;
+	}
+
+	public final void setEmployeeRepository(EmployeeRepository employeeRepository) {
+		this.employeeRepository = employeeRepository;
+	}
+
+	public final EquipmentRepository getEquipmentRepository() {
+		return equipmentRepository;
+	}
+
+	public final void setEquipmentRepository(EquipmentRepository equipmentRepository) {
+		this.equipmentRepository = equipmentRepository;
+	}
+
 }

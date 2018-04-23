@@ -41,7 +41,7 @@ public abstract class Repository<T extends Model<T>> {
 	}
 
 	public Repository() {
-		dateFormat  = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
+		dateFormat  = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		this.models = new Hashtable<>();
 	}
 
