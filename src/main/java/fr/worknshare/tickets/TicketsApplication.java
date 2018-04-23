@@ -30,10 +30,10 @@ public class TicketsApplication extends Application {
 	public void start(Stage primaryStage) {
 
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("view/MainView.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MainView.fxml"));
 			StackPane rootLayout = (StackPane) loader.load();
 			Scene scene = new Scene(rootLayout);
-			scene.getStylesheets().add(getClass().getResource("view/application.css").toExternalForm());
+			scene.getStylesheets().add(getClass().getResource("/view/application.css").toExternalForm());
 
 			primaryStage.setTitle("Work'n Share Tickets");
 			primaryStage.setMinHeight(635);
@@ -51,9 +51,9 @@ public class TicketsApplication extends Application {
 	}
 
 	private void setupIcons(Stage primaryStage) {
-		primaryStage.getIcons().add(new Image(getClass().getResource("view/logo16.png").toExternalForm()));
-		primaryStage.getIcons().add(new Image(getClass().getResource("view/logo32.png").toExternalForm()));
-		primaryStage.getIcons().add(new Image(getClass().getResource("view/logo64.png").toExternalForm()));
+		primaryStage.getIcons().add(new Image(getClass().getResource("/view/logo16.png").toExternalForm()));
+		primaryStage.getIcons().add(new Image(getClass().getResource("/view/logo32.png").toExternalForm()));
+		primaryStage.getIcons().add(new Image(getClass().getResource("/view/logo64.png").toExternalForm()));
 	}
 	
 	private static void setup() {
