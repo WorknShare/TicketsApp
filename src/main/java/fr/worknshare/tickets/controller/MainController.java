@@ -74,7 +74,7 @@ public class MainController extends Controller {
 	private void initLoginController() {
 		loginController.setHttpClient(client);
 		loginController.setHttpContext(context);
-		loginController.attempt("admin@worknshare.fr", "admin"); //TODO disable auto auth
+		loginController.attempt("admin@worknshare.fr", "password"); //TODO disable auto auth
 
 		loginController.setSnackbar(getSnackbar());
 		loginController.setOnLogin(() -> {
@@ -125,6 +125,8 @@ public class MainController extends Controller {
 		initTicketControllers();
 		
 		equipmentsController.setSnackbar(getSnackbar());
+		
+		menuTickets.getStyleClass().add("active");
 	}
 
 	@FXML
