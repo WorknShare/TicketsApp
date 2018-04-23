@@ -38,7 +38,7 @@ public final class EquipmentRepository extends Repository<Equipment>{
 	}
 
 	@Override
-	protected Equipment parseObject(JsonObject object) {
+	public Equipment parseObject(JsonObject object) {
 
 		JsonElement element = object.get("id_equipment");
 		if(element != null && element.isJsonPrimitive()) {

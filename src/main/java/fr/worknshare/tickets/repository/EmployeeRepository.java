@@ -24,7 +24,7 @@ public final class EmployeeRepository extends Repository<Employee> {
 	}
 
 	@Override
-	protected Employee parseObject(JsonObject object) {
+	public Employee parseObject(JsonObject object) {
 		JsonElement element = object.get("id_employee");
 		if(element != null && element.isJsonPrimitive()) {
 

@@ -41,7 +41,7 @@ public final class TicketRepository extends Repository<Ticket> implements Creato
 	}
 
 	@Override
-	protected Ticket parseObject(JsonObject object) {
+	public Ticket parseObject(JsonObject object) {
 
 		JsonElement element = object.get("id_ticket");
 		if(element != null && element.isJsonPrimitive()) {
