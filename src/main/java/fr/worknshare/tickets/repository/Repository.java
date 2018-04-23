@@ -291,7 +291,7 @@ public abstract class Repository<T extends Model<T>> {
 	 * @param element - the element from the response
 	 * @return an instance of the model with filled values
 	 */
-	public abstract T parseObject(JsonObject object);
+	protected abstract T parseObject(JsonObject object);
 
 	/**
 	 * Get the HttpClient used for requests in this repository

@@ -30,7 +30,7 @@ public final class EquipmentTypeRepository extends Repository<EquipmentType> {
 	}
 
 	@Override
-	public EquipmentType parseObject(JsonObject object) {
+	protected EquipmentType parseObject(JsonObject object) {
 
 		JsonElement element = object.get("id_equipment_type");
 		if(element != null && element.isJsonPrimitive()) {

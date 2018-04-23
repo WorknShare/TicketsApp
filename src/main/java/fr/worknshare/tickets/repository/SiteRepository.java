@@ -21,7 +21,7 @@ public class SiteRepository extends Repository<Site>{
 	}
 
 	@Override
-	public Site parseObject(JsonObject object) {
+	protected Site parseObject(JsonObject object) {
 
 		JsonElement element = object.get("id_site");
 		if(element != null && element.isJsonPrimitive()) {
