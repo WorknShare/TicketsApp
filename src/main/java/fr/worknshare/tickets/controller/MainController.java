@@ -47,8 +47,8 @@ public class MainController extends Controller {
 	@FXML private TicketShowController ticketShowController;
 	@FXML private EquipmentController equipmentsController;
 
-	private HttpClient client = HttpClientBuilder.create().build();
-	private HttpContext context = new BasicHttpContext();
+	private HttpClient client;
+	private HttpContext context;
 
 	private EmployeeRepository employeeRepository;
 	private EquipmentRepository equipmentRepository;
@@ -117,6 +117,8 @@ public class MainController extends Controller {
 
 		setSnackbar(new JFXSnackbar(pane));
 
+		client = HttpClientBuilder.create().build();
+		context = new BasicHttpContext();
 		CookieStore cookieStore = new BasicCookieStore();		
 		context.setAttribute(HttpClientContext.COOKIE_STORE, cookieStore);
 
