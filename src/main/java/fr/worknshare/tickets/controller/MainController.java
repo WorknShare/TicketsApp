@@ -93,6 +93,8 @@ public class MainController extends Controller {
 
 			tickets.toFront();
 			login.toFront();
+			menuTickets.getStyleClass().add("active");
+			menuEquipments.getStyleClass().remove("active");
 		});
 	}
 
