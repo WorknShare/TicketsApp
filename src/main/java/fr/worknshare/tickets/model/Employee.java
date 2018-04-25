@@ -30,7 +30,7 @@ public final class Employee extends Model<Employee> {
 
 	public final void setName(String name) {
 		this.name.set(name);
-		this.fullName.set((surname != null ? surname.get() : " ") + name);
+		this.fullName.set((surname.get() != null ? surname.get() + " " : "") + name);
 	}
 
 	public final SimpleStringProperty getSurname() {
@@ -39,7 +39,7 @@ public final class Employee extends Model<Employee> {
 
 	public final void setSurname(String surname) {
 		this.surname.set(surname);
-		this.fullName.set(surname + (name != null ? " " + name.get() : ""));
+		this.fullName.set(surname + (name.get() != null ? " " + name.get() : ""));
 	}
 
 	public final SimpleStringProperty getEmail() {
@@ -79,7 +79,7 @@ public final class Employee extends Model<Employee> {
 	}
 
 	public String toString() {
-		return surname.get() + " " + name.get();
+		return fullName.get();
 	}
 
 }
