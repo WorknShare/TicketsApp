@@ -276,7 +276,6 @@ public class EquipmentController extends Controller implements RequestController
 		if(type != null) 
 			idtype = type.getId().get();
 		
-		Logger.getGlobal().info("idType : " + idtype);
 		if(idtype == -1)
 			equipmentRepository.where(search, callback, failCallback);
 		else

@@ -74,6 +74,9 @@
 					<resource>
 						<directory>src/main/resources/local</directory>
 					</resource>
+					<resource>
+						<directory>src/main/resources/common</directory>
+					</resource>
 				</resources>
 			</build>
 		</profile>
@@ -86,6 +89,9 @@
 				<resources>
 					<resource>
 						<directory>src/main/resources/production</directory>
+					</resource>
+					<resource>
+						<directory>src/main/resources/common</directory>
 					</resource>
 				</resources>
 			</build>
@@ -103,6 +109,7 @@
 			<artifactId>jfoenix</artifactId>
 			<version>8.0.3</version>
 			<classifier>javadoc</classifier>
+			<scope>provided</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.poi/poi -->
 		<dependency>
@@ -115,6 +122,7 @@
 			<artifactId>poi</artifactId>
 			<version>3.17</version>
 			<classifier>javadoc</classifier>
+			<scope>provided</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
 		<dependency>
@@ -127,6 +135,7 @@
 			<artifactId>poi-ooxml</artifactId>
 			<version>3.17</version>
 			<classifier>javadoc</classifier>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -139,6 +148,7 @@
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
 			<classifier>javadoc</classifier>
+			<scope>provided</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
 		<dependency>
@@ -151,6 +161,7 @@
 			<artifactId>httpclient</artifactId>
 			<version>4.5.5</version>
 			<classifier>javadoc</classifier>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.rollbar</groupId>
@@ -162,6 +173,7 @@
 			<artifactId>rollbar-java</artifactId>
 			<version>1.0.1</version>
 			<classifier>javadoc</classifier>
+			<scope>provided</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
 		<dependency>
@@ -174,6 +186,7 @@
 			<artifactId>gson</artifactId>
 			<version>2.8.2</version>
 			<classifier>javadoc</classifier>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>

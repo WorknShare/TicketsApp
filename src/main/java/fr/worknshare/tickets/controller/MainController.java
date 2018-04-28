@@ -1,5 +1,7 @@
 package fr.worknshare.tickets.controller;
 
+import java.util.logging.Logger;
+
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.protocol.HttpClientContext;
@@ -45,8 +47,8 @@ public class MainController extends Controller {
 	@FXML private TicketShowController ticketShowController;
 	@FXML private EquipmentController equipmentsController;
 
-	private HttpClient client = HttpClientBuilder.create().build();
-	private HttpContext context = new BasicHttpContext();
+	private HttpClient client;
+	private HttpContext context;
 
 	private EmployeeRepository employeeRepository;
 	private EquipmentRepository equipmentRepository;
@@ -73,7 +75,7 @@ public class MainController extends Controller {
 	private void initLoginController() {
 		loginController.setHttpClient(client);
 		loginController.setHttpContext(context);
-		loginController.attempt("admin@worknshare.fr", "admin"); //TODO disable auto auth
+		loginController.attempt("admin@worknshare.fr", "password"); //TODO disable auto auth
 
 		loginController.setSnackbar(getSnackbar());
 		loginController.setOnLogin(() -> {
@@ -85,6 +87,7 @@ public class MainController extends Controller {
 			equipmentsController.updateSite();
 		});
 		loginController.setOnLogout(() -> {
+			Logger.getGlobal().info("Clearing cache...");
 			employeeRepository.clearCache();
 			equipmentRepository.clearCache();
 			equipmentTypeRepository.clearCache();
@@ -92,6 +95,8 @@ public class MainController extends Controller {
 
 			tickets.toFront();
 			login.toFront();
+			menuTickets.getStyleClass().add("active");
+			menuEquipments.getStyleClass().remove("active");
 		});
 	}
 
@@ -116,6 +121,8 @@ public class MainController extends Controller {
 
 		setSnackbar(new JFXSnackbar(pane));
 
+		client = HttpClientBuilder.create().build();
+		context = new BasicHttpContext();
 		CookieStore cookieStore = new BasicCookieStore();		
 		context.setAttribute(HttpClientContext.COOKIE_STORE, cookieStore);
 
@@ -124,6 +131,8 @@ public class MainController extends Controller {
 		initTicketControllers();
 		
 		equipmentsController.setSnackbar(getSnackbar());
+		
+		menuTickets.getStyleClass().add("active");
 	}
 
 	@FXML

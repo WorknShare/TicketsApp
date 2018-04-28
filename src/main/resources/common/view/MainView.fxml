@@ -26,7 +26,6 @@
 						<JFXButton fx:id="menuTickets" onAction="#onMenuTicketsClicked" stylesheets="@application.css" text="Tickets">
 							<styleClass>
 								<String fx:value="menu-item" />
-								<String fx:value="active" />
 							</styleClass>
 						</JFXButton>
 						<JFXButton fx:id="menuEquipments" layoutX="10.0" layoutY="10.0" onAction="#onMenuEquipmentsClicked" styleClass="menu-item" stylesheets="@application.css" text="Matériel" />
