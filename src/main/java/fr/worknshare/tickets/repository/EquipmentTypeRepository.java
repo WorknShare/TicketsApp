@@ -1,5 +1,8 @@
 package fr.worknshare.tickets.repository;
 
+import java.util.ArrayList;
+import java.util.logging.Logger;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
 
@@ -8,6 +11,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import fr.worknshare.tickets.model.EquipmentType;
+import fr.worknshare.tickets.model.Site;
 import fr.worknshare.tickets.view.Paginator;
 
 public final class EquipmentTypeRepository extends Repository<EquipmentType> {
@@ -28,7 +32,34 @@ public final class EquipmentTypeRepository extends Repository<EquipmentType> {
 	public String getResourceName() {
 		return "equipmenttype";
 	}
+	
+	
+	public void getEquipmentType(PaginatedRequestCallback<EquipmentType> callback, FailCallback failCallback) {
+		request(null, null, null, getUrl() + "/getequipmenttype", new JsonCallback() {
 
+			@Override
+			public void run() {
+				PaginatedResponse<EquipmentType> response = null;
+				ArrayList<EquipmentType> list = null;
+				JsonObject data = getObject();
+				JsonElement elem = data.get("equipmentType");
+				if(elem != null && elem.isJsonArray()) {
+					list = parseArray(elem.getAsJsonArray());
+					response = new PaginatedResponse<EquipmentType>(new Paginator(1, 1, 10), list);
+					callback.setResponse(getResponse());
+					callback.setPaginatedResponse(response);
+					callback.run();
+				} else {
+					failCallback.setResponse(getResponse());
+					failCallback.setMessage("Réponse malformée");
+					failCallback.run();
+					Logger.getGlobal().warning("Malformed where response (missing expected \"equipmentType\"):\n\t" + getResponse().getRaw());
+				}
+			}
+
+		}, failCallback);
+	}
+	
 	@Override
 	public EquipmentType parseObject(JsonObject object) {
 

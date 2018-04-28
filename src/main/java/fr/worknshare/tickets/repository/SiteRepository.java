@@ -1,5 +1,8 @@
 package fr.worknshare.tickets.repository;
 
+import java.util.ArrayList;
+import java.util.logging.Logger;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
 
@@ -7,6 +10,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import fr.worknshare.tickets.model.Site;
+import fr.worknshare.tickets.model.Ticket;
+import fr.worknshare.tickets.networking.RequestCallback;
+import fr.worknshare.tickets.view.Paginator;
 
 public class SiteRepository extends Repository<Site>{
 
@@ -19,7 +25,7 @@ public class SiteRepository extends Repository<Site>{
 	public String getResourceName() {
 		return "site";
 	}
-
+	
 	@Override
 	public Site parseObject(JsonObject object) {
 
@@ -42,4 +48,5 @@ public class SiteRepository extends Repository<Site>{
 		}
 		return null;
 	}
+
 }
