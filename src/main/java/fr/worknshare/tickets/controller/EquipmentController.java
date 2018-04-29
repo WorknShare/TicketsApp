@@ -1,7 +1,5 @@
 package fr.worknshare.tickets.controller;
 
-import java.util.logging.Logger;
-
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
 

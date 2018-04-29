@@ -11,7 +11,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import fr.worknshare.tickets.model.EquipmentType;
-import fr.worknshare.tickets.model.Site;
 import fr.worknshare.tickets.view.Paginator;
 
 public final class EquipmentTypeRepository extends Repository<EquipmentType> {
