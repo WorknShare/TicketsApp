@@ -200,7 +200,6 @@ public class EquipmentController extends Controller implements RequestController
 				tableEquipment.setDisable(false);
 				previousButton.setDisable(true);
 				nextButton.setDisable(true);
-				tableEquipment.setDisable(false);
 				loader.setVisible(false);
 				searchbar.setDisable(false);
 				equipmentTypeSelected.setDisable(false);
