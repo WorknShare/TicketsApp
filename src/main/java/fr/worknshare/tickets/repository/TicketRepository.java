@@ -1,6 +1,7 @@
 package fr.worknshare.tickets.repository;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,6 +18,7 @@ import fr.worknshare.tickets.model.Ticket;
 import fr.worknshare.tickets.networking.HttpMethod;
 import fr.worknshare.tickets.networking.RequestCallback;
 import fr.worknshare.tickets.networking.RestRequest;
+import fr.worknshare.tickets.view.Paginator;
 
 public final class TicketRepository extends Repository<Ticket> implements CreatorRepository<Ticket> {
 
@@ -159,6 +161,30 @@ public final class TicketRepository extends Repository<Ticket> implements Creato
 				.param("employee", employee.getId().get());
 
 		request.asyncExecute(HttpMethod.PUT, callback);
+	}
+	
+	public void getAll(PaginatedRequestCallback<Ticket> callback, FailCallback failCallback) {
+		//String paramName, Object paramValue, Object filter, String url, JsonCallback callback, FailCallback failCallback
+		request(null, null, null, getUrl() + "/all", new JsonCallback() {
+
+			@Override
+			public void run() {
+				PaginatedResponse<Ticket> response = null;
+				ArrayList<Ticket> list = null;
+				JsonObject data = getObject();
+				JsonElement elem = data.get("items");
+				if(elem != null && elem.isJsonArray()) {
+					list = parseArray(elem.getAsJsonArray());
+					response = new PaginatedResponse<Ticket>(new Paginator(1, 1, 10), list);
+					callback.setResponse(getResponse());
+					callback.setPaginatedResponse(response);
+					callback.run();
+				} else
+					handleMalformedResponse(getResponse(), failCallback, "items");
+
+			}
+
+		}, failCallback);
 	}
 
 	public final EmployeeRepository getEmployeeRepository() {

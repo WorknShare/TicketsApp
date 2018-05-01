@@ -245,7 +245,7 @@ public abstract class Repository<T extends Model<T>> {
 		});
 	}
 
-	private void handleMalformedResponse(RestResponse response, FailCallback failCallback, String expected) {
+	protected void handleMalformedResponse(RestResponse response, FailCallback failCallback, String expected) {
 		failCallback.setResponse(response);
 		failCallback.setMessage("Réponse malformée");
 		failCallback.run();

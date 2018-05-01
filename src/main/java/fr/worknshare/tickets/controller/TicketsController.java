@@ -1,5 +1,10 @@
 package fr.worknshare.tickets.controller;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXSnackbar.SnackbarEvent;
@@ -7,6 +12,7 @@ import com.jfoenix.controls.JFXSpinner;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXTreeTableView;
 
+import fr.worknshare.tickets.SpreadSheet;
 import fr.worknshare.tickets.model.Ticket;
 import fr.worknshare.tickets.repository.FailCallback;
 import fr.worknshare.tickets.repository.PaginatedRequestCallback;
@@ -16,14 +22,24 @@ import fr.worknshare.tickets.view.Paginator;
 import fr.worknshare.tickets.view.StatusComboBoxMaker;
 import fr.worknshare.tickets.view.StatusItem;
 import fr.worknshare.tickets.view.TicketTableMaker;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeTableRow;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
-public class TicketsController extends Controller {
+public class TicketsController extends Controller implements Authorizable {
 
 	private TicketRepository ticketRepository;
 	private TicketShowController ticketShowController;
@@ -37,6 +53,9 @@ public class TicketsController extends Controller {
 	@FXML private JFXSpinner loader;
 	@FXML private JFXTextField searchbar;
 	@FXML private JFXComboBox<StatusItem> statusFilter;
+	@FXML private JFXButton exportButton;
+
+	private Stage dialog;
 
 	private int page;
 	private FailCallback failCallback;
@@ -49,12 +68,14 @@ public class TicketsController extends Controller {
 			public void run() {
 				getSnackbar().enqueue(new SnackbarEvent(getFullMessage(), "error"));
 				paginationLabel.setText("Page 1/1");
+				paginationLabel.getStyleClass().remove("text-muted");
 				table.setDisable(false);
 				previousButton.setDisable(true);
 				nextButton.setDisable(true);
 				loader.setVisible(false);
 				searchbar.setDisable(false);
 				statusFilter.setDisable(false);
+				exportButton.setDisable(false);
 			}
 
 		};
@@ -79,6 +100,7 @@ public class TicketsController extends Controller {
 				loader.setVisible(false);
 				searchbar.setDisable(false);
 				statusFilter.setDisable(false);
+				exportButton.setDisable(false);
 
 			}
 		};
@@ -163,6 +185,7 @@ public class TicketsController extends Controller {
 		loader.setVisible(true);
 		searchbar.setDisable(true);
 		statusFilter.setDisable(true);
+		exportButton.setDisable(true);
 		ticketList.clear();
 	}
 
@@ -208,5 +231,112 @@ public class TicketsController extends Controller {
 
 	public void setTicketShowController(TicketShowController controller) {
 		this.ticketShowController = controller;
+	}
+
+	@Override
+	public void updateAuthorizations(int role) {
+		exportButton.setVisible(role == 1);
+	}
+
+	@FXML
+	private void exportClicked() {
+		FileChooser fileChooser = new FileChooser();
+
+		//Set extension filter
+		FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Fichiers excel (*.xlsx)", "*.xlsx");
+		fileChooser.getExtensionFilters().add(extFilter);
+
+		File selectedFile = fileChooser.showSaveDialog(exportButton.getScene().getWindow());
+
+		if (selectedFile != null) {
+			Logger.getGlobal().info("Exporting ticket database to file " + selectedFile.getAbsolutePath());
+			exportTickets(selectedFile);
+		}
+	}
+
+	private void exportTickets(File file) {
+		ticketRepository.getAll(new PaginatedRequestCallback<Ticket>() {
+
+			@Override
+			public void run() {
+				new Thread(() -> {
+					
+					ArrayList<Ticket> items = getPaginatedResponse().getItems();
+					String[] header = {
+									"ID", "Statut", "Numéro de série",
+									"Type", "Description", "Employé affecté",
+									"Employé source", "Date de création", "Date de mise à jour"
+									};
+
+					Object data[][] = new Object[items.size()][9];
+					int i = 0;
+					for(Ticket ticket : items)
+						data[i++] = ticket.toArray();
+					
+					SpreadSheet spreadsheet = new SpreadSheet(file.getAbsolutePath());
+					
+					spreadsheet.setTitle("Tickets");
+					spreadsheet.setHeader(header);
+					spreadsheet.setData(data);
+					
+					if(spreadsheet.save()) {
+						//Success
+						Platform.runLater(() -> {
+							dialog.close();
+							getSnackbar().enqueue(new SnackbarEvent("Base des tickets exportée avec succès !", "success"));
+						});
+					} else {
+						//Failure
+						Platform.runLater(() -> {
+							dialog.close();
+							getSnackbar().enqueue(new SnackbarEvent("Une erreur est survenue lors de l'export de la base des tickets.", "error"));
+						});
+					}
+					
+				}).start();
+			}
+		}, new FailCallback() {
+
+			@Override
+			public void run() {
+				dialog.close();
+				getSnackbar().enqueue(new SnackbarEvent(getFullMessage(), "error"));
+				Logger.getGlobal().log(Level.SEVERE, "Get all tickets request failed :\n\t" + getFullMessage());
+			}
+		});
+		showLoadingDialog();
+	}
+
+	private void showLoadingDialog() {
+		if(dialog == null) {
+			try {
+				dialog = new Stage();
+				dialog.initOwner(exportButton.getScene().getWindow());
+				dialog.initModality(Modality.APPLICATION_MODAL);
+				dialog.setResizable(false);
+
+				FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/LoadingDialog.fxml"));
+				VBox rootLayout = (VBox) loader.load();
+				Scene scene = new Scene(rootLayout);
+
+				dialog.setTitle("Chargement...");
+				dialog.getIcons().add(new Image(getClass().getResource("/view/logo16.png").toExternalForm()));
+				dialog.getIcons().add(new Image(getClass().getResource("/view/logo32.png").toExternalForm()));
+				dialog.getIcons().add(new Image(getClass().getResource("/view/logo64.png").toExternalForm()));
+
+				//Prevent dialog from closing
+				dialog.setOnCloseRequest(new EventHandler<WindowEvent>() {
+					@Override
+					public void handle(WindowEvent event) {
+						event.consume();
+					}
+				});
+
+				dialog.setScene(scene);
+			} catch( Exception e ) {
+				Logger.getGlobal().log(Level.SEVERE, "Error while loading the loading dialog interface.", e);
+			}
+		}
+		dialog.show();
 	}
 }

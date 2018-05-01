@@ -136,4 +136,14 @@ public final class Ticket extends Model<Ticket> {
 		return employeeAssignedName;
 	}
 
+	public Object[] toArray() {
+		return new Object[] { 
+			getId().get(), getStatus().get(), getEquipment().getName().get(),
+			getEquipmentType().getName().get(), getDescription().get(), 
+			getEmployeeAssigned() != null ? getEmployeeAssigned().getFullName() : null,
+			getEmployeeSource() != null ? getEmployeeSource().getFullName() : null,
+			getCreatedAt().get(), getUpdatedAt().get()
+		};
+	}
+
 }
