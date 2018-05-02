@@ -19,7 +19,7 @@ public class SiteRepository extends Repository<Site>{
 	public String getResourceName() {
 		return "site";
 	}
-
+	
 	@Override
 	public Site parseObject(JsonObject object) {
 
@@ -42,4 +42,5 @@ public class SiteRepository extends Repository<Site>{
 		}
 		return null;
 	}
+
 }

@@ -36,6 +36,7 @@ public final class EquipmentRepository extends Repository<Equipment>{
 	public String getResourceName() {
 		return "equipmenttype/equipment";
 	}
+	
 
 	@Override
 	public Equipment parseObject(JsonObject object) {

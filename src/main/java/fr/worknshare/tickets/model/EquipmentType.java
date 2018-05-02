@@ -34,5 +34,10 @@ public final class EquipmentType extends Model<EquipmentType> {
 	public boolean removeEquipment(Equipment equipment) {
 		return this.equipment.remove(equipment);
 	}
+	
+	@Override
+	public String toString() {
+		return name.get();	
+	}
 
 }

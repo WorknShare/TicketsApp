@@ -69,6 +69,7 @@ public class MainController extends Controller {
 		ticketShowController.setTicketRepository(ticketRepository);
 		ticketShowController.setEmployeeRepository(employeeRepository);
 		equipmentsController.setEquipmentRepository(equipmentRepository);
+		equipmentsController.setEquipmentTypeRepository(equipmentTypeRepository);
 	}
 
 	private void initLoginController() {
@@ -84,6 +85,7 @@ public class MainController extends Controller {
 			ticketsController.setPage(1);
 			ticketsController.resetFilter();
 			ticketsController.refresh();
+			equipmentsController.updateSite();
 		});
 		loginController.setOnLogout(() -> {
 			Logger.getGlobal().info("Clearing cache...");

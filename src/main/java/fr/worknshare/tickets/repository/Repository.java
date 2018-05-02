@@ -70,7 +70,7 @@ public abstract class Repository<T extends Model<T>> {
 	 * @param callback - the callback to execute when the request is done
 	 * @param failCallback - the callback to execute when the request failed
 	 */
-	public final void paginate(int page, Object filter, PaginatedRequestCallback<T> callback, FailCallback failCallback) {
+	public final void paginate(int page, Object filter, PaginatedRequestCallback<T> callback, FailCallback failCallback) {	
 		request("page", page, filter, new JsonCallback() {
 
 			@Override

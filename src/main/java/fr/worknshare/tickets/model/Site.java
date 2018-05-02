@@ -7,7 +7,6 @@ public class Site extends Model<Site>{
 	private SimpleStringProperty name;
 	private SimpleStringProperty address;
 	
-	
 	public Site(int id) {
 		super(id);
 		name 	= new SimpleStringProperty();
@@ -30,4 +29,5 @@ public class Site extends Model<Site>{
 	public final void setAddress(String address) {
 		this.address.set(address);
 	}
+	
 }
