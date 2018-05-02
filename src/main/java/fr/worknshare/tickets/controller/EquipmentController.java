@@ -188,6 +188,13 @@ public class EquipmentController extends Controller implements RequestController
 	
 	public void setPage(int page) {
 		this.page = page;
+		this.searchbar.setText(null);
+	}
+	
+	public void resetFilter() {
+		equipmentTypeSelected.setDisable(true);
+		equipmentTypeSelected.getSelectionModel().select(0);
+		equipmentTypeSelected.setDisable(false);
 	}
 	
 	private void initFailCallback() {

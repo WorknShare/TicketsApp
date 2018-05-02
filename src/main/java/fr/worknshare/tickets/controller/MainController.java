@@ -86,6 +86,9 @@ public class MainController extends Controller {
 			ticketsController.resetFilter();
 			ticketsController.refresh();
 			equipmentsController.updateSite();
+			equipmentsController.setPage(1);
+			equipmentsController.resetFilter();
+			equipmentsController.refresh();
 		});
 		loginController.setOnLogout(() -> {
 			Logger.getGlobal().info("Clearing cache...");
@@ -155,6 +158,7 @@ public class MainController extends Controller {
 	public void onMenuEquipmentsClicked() {
 		equipments.toFront();
 		equipmentsController.setPage(1);
+		equipmentsController.resetFilter();
 		equipmentsController.refresh();
 		menuTickets.getStyleClass().remove("active");
 		menuEquipments.getStyleClass().add("active");
