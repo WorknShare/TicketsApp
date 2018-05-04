@@ -193,7 +193,6 @@ public class RestRequest {
 				result = new RestResponse(); //Create a response with status code -1 and message "Request failed".
 			}
 
-			Logger.getGlobal().info(result.getRaw());
 			callback.setResponse(result);
 			Platform.runLater(callback);
 		});
