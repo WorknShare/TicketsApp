@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>WorknShareTickets</groupId>
 	<artifactId>WorknShareTickets</artifactId>
-	<version>0.0.1</version>
+	<version>1.0</version>
 	<name>Work'n Share</name>
 	<build>
 		<finalName>${project.artifactId}-${project.version}-${git.commit.id.describe-short}-${lane}</finalName>
