@@ -38,6 +38,7 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 
 	private TicketRepository ticketRepository;
 	private EmployeeRepository employeeRepository;
+	private EquipmentShowController equipmentShowController;
 	private Ticket ticket;
 	private Employee noneEmployee;
 	private int currentStatus;
@@ -202,7 +203,8 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 	
 	@FXML
 	private void equipmentButtonClicked() {
-		//TODO show equipment panel
+		equipmentShowController.setBackPanel(pane);
+		equipmentShowController.showEquipment(ticket.getEquipment());
 	}
 
 	public void showTicket(Ticket ticket) {
@@ -272,6 +274,10 @@ public class TicketShowController extends Controller implements Authorizable, Ba
 				getSnackbar().enqueue(new SnackbarEvent(getFullMessage(), "error"));
 			}
 		});
+	}
+
+	public void setEquipmentShowController(EquipmentShowController equipmentShowController) {
+		this.equipmentShowController = equipmentShowController;
 	}
 
 }

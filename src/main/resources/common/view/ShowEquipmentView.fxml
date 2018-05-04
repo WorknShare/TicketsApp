@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTreeTableView?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+
+<VBox fx:id="pane" styleClass="opaque" stylesheets="@application.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.141" fx:controller="fr.worknshare.tickets.controller.EquipmentShowController">
+   <children>
+      <Label styleClass="h1" stylesheets="@application.css" text="Équipement" />
+      <HBox VBox.vgrow="ALWAYS">
+         <VBox.margin>
+            <Insets bottom="5.0" />
+         </VBox.margin>
+         <children>
+            <GridPane hgap="5.0" minWidth="-Infinity" HBox.hgrow="NEVER">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" />
+                <ColumnConstraints hgrow="SOMETIMES" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Label text="Numéro de série :">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <Label text="Type : " GridPane.rowIndex="1">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <Label text="Site : " GridPane.rowIndex="2">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="serialLabel" text="SERIAL" GridPane.columnIndex="1">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="typeLabel" text="TYPE" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="siteLabel" text="SITE" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+               </children>
+            </GridPane>
+            <Pane HBox.hgrow="ALWAYS" />
+         </children>
+      </HBox>
+      <Label text="Tickets :">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+         <VBox.margin>
+            <Insets bottom="5.0" />
+         </VBox.margin>
+      </Label>
+      <JFXTreeTableView fx:id="table">
+         <VBox.margin>
+            <Insets bottom="10.0" />
+         </VBox.margin>
+      </JFXTreeTableView>
+      <HBox alignment="CENTER_LEFT">
+         <children>
+            <JFXButton fx:id="back" onAction="#backClicked" text="Retour">
+               <graphic>
+                  <Label styleClass="previous-button" stylesheets="@application.css" text="&lt;" />
+               </graphic>
+               <HBox.margin>
+                  <Insets bottom="5.0" />
+               </HBox.margin>
+            </JFXButton>
+            <Pane HBox.hgrow="ALWAYS" />
+            <JFXButton fx:id="createTicket" onAction="#createClicked" style="-fx-background-color: #007bff;" text="Créer un ticket" textFill="WHITE">
+               <HBox.margin>
+                  <Insets bottom="5.0" right="5.0" />
+               </HBox.margin>
+               <font>
+                  <Font size="13.0" />
+               </font>
+            </JFXButton>
+         </children>
+      </HBox>
+   </children>
+</VBox>

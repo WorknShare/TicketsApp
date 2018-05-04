@@ -8,7 +8,6 @@ public final class Equipment extends Model<Equipment> {
 	private SimpleStringProperty name;
 	private SimpleIntegerProperty equipmentTypeId;
 	private EquipmentType equipmentType;
-	private SimpleStringProperty type;
 	private Site site;
 
 	public Equipment(int id) {
@@ -39,14 +38,6 @@ public final class Equipment extends Model<Equipment> {
 
 	public void setSite(Site site) {
 		this.site = site;
-	}
-
-	public SimpleStringProperty getType() {
-		return type;
-	}
-
-	public void setType(String string) {
-		this.type.set(string);
 	}
 
 	public final SimpleIntegerProperty getEquipmentTypeId() {

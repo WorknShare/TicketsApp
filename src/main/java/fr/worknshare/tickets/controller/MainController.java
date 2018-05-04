@@ -38,6 +38,7 @@ public class MainController extends Controller {
 	@FXML private JFXButton menuEquipments;
 	@FXML private VBox tickets;
 	@FXML private VBox equipments;
+	@FXML private VBox equipmentShow;
 
 	@FXML private FlowPane login;
 
@@ -46,6 +47,7 @@ public class MainController extends Controller {
 	@FXML private TicketCreateController ticketCreateController;
 	@FXML private TicketShowController ticketShowController;
 	@FXML private EquipmentController equipmentsController;
+	@FXML private EquipmentShowController equipmentShowController;
 
 	private HttpClient client;
 	private HttpContext context;
@@ -68,8 +70,12 @@ public class MainController extends Controller {
 		ticketCreateController.setTicketRepository(ticketRepository);
 		ticketShowController.setTicketRepository(ticketRepository);
 		ticketShowController.setEmployeeRepository(employeeRepository);
+		ticketShowController.setEquipmentShowController(equipmentShowController);
 		equipmentsController.setEquipmentRepository(equipmentRepository);
 		equipmentsController.setEquipmentTypeRepository(equipmentTypeRepository);
+		equipmentsController.setEquipmentShowController(equipmentShowController);
+		equipmentShowController.setTicketShowController(ticketShowController);
+		equipmentShowController.setTicketCreateController(ticketCreateController);
 	}
 
 	private void initLoginController() {
@@ -79,8 +85,10 @@ public class MainController extends Controller {
 
 		loginController.setSnackbar(getSnackbar());
 		loginController.setOnLogin(() -> {
-			ticketsController.updateAuthorizations(loginController.getEmployee().getRole().get());
-			ticketShowController.updateAuthorizations(loginController.getEmployee().getRole().get());
+			int role = loginController.getEmployee().getRole().get();
+			ticketsController.updateAuthorizations(role);
+			ticketShowController.updateAuthorizations(role);
+			equipmentShowController.updateAuthorizations(role);
 			ticketShowController.updateEmployees();
 			ticketsController.setPage(1);
 			ticketsController.resetFilter();
@@ -116,7 +124,6 @@ public class MainController extends Controller {
 			ticketsController.refresh();
 		});
 
-		ticketShowController.setBackPanel(tickets);
 		ticketShowController.setSnackbar(getSnackbar());
 	}
 

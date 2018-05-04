@@ -17,6 +17,7 @@ import fr.worknshare.tickets.repository.TicketRepository;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 
 /**
  * Controller used for ticket creation
@@ -27,7 +28,8 @@ import javafx.scene.layout.Pane;
 public class TicketCreateController extends Controller implements Backable {
 
 	private TicketRepository ticketRepository;
-
+	
+	@FXML private VBox pane;
 	@FXML private JFXButton submit;
 	@FXML private JFXButton back;
 	@FXML private Label equipmentLabel;
@@ -123,6 +125,10 @@ public class TicketCreateController extends Controller implements Backable {
 		this.equipment = equipment;
 		equipmentLabel.setText("Matériel concerné : " + equipment.getName().get());
 		description.setText(null);
+	}
+	
+	public void show() {
+		pane.toFront();
 	}
 
 	public final TicketRepository getTicketRepository() {

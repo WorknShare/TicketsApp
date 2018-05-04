@@ -29,16 +29,19 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableRow;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.VBox;
 
 public class EquipmentController extends Controller implements RequestController{
-	
+
 	private EquipmentRepository equipmentRepository;
 	private EquipmentTypeRepository equipmentTypeRepository;
-	
+
 	private ObservableList<Equipment> equipmentList;	
 	private ObservableList<EquipmentType> equipmentTypeList;
 
+	@FXML private VBox pane;
 	@FXML private JFXTreeTableView<Equipment> tableEquipment;
 	@FXML private Label paginationLabel;
 	@FXML private JFXButton nextButton;
@@ -47,14 +50,16 @@ public class EquipmentController extends Controller implements RequestController
 	@FXML private JFXTextField searchbar;
 	private EquipmentType allSite;
 	@FXML private JFXComboBox<EquipmentType> equipmentTypeSelected;
-	
+
+	private EquipmentShowController equipmentShowController;
+
 	private int page;
 	private FailCallback failCallback;
 	private PaginatedRequestCallback<Equipment> callback;
-	
+
 	private HttpClient httpClient;
 	private HttpContext httpContext;
-	
+
 	private void initEquipmentTypeCellFactory() {
 		equipmentTypeSelected.setCellFactory((lv) -> {
 			return new ListCell<EquipmentType>() {
@@ -73,29 +78,29 @@ public class EquipmentController extends Controller implements RequestController
 			};
 		});
 	}
-	
+
 	@Override
 	public void setHttpClient(HttpClient client) {
 		this.httpClient = client;
 		equipmentRepository.setHttpClient(httpClient);
-		
+
 	}
 
 	@Override
 	public void setHttpContext(HttpContext context) {
 		this.httpContext = context;
 		equipmentRepository.setHttpContext(httpContext);
-		
+
 	}
-	
+
 	public void setEquipmentRepository(EquipmentRepository equipmentRepository) {
 		this.equipmentRepository = equipmentRepository;
 	}
-	
+
 	public EquipmentRepository getEquipmentRepository() {
 		return this.equipmentRepository;
 	}
-	
+
 	public EquipmentTypeRepository getEquipmentTypeRepository() {
 		return equipmentTypeRepository;
 	}
@@ -103,8 +108,8 @@ public class EquipmentController extends Controller implements RequestController
 	public void setEquipmentTypeRepository(EquipmentTypeRepository equipmentTypeRepository) {
 		this.equipmentTypeRepository = equipmentTypeRepository;
 	}
-	
-	
+
+
 	private void initNameColumn() {
 		JFXTreeTableColumn<Equipment, String> serialColumn = new JFXTreeTableColumn<Equipment, String>("Equipement");
 		serialColumn.setCellValueFactory((TreeTableColumn.CellDataFeatures<Equipment, String> param) -> {
@@ -118,7 +123,7 @@ public class EquipmentController extends Controller implements RequestController
 		serialColumn.setContextMenu(null);
 		tableEquipment.getColumns().add(serialColumn);
 	}
-	
+
 	private void initTypeColumn() {
 		JFXTreeTableColumn<Equipment, String> typeColumn = new JFXTreeTableColumn<Equipment, String>("Type");
 		typeColumn.setCellValueFactory((TreeTableColumn.CellDataFeatures<Equipment, String> param) -> {
@@ -132,7 +137,7 @@ public class EquipmentController extends Controller implements RequestController
 		typeColumn.setContextMenu(null);
 		tableEquipment.getColumns().add(typeColumn);
 	}
-	
+
 	private void initSiteColumn() {
 		JFXTreeTableColumn<Equipment, String> siteColumn = new JFXTreeTableColumn<Equipment, String>("Site");
 		siteColumn.setCellValueFactory((TreeTableColumn.CellDataFeatures<Equipment, String> param) -> {
@@ -146,7 +151,7 @@ public class EquipmentController extends Controller implements RequestController
 		siteColumn.setContextMenu(null);
 		tableEquipment.getColumns().add(siteColumn);
 	}
-	
+
 	private void initColumns() {
 
 		final TreeItem<Equipment> root = new RecursiveTreeItem<Equipment>(equipmentList, RecursiveTreeObject::getChildren);
@@ -157,7 +162,21 @@ public class EquipmentController extends Controller implements RequestController
 		initTypeColumn();
 		initSiteColumn();
 	}
-	
+
+	private void initDoubleClickListener() {
+		tableEquipment.setRowFactory( tv -> {
+			TreeTableRow<Equipment> row = new TreeTableRow<Equipment>();
+			row.setOnMouseClicked(event -> {
+				if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
+					Equipment equipment = row.getItem();
+					equipmentShowController.setBackPanel(pane);
+					equipmentShowController.showEquipment(equipment);
+				}
+			});
+			return row;
+		});
+	}
+
 	@FXML
 	private void initialize() {
 		initFailCallback();
@@ -171,8 +190,9 @@ public class EquipmentController extends Controller implements RequestController
 		equipmentList = FXCollections.observableArrayList();
 		page = 1;
 		initColumns();
+		initDoubleClickListener();
 	}
-	
+
 	@FXML
 	public void nextClicked(ActionEvent e) {
 		page++;
@@ -185,18 +205,18 @@ public class EquipmentController extends Controller implements RequestController
 			page--;
 		refresh();
 	}
-	
+
 	public void setPage(int page) {
 		this.page = page;
 		this.searchbar.setText(null);
 	}
-	
+
 	public void resetFilter() {
 		equipmentTypeSelected.setDisable(true);
 		equipmentTypeSelected.getSelectionModel().select(0);
 		equipmentTypeSelected.setDisable(false);
 	}
-	
+
 	private void initFailCallback() {
 		failCallback = new FailCallback() {
 
@@ -223,14 +243,14 @@ public class EquipmentController extends Controller implements RequestController
 				PaginatedResponse<Equipment> response = getPaginatedResponse();
 				Paginator paginator = response.getPaginator();
 
-				
+
 				equipmentList.addAll(response.getItems());
 
 				paginationLabel.setText("Page " + paginator.getCurrentPage() + "/" + paginator.getMaxPage());
 				paginationLabel.getStyleClass().remove("text-muted");
 				previousButton.setDisable(paginator.getCurrentPage() == 1);
 				nextButton.setDisable(paginator.getCurrentPage() == paginator.getMaxPage());
-				
+
 				searchbar.setDisable(false);
 				tableEquipment.setDisable(false);
 				loader.setVisible(false);
@@ -239,15 +259,15 @@ public class EquipmentController extends Controller implements RequestController
 			}
 		};
 	}
-	
-	
+
+
 	private void initSearchSubmitOnEnter() {
 		searchbar.setOnKeyPressed((event) -> {
 			if (event.getCode().equals(KeyCode.ENTER))
 				submitSearch();
 		});
 	}
-	
+
 	private void submitSearch() {
 		if(searchbar.getText() != null) {
 			String text = searchbar.getText().trim();
@@ -262,8 +282,8 @@ public class EquipmentController extends Controller implements RequestController
 			refresh();
 		}
 	}
-	
-	
+
+
 	public void search(String search) {
 		tableEquipment.setDisable(true);
 		previousButton.setDisable(true);
@@ -274,19 +294,19 @@ public class EquipmentController extends Controller implements RequestController
 		equipmentTypeSelected.setDisable(true);
 		equipmentList.clear();
 		page = 1;
-		
+
 		int idtype = -1;
 		EquipmentType type = equipmentTypeSelected.getSelectionModel().getSelectedItem();
 		if(type != null) 
 			idtype = type.getId().get();
-		
+
 		if(idtype == -1)
 			equipmentRepository.where(search, callback, failCallback);
 		else
 			equipmentRepository.where(search, idtype, callback, failCallback);
 	}
-	
-	
+
+
 	public void refresh() {
 
 		tableEquipment.setDisable(true);
@@ -296,19 +316,19 @@ public class EquipmentController extends Controller implements RequestController
 		loader.setVisible(true);
 		equipmentList.clear(); //Empty the list
 		int idtype = -1;
-		
+
 		EquipmentType type = equipmentTypeSelected.getSelectionModel().getSelectedItem();
 		if(type != null) 
 			idtype = type.getId().get();
-		 
+
 		if(idtype == -1)
 			equipmentRepository.paginate(page, callback, failCallback);
 		else
 			equipmentRepository.paginate(page, idtype, callback, failCallback);
 	}
-	
-	
-	
+
+
+
 	public void updateSite() {
 		equipmentTypeList.clear();
 
@@ -328,15 +348,19 @@ public class EquipmentController extends Controller implements RequestController
 			}
 		});
 	}
-	
-	
+
+
 	@FXML
-	private void equipmentTypeChanged() {
+	public void equipmentTypeChanged() {
 		if(!equipmentTypeSelected.isDisabled()) {
 			setPage(1);
 			submitSearch();
 		}
-			
+
+	}
+
+	public void setEquipmentShowController(EquipmentShowController equipmentShowController) {
+		this.equipmentShowController = equipmentShowController;
 	}
 
 }

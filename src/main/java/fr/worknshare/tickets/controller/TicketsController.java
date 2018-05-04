@@ -46,6 +46,7 @@ public class TicketsController extends Controller implements Authorizable {
 
 	private ObservableList<Ticket> ticketList;	
 
+	@FXML private VBox tickets;
 	@FXML private JFXTreeTableView<Ticket> table;
 	@FXML private Label paginationLabel;
 	@FXML private JFXButton nextButton;
@@ -112,6 +113,7 @@ public class TicketsController extends Controller implements Authorizable {
 			row.setOnMouseClicked(event -> {
 				if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
 					Ticket ticket = row.getItem();
+					ticketShowController.setBackPanel(tickets);
 					ticketShowController.showTicket(ticket);
 				}
 			});

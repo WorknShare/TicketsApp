@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="1.7976931348623157E308" styleClass="opaque" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.worknshare.tickets.controller.TicketCreateController">
+<VBox maxHeight="1.7976931348623157E308" fx:id="pane" styleClass="opaque" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.worknshare.tickets.controller.TicketCreateController">
 	<children>
        <Label styleClass="h1" stylesheets="@application.css" text="Créer un ticket">
          <VBox.margin>

@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox styleClass="opaque" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.worknshare.tickets.controller.TicketsController">
+<VBox styleClass="opaque" fx:id="tickets" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.worknshare.tickets.controller.TicketsController">
 	<children>
       <HBox alignment="CENTER_LEFT">
          <children>
