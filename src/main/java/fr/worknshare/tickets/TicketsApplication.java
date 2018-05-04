@@ -57,6 +57,7 @@ public class TicketsApplication extends Application {
 	}
 	
 	private static void setup() {
+		setupRollbar();
 		setupLogging();
 		setupErrorHandling();
 		loadConfig();
@@ -99,7 +100,6 @@ public class TicketsApplication extends Application {
 				Logger.getGlobal().log(Level.SEVERE, e.getMessage(), e);
 			}
 		});
-		setupRollbar();
 	}
 
 	private static void setupRollbar() {

@@ -26,7 +26,7 @@ public class RollbarConsoleHandler extends ConsoleHandler {
 	public synchronized void publish(final LogRecord record) {
 		super.publish(record);
 
-		if(rollbar != null)
+		if(rollbar != null && record.getThrown() != null)
 			switch(record.getLevel().getName()) {
 			case "SEVERE":
 				rollbar.error(record.getThrown());
