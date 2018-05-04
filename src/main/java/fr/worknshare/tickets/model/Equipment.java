@@ -8,12 +8,14 @@ public final class Equipment extends Model<Equipment> {
 	private SimpleStringProperty name;
 	private SimpleIntegerProperty equipmentTypeId;
 	private EquipmentType equipmentType;
+	private SimpleIntegerProperty siteId;
 	private Site site;
 
 	public Equipment(int id) {
 		super(id);
 		name = new SimpleStringProperty();
 		equipmentTypeId = new SimpleIntegerProperty();
+		siteId = new SimpleIntegerProperty();
 	}
 
 	public final SimpleStringProperty getName() {
@@ -46,6 +48,14 @@ public final class Equipment extends Model<Equipment> {
 
 	public final void setEquipmentTypeId(int id) {
 		this.equipmentTypeId.set(id);
+	}
+	
+	public final void setSiteId(int id) {
+		siteId.set(id);
+	}
+	
+	public final SimpleIntegerProperty getSiteId() {
+		return siteId;
 	}
 
 }

@@ -324,7 +324,7 @@ public class EquipmentController extends Controller implements RequestController
 		if(idtype == -1)
 			equipmentRepository.paginate(page, callback, failCallback);
 		else
-			equipmentRepository.paginate(page, idtype, callback, failCallback);
+			equipmentRepository.paginate(page, idtype, equipmentRepository.getUrl(), callback, failCallback);
 	}
 
 

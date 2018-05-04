@@ -198,7 +198,7 @@ public class TicketsController extends Controller implements Authorizable {
 		if(status == -1)
 			ticketRepository.paginate(page, callback, failCallback);
 		else
-			ticketRepository.paginate(page, status, callback, failCallback);
+			ticketRepository.paginate(page, status, ticketRepository.getUrl(), callback, failCallback);
 	}
 
 	public void search(String search) {

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXSpinner?>
 <?import com.jfoenix.controls.JFXTreeTableView?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
@@ -12,8 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
-<VBox fx:id="pane" styleClass="opaque" stylesheets="@application.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.141" fx:controller="fr.worknshare.tickets.controller.EquipmentShowController">
+<VBox fx:id="pane" styleClass="opaque" stylesheets="@application.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.worknshare.tickets.controller.EquipmentShowController">
    <children>
       <Label styleClass="h1" stylesheets="@application.css" text="Équipement" />
       <HBox VBox.vgrow="ALWAYS">
@@ -77,28 +77,44 @@
       </Label>
       <JFXTreeTableView fx:id="table">
          <VBox.margin>
-            <Insets bottom="10.0" />
+            <Insets />
          </VBox.margin>
       </JFXTreeTableView>
-      <HBox alignment="CENTER_LEFT">
+      <HBox alignment="CENTER_LEFT" prefHeight="40.0">
          <children>
             <JFXButton fx:id="back" onAction="#backClicked" text="Retour">
                <graphic>
                   <Label styleClass="previous-button" stylesheets="@application.css" text="&lt;" />
                </graphic>
                <HBox.margin>
-                  <Insets bottom="5.0" />
+                  <Insets />
                </HBox.margin>
             </JFXButton>
+            <JFXSpinner fx:id="loader">
+               <HBox.margin>
+                  <Insets bottom="7.0" left="-7.0" right="7.0" top="7.0" />
+               </HBox.margin>
+            </JFXSpinner>
             <Pane HBox.hgrow="ALWAYS" />
             <JFXButton fx:id="createTicket" onAction="#createClicked" style="-fx-background-color: #007bff;" text="Créer un ticket" textFill="WHITE">
                <HBox.margin>
-                  <Insets bottom="5.0" right="5.0" />
+                  <Insets right="15.0" />
                </HBox.margin>
                <font>
                   <Font size="13.0" />
                </font>
             </JFXButton>
+            <JFXButton fx:id="previousButton" onAction="#previousClicked" prefHeight="40.0" styleClass="previous-button" stylesheets="@application.css" text="&lt;" textAlignment="CENTER">
+                <opaqueInsets>
+                   <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+                </opaqueInsets>
+             </JFXButton>
+             <Label fx:id="paginationLabel" prefHeight="40.0" text="Page 1/1" textAlignment="CENTER" />
+             <JFXButton fx:id="nextButton" layoutX="455.0" layoutY="10.0" onAction="#nextClicked" prefHeight="40.0" styleClass="next-button" stylesheets="@application.css" text="&gt;" textAlignment="CENTER">
+                <opaqueInsets>
+                   <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+                </opaqueInsets>
+             </JFXButton>
          </children>
       </HBox>
    </children>

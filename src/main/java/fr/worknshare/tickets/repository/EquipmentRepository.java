@@ -64,6 +64,11 @@ public final class EquipmentRepository extends Repository<Equipment>{
 			element = object.get("site");
 			if(element != null && element.isJsonObject()) equipment.setSite(siteRepository.parseObject(element.getAsJsonObject()));
 
+			element = object.get("id_site");
+			if(element != null && element.isJsonPrimitive()) { //Only ID
+				equipment.setSiteId(element.getAsInt());
+			}
+			
 			registerModel(equipment);
 			return equipment;
 

@@ -56,11 +56,22 @@ public abstract class Repository<T extends Model<T>> {
 	/**
 	 * Get the list of records for the given page.
 	 * @param page - the page number, must be positive
+	 * @param suburl - A sub url for the given resource
+	 * @param callback - the callback to execute when the request is done
+	 * @param failCallback - the callback to execute when the request failed
+	 */
+	public final void paginate(int page, String suburl, PaginatedRequestCallback<T> callback, FailCallback failCallback) {
+		paginate(page, null, getUrl() + "/" + suburl, callback, failCallback);
+	}
+
+	/**
+	 * Get the list of records for the given page.
+	 * @param page - the page number, must be positive
 	 * @param callback - the callback to execute when the request is done
 	 * @param failCallback - the callback to execute when the request failed
 	 */
 	public final void paginate(int page, PaginatedRequestCallback<T> callback, FailCallback failCallback) {
-		paginate(page, null, callback, failCallback);
+		paginate(page, null, getUrl(), callback, failCallback);
 	}
 
 	/**
@@ -70,8 +81,8 @@ public abstract class Repository<T extends Model<T>> {
 	 * @param callback - the callback to execute when the request is done
 	 * @param failCallback - the callback to execute when the request failed
 	 */
-	public final void paginate(int page, Object filter, PaginatedRequestCallback<T> callback, FailCallback failCallback) {	
-		request("page", page, filter, new JsonCallback() {
+	public final void paginate(int page, Object filter, String url, PaginatedRequestCallback<T> callback, FailCallback failCallback) {	
+		request("page", page, filter, url, new JsonCallback() {
 
 			@Override
 			public void run() {
@@ -234,7 +245,7 @@ public abstract class Repository<T extends Model<T>> {
 						callback.run();
 					} else
 						handleMalformedResponse(getResponse(), failCallback, "data");
-					
+
 				} else {
 					failCallback.setResponse(response);
 					failCallback.run();
@@ -256,7 +267,7 @@ public abstract class Repository<T extends Model<T>> {
 	 * Generate the URL based on the Host in the config and the resource name
 	 * @return the url to make a request for this model
 	 */
-	protected final String getUrl() {
+	public String getUrl() {
 		String host = Config.getInstance().get("Host");
 		if(host == null) throw new NullPointerException("Host is undefined");
 

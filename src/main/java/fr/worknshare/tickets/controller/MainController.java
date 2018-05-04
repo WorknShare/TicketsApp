@@ -76,6 +76,7 @@ public class MainController extends Controller {
 		equipmentsController.setEquipmentShowController(equipmentShowController);
 		equipmentShowController.setTicketShowController(ticketShowController);
 		equipmentShowController.setTicketCreateController(ticketCreateController);
+		equipmentShowController.setTicketRepository(ticketRepository);
 	}
 
 	private void initLoginController() {
@@ -96,7 +97,6 @@ public class MainController extends Controller {
 			equipmentsController.updateSite();
 			equipmentsController.setPage(1);
 			equipmentsController.resetFilter();
-			equipmentsController.refresh();
 		});
 		loginController.setOnLogout(() -> {
 			Logger.getGlobal().info("Clearing cache...");
@@ -142,6 +142,7 @@ public class MainController extends Controller {
 		initTicketControllers();
 		
 		equipmentsController.setSnackbar(getSnackbar());
+		equipmentShowController.setSnackbar(getSnackbar());
 		
 		menuTickets.getStyleClass().add("active");
 	}
