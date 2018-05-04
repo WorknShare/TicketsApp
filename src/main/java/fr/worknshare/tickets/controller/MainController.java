@@ -157,7 +157,9 @@ public class MainController extends Controller {
 		ticketsController.setPage(1);
 		ticketsController.resetFilter();
 		ticketsController.refresh();
-		menuTickets.getStyleClass().add("active");
+		
+		if(!menuTickets.getStyleClass().contains("active"))
+			menuTickets.getStyleClass().add("active");
 		menuEquipments.getStyleClass().remove("active");
 	}
 	
@@ -168,7 +170,9 @@ public class MainController extends Controller {
 		equipmentsController.resetFilter();
 		equipmentsController.refresh();
 		menuTickets.getStyleClass().remove("active");
-		menuEquipments.getStyleClass().add("active");
+		
+		if(!menuEquipments.getStyleClass().contains("active"))
+			menuEquipments.getStyleClass().add("active");
 	}
 	
 	public HttpClient getHttpClient() {
