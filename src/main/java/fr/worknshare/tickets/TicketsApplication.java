@@ -57,7 +57,6 @@ public class TicketsApplication extends Application {
 	}
 	
 	private static void setup() {
-		setupRollbar();
 		setupLogging();
 		setupErrorHandling();
 		loadConfig();
@@ -84,12 +83,15 @@ public class TicketsApplication extends Application {
 		handlerInfo.setFilter((LogRecord record) -> { return record.getLevel().equals(Level.INFO); }); //Only show INFO logs
 		handlerInfo.setLevel(Level.INFO);
 
+		logger.setUseParentHandlers(false);
+		logger.addHandler(handlerInfo);
+		
+		setupRollbar();
+		
 		//Print other logs to System.err and report them to Rollbar
 		RollbarConsoleHandler handler = new RollbarConsoleHandler(rollbar);
 		handler.setFormatter(formatter);
 
-		logger.setUseParentHandlers(false);
-		logger.addHandler(handlerInfo);
 		logger.addHandler(handler);
 
 	}

@@ -117,10 +117,9 @@ public class MainController extends Controller {
 
 		ticketCreateController.setSnackbar(getSnackbar());
 		ticketCreateController.setTicketCreatedCallback(() -> {
-			tickets.toFront();
-			ticketsController.setPage(1);
-			ticketsController.resetFilter();
-			ticketsController.refresh();
+			equipmentShow.toFront();
+			equipmentShowController.setPage(1);
+			equipmentShowController.refresh();
 		});
 
 		ticketShowController.setSnackbar(getSnackbar());
