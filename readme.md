@@ -9,8 +9,8 @@ This application is meant to manage tickets and issues for the fictional company
 
 The project uses maven.
 
-**Build for local environment:** `mvn install -plocal`  
-**Build for production environment:** `mvn install -pproduction`  
+**Build for local environment:** `mvn install -Plocal`  
+**Build for production environment:** `mvn install -Pproduction`  
 
 Useful links
 ====================
